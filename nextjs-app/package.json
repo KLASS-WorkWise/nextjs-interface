@@ -1,27 +1,36 @@
 {
-  "name": "nextjs-app",
+  "name": "jobbox-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "sass": "sass --watch public/assets/scss/style.scss:public/assets/css/style.css"
   },
   "dependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.4.2"
+    "@hookform/resolvers": "^5.2.1",
+    "@types/react-router": "^5.1.20",
+    "next": "15.3.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.62.0",
+    "react-perfect-scrollbar": "^1.5.8",
+    "react-router": "^7.8.0",
+    "react-toastify": "^11.0.5",
+    "sass": "^1.56.1",
+    "swiper": "^11.0.7",
+    "yup": "^1.7.0",
+    "zustand": "^5.0.7"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
-    "eslint-config-next": "15.4.2",
-    "@eslint/eslintrc": "^3"
+    "eslint-config-next": "15.3.3",
+    "typescript": "^5"
   }
 }
