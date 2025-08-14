@@ -255,7 +255,7 @@ export default function CompaniesGrid() {
                               </Link>
                             </h5>
                             <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
+                              <img alt="jobBox" src="ssets/imgs/atemplate/icons/star.svg" />
                               <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
                               <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
                               <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
