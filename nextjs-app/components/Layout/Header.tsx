@@ -1,6 +1,5 @@
-﻿/* eslint-disable @next/next/no-html-link-for-pages */
-import Link from "next/link";
-import React, { useState, useEffect } from "react";
+﻿import Link from "next/link";
+import React, { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 
 interface HeaderProps {
@@ -12,6 +11,8 @@ interface HeaderProps {
 const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
   const [scroll, setScroll] = useState(false);
   const { data: session } = useSession();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.addEventListener("scroll", () => {
@@ -21,6 +22,25 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
       }
     });
   });
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   return (
     <>
@@ -142,42 +162,137 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                 </ul>
               </nav>
             </div>
+
             <div className="header-right">
               <div className="block-signin">
                 {session?.user ? (
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <div
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "18px",
+                      position: "relative",
+                    }}
+                    ref={dropdownRef}
+                  >
+                    <img
+                      src="/assets/imgs/avatar/logoLogin.jpg"
+                      alt="Avatar"
                       style={{
                         width: 40,
                         height: 40,
                         borderRadius: "50%",
+                        objectFit: "cover",
+                        cursor: "pointer",
                         background: "#eee",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: "bold",
-                        fontSize: 18,
-                        color: "#333",
+                        border: "2px solid #e0e0e0",
                       }}
-                    >
-                      {session.user.fullName
-                        ? session.user.fullName[0].toUpperCase()
-                        : session.user.username
-                          ? session.user.username[0].toUpperCase()
-                          : session.user.email
-                            ? session.user.email[0].toUpperCase()
-                            : "U"}
-                    </div>
-                    <span>
-                      Hi, {session.user.fullName || session.user.username || session.user.email}
-                    </span>
-                    <button
-                      className="btn btn-default btn-shadow ml-20 hover-up"
-                      onClick={() => signOut()}
-                      style={{ marginLeft: 10 }}
-                    >
-                      Logout
-                    </button>
+                      onClick={() => setDropdownOpen((v) => !v)}
+                    />
+                    <Link href="/recruiter/register">
+                      <span
+                        className="btn btn-primary"
+                        style={{ fontWeight: 500, padding: "8px 18px" }}
+                      >
+                        Đăng tuyển ngay
+                      </span>
+                    </Link>
+                    {dropdownOpen && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          right: 0,
+                          top: "110%",
+                          minWidth: 360,
+                          background: "#fff",
+                          boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+                          borderRadius: 12,
+                          zIndex: 100,
+                          padding: 24,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 16,
+                            marginBottom: 18,
+                          }}
+                        >
+                          <img
+                            src="/assets/imgs/avatar/logoLogin.jpg"
+                            alt="Avatar"
+                            style={{
+                              width: 56,
+                              height: 56,
+                              borderRadius: "50%",
+                              objectFit: "cover",
+                              background: "#eee",
+                              border: "2px solid #e0e0e0",
+                            }}
+                          />
+                          <div>
+                            <div
+                              style={{
+                                fontWeight: 600,
+                                fontSize: 17,
+                                marginBottom: 2,
+                              }}
+                            >
+                              {session.user.fullName ||
+                                session.user.username ||
+                                session.user.email}
+                            </div>
+                            <div style={{ fontSize: 14, color: "#888" }}>
+                              {session.user.email}
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          style={{
+                            borderTop: "1px solid #f0f0f0",
+                            marginBottom: 12,
+                          }}
+                        />
+                        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                          <li>
+                            <Link href="/">
+                              <span
+                                style={{
+                                  display: "block",
+                                  padding: "8px 0",
+                                  color: "#333",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                Quản lý tài khoản
+                              </span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/">
+                              <span
+                                style={{
+                                  display: "block",
+                                  padding: "8px 0",
+                                  color: "#333",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                Reset Password
+                              </span>
+                            </Link>
+                          </li>
+                        </ul>
+                        <button
+                          className="btn btn-primary w-100 mt-3"
+                          style={{ marginTop: 18, fontWeight: 500 }}
+                          onClick={() => signOut()}
+                        >
+                          Đăng xuất
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <>
@@ -185,7 +300,9 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       <span className="text-link-bd-btom hover-up">Register</span>
                     </Link>
                     <Link href="/page-signin">
-                      <span className="btn btn-default btn-shadow ml-40 hover-up">Sign in</span>
+                      <span className="btn btn-default btn-shadow ml-40 hover-up">
+                        Sign in
+                      </span>
                     </Link>
                   </>
                 )}
