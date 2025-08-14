@@ -37,7 +37,110 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
               </div>
             </div>
             <div className="header-nav">
-              {/* ...existing nav code... */}
+              <nav className="nav-main-menu">
+                <ul className="main-menu">
+                  <li>
+                    <Link href="/">
+                      <span>Home</span>
+                    </Link>
+                  </li>
+                  <li className="has-children">
+                    <Link href="/jobs-grid">
+                      <span>Find a Job</span>
+                    </Link>
+                    <ul className="sub-menu">
+                      <li>
+                        <Link href="/jobs-grid">
+                          <span>Jobs Grid</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/job-details-2">
+                          <span>Jobs Details</span>
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                  <li className="has-children">
+                    <Link href="/companies-grid">
+                      <span>Recruiters</span>
+                    </Link>
+                    <ul className="sub-menu">
+                      <li>
+                        <Link href="/companies-grid">
+                          <span>Recruiters</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/company-details">
+                          <span>Company Details</span>
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                  <li className="has-children">
+                    <Link href="/candidates-grid">
+                      <span>Candidates</span>
+                    </Link>
+                    <ul className="sub-menu">
+                      <li>
+                        <Link href="/candidates-grid">
+                          <span>Candidates Grid</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/candidate-details">
+                          <span>Candidate Details</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/candidate-profile">
+                          <span>Candidate Profile</span>
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                  <li className="has-children">
+                    <Link href="/blog-grid">
+                      <span>Pages</span>
+                    </Link>
+                    <ul className="sub-menu">
+                      <li>
+                        <Link href="/page-about">
+                          <span>About Us</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/page-reset-password">
+                          <span>Reset Password</span>
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                  <li className="has-children">
+                    <Link href="/blog-grid">
+                      <span>Blog</span>
+                    </Link>
+                    <ul className="sub-menu">
+                      <li>
+                        <Link href="/blog-grid-2">
+                          <span>Blog Grid</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/blog-details">
+                          <span>Blog Single</span>
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <Link href="/page-contact">
+                      <span>Contact</span>
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
             </div>
             <div className="header-right">
               <div className="block-signin">
