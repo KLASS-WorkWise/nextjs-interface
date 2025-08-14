@@ -21,7 +21,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
         setScroll(scrollCheck);
       }
     });
-  });
+  }, [scroll]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -47,6 +47,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
       <header className={scroll ? "header sticky-bar stick" : "header sticky-bar"}>
         <div className="container">
           <div className="main-header">
+            {/* Logo */}
             <div className="header-left">
               <div className="header-logo">
                 <Link href="/">
@@ -56,113 +57,55 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                 </Link>
               </div>
             </div>
+
+            {/* Menu */}
             <div className="header-nav">
               <nav className="nav-main-menu">
                 <ul className="main-menu">
                   <li>
-                    <Link href="/">
-                      <span>Home</span>
-                    </Link>
+                    <Link href="/"><span>Home</span></Link>
                   </li>
                   <li className="has-children">
-                    <Link href="/jobs-grid">
-                      <span>Find a Job</span>
-                    </Link>
+                    <Link href="/jobs-grid"><span>Find a Job</span></Link>
                     <ul className="sub-menu">
-                      <li>
-                        <Link href="/jobs-grid">
-                          <span>Jobs Grid</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/job-details-2">
-                          <span>Jobs Details</span>
-                        </Link>
-                      </li>
+                      <li><Link href="/jobs-grid"><span>Jobs Grid</span></Link></li>
+                      <li><Link href="/job-details-2"><span>Jobs Details</span></Link></li>
                     </ul>
                   </li>
                   <li className="has-children">
-                    <Link href="/companies-grid">
-                      <span>Recruiters</span>
-                    </Link>
+                    <Link href="/companies-grid"><span>Recruiters</span></Link>
                     <ul className="sub-menu">
-                      <li>
-                        <Link href="/companies-grid">
-                          <span>Recruiters</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/company-details">
-                          <span>Company Details</span>
-                        </Link>
-                      </li>
+                      <li><Link href="/companies-grid"><span>Recruiters</span></Link></li>
                     </ul>
                   </li>
                   <li className="has-children">
-                    <Link href="/candidates-grid">
-                      <span>Candidates</span>
-                    </Link>
+                    <Link href="/candidates-grid"><span>Candidates</span></Link>
                     <ul className="sub-menu">
-                      <li>
-                        <Link href="/candidates-grid">
-                          <span>Candidates Grid</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/candidate-details">
-                          <span>Candidate Details</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/candidate-profile">
-                          <span>Candidate Profile</span>
-                        </Link>
-                      </li>
+                      <li><Link href="/candidates-grid"><span>Candidates Grid</span></Link></li>
+                      <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
                     </ul>
                   </li>
                   <li className="has-children">
-                    <Link href="/blog-grid">
-                      <span>Pages</span>
-                    </Link>
+                    <Link href="/blog-grid"><span>Pages</span></Link>
                     <ul className="sub-menu">
-                      <li>
-                        <Link href="/page-about">
-                          <span>About Us</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/page-reset-password">
-                          <span>Reset Password</span>
-                        </Link>
-                      </li>
+                      <li><Link href="/page-about"><span>About Us</span></Link></li>
                     </ul>
                   </li>
                   <li className="has-children">
-                    <Link href="/blog-grid">
-                      <span>Blog</span>
-                    </Link>
+                    <Link href="/blog-grid"><span>Blog</span></Link>
                     <ul className="sub-menu">
-                      <li>
-                        <Link href="/blog-grid-2">
-                          <span>Blog Grid</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/blog-details">
-                          <span>Blog Single</span>
-                        </Link>
-                      </li>
+                      <li><Link href="/blog-grid-2"><span>Blog Grid</span></Link></li>
+                      <li><Link href="/blog-details"><span>Blog Single</span></Link></li>
                     </ul>
                   </li>
                   <li>
-                    <Link href="/page-contact">
-                      <span>Contact</span>
-                    </Link>
+                    <Link href="/page-contact"><span>Contact</span></Link>
                   </li>
                 </ul>
               </nav>
             </div>
 
+            {/* Right side */}
             <div className="header-right">
               <div className="block-signin">
                 {session?.user ? (
@@ -170,17 +113,18 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "18px",
+                      gap: "9px",
                       position: "relative",
                     }}
                     ref={dropdownRef}
                   >
+                    {/* Avatar user */}
                     <img
                       src="/assets/imgs/avatar/logoLogin.jpg"
                       alt="Avatar"
                       style={{
-                        width: 40,
-                        height: 40,
+                        width: 50,
+                        height: 50,
                         borderRadius: "50%",
                         objectFit: "cover",
                         cursor: "pointer",
@@ -189,14 +133,36 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       }}
                       onClick={() => setDropdownOpen((v) => !v)}
                     />
-                    <Link href="/recruiter/register">
-                      <span
-                        className="btn btn-primary"
-                        style={{ fontWeight: 500, padding: "8px 18px" }}
-                      >
-                        Đăng tuyển ngay
-                      </span>
+
+                    {/* Nút Đăng tuyển ngay kiểu mới */}
+                    <Link
+                      href="/recruiter/register"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        textDecoration: "none",
+                        background: "transparent",
+                        padding: "4px 8px",
+                      }}
+                    >
+                      <div style={{ lineHeight: 1.2 }}>
+                        <div style={{ fontSize: 13, color: "#888" }}>
+                          Bạn là nhà tuyển dụng?
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                            color: "blue",
+                          }}
+                        >
+                          Đăng tuyển ngay »
+                        </div>
+                      </div>
                     </Link>
+
+                    {/* Dropdown menu */}
                     {dropdownOpen && (
                       <div
                         style={{
@@ -270,7 +236,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                             </Link>
                           </li>
                           <li>
-                            <Link href="/">
+                            <Link href="/page-reset-password">
                               <span
                                 style={{
                                   display: "block",
@@ -311,7 +277,6 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
           </div>
         </div>
       </header>
-      {/* ...existing mobile header code... */}
     </>
   );
 };
