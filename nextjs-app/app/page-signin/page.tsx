@@ -22,8 +22,8 @@ export default function Signin() {
 
     const res = await signIn("credentials", {
       redirect: false,
-      username,
-      password,
+      username: "hoangle191205@gmail.com",
+      password: "123456789",
     });
 
     setLoading(false);
