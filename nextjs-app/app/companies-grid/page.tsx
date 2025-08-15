@@ -1,9 +1,81 @@
+"use client";
+
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
 import BlogSlider from "@/components/sliders/Blog";
+import React, { useEffect, useState } from 'react';
+
+interface CompanyInformation {
+  id: number
+  employee: number
+  companyName: string
+  logoUrl: string
+  bannerUrl: string
+  email: string
+  phone: string
+  description: string
+  lastPosted: string
+  address: string
+  location: string
+  website: string
+  industry: string
+}
+interface PaginatedCompanyResponse {
+  data: CompanyInformation[]
+  pageNumber: number
+  pageSize: number
+  totalPages: number
+  totalRecords: number
+  hasNext: boolean
+  hasPrevious: boolean
+}
 
 export default function CompaniesGrid() {
+  const [companies, setCompanies] = useState<CompanyInformation[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [pageSize, setPageSize] = useState(12)
+  const [totalRecords, setTotalRecords] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+
+  const fetchCompanies = async (page = 0, size = 12) => {
+    try {
+      setLoading(true)
+      const response = await fetch(`http://localhost:8080/api/company?page=${page}&size=${size}`)
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch companies")
+      }
+
+      const data: PaginatedCompanyResponse = await response.json()
+      setCompanies(data.data)
+      setCurrentPage(data.pageNumber)
+      setTotalRecords(data.totalRecords)
+      setTotalPages(data.totalPages)
+      setError(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred")
+      setCompanies([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchCompanies(currentPage, pageSize)
+  }, [currentPage, pageSize])
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage)
+  }
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize)
+    setCurrentPage(0) // Reset to first page when changing page size
+  }
+
   return (
     <>
       <Layout>
@@ -164,7 +236,11 @@ export default function CompaniesGrid() {
                       <div className="row">
                         <div className="col-xl-6 col-lg-5">
                           <span className="text-small text-showing">
-                            Showing <strong>41-60 </strong>of <strong>944 </strong>jobs
+                            Showing{" "}
+                            <strong>
+                              {currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, totalRecords)}{" "}
+                            </strong>
+                            of <strong>{totalRecords} </strong>companies
                           </span>
                         </div>
                         <div className="col-xl-6 col-lg-7 text-lg-end mt-sm-15">
@@ -172,25 +248,32 @@ export default function CompaniesGrid() {
                             <div className="box-border mr-10">
                               <span className="text-sortby">Show:</span>
                               <div className="dropdown dropdown-sort">
-                                <button className="btn dropdown-toggle" id="dropdownSort" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
-                                  <span>12</span>
+                                <button
+                                  className="btn dropdown-toggle"
+                                  id="dropdownSort"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  data-bs-display="static"
+                                >
+                                  <span>{pageSize}</span>
                                   <i className="fi-rr-angle-small-down" />
                                 </button>
                                 <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownSort">
                                   <li>
-                                    <Link href="#">
-                                      <span className="dropdown-item active">10</span>
-                                    </Link>
+                                    <button onClick={() => handlePageSizeChange(6)} className="dropdown-item">
+                                      6
+                                    </button>
                                   </li>
                                   <li>
-                                    <Link href="#">
-                                      <span className="dropdown-item">12</span>
-                                    </Link>
+                                    <button onClick={() => handlePageSizeChange(12)} className="dropdown-item">
+                                      12
+                                    </button>
                                   </li>
                                   <li>
-                                    <Link href="#">
-                                      <span className="dropdown-item">20</span>
-                                    </Link>
+                                    <button onClick={() => handlePageSizeChange(24)} className="dropdown-item">
+                                      24
+                                    </button>
                                   </li>
                                 </ul>
                               </div>
@@ -198,7 +281,14 @@ export default function CompaniesGrid() {
                             <div className="box-border">
                               <span className="text-sortby">Sort by:</span>
                               <div className="dropdown dropdown-sort">
-                                <button className="btn dropdown-toggle" id="dropdownSort2" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+                                <button
+                                  className="btn dropdown-toggle"
+                                  id="dropdownSort2"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  data-bs-display="static"
+                                >
                                   <span>Newest Post</span>
                                   <i className="fi-rr-angle-small-down" />
                                 </button>
@@ -227,7 +317,6 @@ export default function CompaniesGrid() {
                                   <img src="assets/imgs/template/icons/icon-list.svg" alt="jobBox" />
                                 </span>
                               </Link>
-
                               <Link href="/jobs-grid">
                                 <span className="view-type">
                                   <img src="assets/imgs/template/icons/icon-grid-hover.svg" alt="jobBox" />
@@ -238,887 +327,150 @@ export default function CompaniesGrid() {
                         </div>
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-1.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Car Toys</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="ssets/imgs/atemplate/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>66</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">New York, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>12</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
+
+                    {loading && (
+                      <div className="text-center py-5">
+                        <div className="spinner-border" role="status">
+                          <span className="visually-hidden">Loading...</span>
                         </div>
+                        <p className="mt-3">Loading companies...</p>
                       </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-2.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Carols Daughter</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>18</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">London, UK</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>25</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
+                    )}
+
+                    {error && (
+                      <div className="alert alert-danger" role="alert">
+                        <h4 className="alert-heading">Error!</h4>
+                        <p>{error}</p>
+                        <button
+                          className="btn btn-outline-danger"
+                          onClick={() => fetchCompanies(currentPage, pageSize)}
+                        >
+                          Try Again
+                        </button>
                       </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-3.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Amazon</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>52</span>
-                                <span>)</span>
-                              </span>
+                    )}
+
+                    {!loading && !error && (
+                      <div className="row">
+                        {companies.map((company) => (
+                          <div key={company.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+                            <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
+                              <div className="image-box">
+                                <Link href={`/company-details/${company.id}`}>
+                                  <span>
+                                    <img
+                                      src={company.logoUrl || "/placeholder.svg?height=80&width=80&query=company logo"}
+                                      alt={company.companyName}
+                                      onError={(e) => {
+                                        const target = e.target as HTMLImageElement
+                                        target.src = "/placeholder.svg?height=80&width=80"
+                                      }}
+                                    />
+                                  </span>
+                                </Link>
+                              </div>
+                              <div className="info-text mt-10">
+                                <h5 className="font-bold">
+                                  <Link href={`/company-details/${company.id}`}>
+                                    <span>{company.companyName}</span>
+                                  </Link>
+                                </h5>
+                                <div className="mt-5">
+                                  {/* Static rating for now - you can make this dynamic later */}
+                                  <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
+                                  <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
+                                  <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
+                                  <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
+                                  <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
+                                  <span className="font-xs color-text-mutted ml-10">
+                                    <span>(4.5)</span>
+                                  </span>
+                                </div>
+                                <span className="card-location">{company.location}</span>
+                                <div className="mt-15">
+                                  <p className="font-xs color-text-paragraph-2 mb-15">
+                                    {company.description?.substring(0, 100)}
+                                    {company.description && company.description.length > 100 ? "..." : ""}
+                                  </p>
+                                  <div className="card-2-bottom mt-20">
+                                    <div className="row">
+                                      <div className="col-lg-6 col-6">
+                                        <span className="card-text-price">
+                                          <strong>{company.employee}</strong> Employees
+                                        </span>
+                                      </div>
+                                      <div className="col-lg-6 col-6 text-end">
+                                        <span className="text-muted font-xs">{company.industry}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="mt-30">
+                                  <Link href={`/jobs-grid?company=${company.id}`}>
+                                    <span className="btn btn-grey-big">View Jobs</span>
+                                  </Link>
+                                </div>
+                              </div>
                             </div>
-                            <span className="card-location">Tokyo,Japan</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>54</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
                           </div>
-                        </div>
+                        ))}
                       </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-4.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Baseball Savings</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>85</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">Chicago, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>6</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
+                    )}
+
+                    {!loading && !error && totalPages > 1 && (
+                      <div className="paginations">
+                        <ul className="pager">
+                          <li>
+                            <button
+                              className={`pager-prev ${currentPage === 0 ? "disabled" : ""}`}
+                              onClick={() => handlePageChange(currentPage - 1)}
+                              disabled={currentPage === 0}
+                            >
+                              Previous
+                            </button>
+                          </li>
+                          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                            const pageNum = Math.max(0, Math.min(currentPage - 2 + i, totalPages - 1))
+                            return (
+                              <li key={pageNum}>
+                                <button
+                                  className={`pager-number ${currentPage === pageNum ? "active" : ""}`}
+                                  onClick={() => handlePageChange(pageNum)}
+                                >
+                                  {pageNum + 1}
+                                </button>
+                              </li>
+                            )
+                          })}
+                          <li>
+                            <button
+                              className={`pager-next ${currentPage >= totalPages - 1 ? "disabled" : ""}`}
+                              onClick={() => handlePageChange(currentPage + 1)}
+                              disabled={currentPage >= totalPages - 1}
+                            >
+                              Next
+                            </button>
+                          </li>
+                        </ul>
                       </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-5.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Ashford</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>25</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">Toronto, Italia</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>67</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-6.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Callaway Golf</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>34</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">San Francisco, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>45</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-7.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Percepta</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>97</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">Chinatown, Singpore</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>64</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-8.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Exela Movers</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>67</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">New York, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>87</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-9.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Ibotta, Inc</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>45</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">New York, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>23</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-1.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Wanderu </span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>08</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">New York, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>45</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-2.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Aceable, Inc.</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>54</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">New York, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>67</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-3.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Intrepid Travel</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>123</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">New York, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>53</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-4.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Defendify </span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>64</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">New York, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>56</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-5.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Twisters </span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>34</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">New York, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>66</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-6.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Fireworks</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>12</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">New York, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>12</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-1.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Car Toys</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>66</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">New York, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>12</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-2.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Carols Daughter</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>18</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">London, UK</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>25</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-3.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Amazon</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>52</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">Tokyo,Japan</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>54</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-4.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Baseball Savings</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>85</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">Chicago, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>6</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-5.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Ashford</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>25</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">Toronto, Italia</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>67</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div className="card-grid-1 hover-up wow animate__animated animate__fadeIn">
-                          <div className="image-box">
-                            <Link href="/company-details">
-                              <span>
-                                <img src="assets/imgs/brands/brand-6.png" alt="jobBox" />
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="info-text mt-10">
-                            <h5 className="font-bold">
-                              <Link href="/company-details">
-                                <span>Callaway Golf</span>
-                              </Link>
-                            </h5>
-                            <div className="mt-5">
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <img alt="jobBox" src="assets/imgs/template/icons/star.svg" />
-                              <span className="font-xs color-text-mutted ml-10">
-                                <span>(</span>
-                                <span>34</span>
-                                <span>)</span>
-                              </span>
-                            </div>
-                            <span className="card-location">San Francisco, US</span>
-                            <div className="mt-30">
-                              <Link href="/jobs-grid">
-                                <span className="btn btn-grey-big">
-                                  <span>45</span>
-                                  <span> Jobs Open</span>
-                                </span>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="paginations">
-                    <ul className="pager">
-                      <li>
-                        <a className="pager-prev" href="#" />
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number">1</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number">2</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number">3</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number">4</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number">5</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number active">6</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number">7</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <a className="pager-next" href="#" />
-                      </li>
-                    </ul>
+                    )}
                   </div>
                 </div>
+
+                {/* ... existing sidebar code ... */}
                 <div className="col-lg-3 col-md-12 col-sm-12 col-12">
                   <div className="sidebar-shadow none-shadow mb-30">
                     <div className="sidebar-filters">
                       <div className="filter-block head-border mb-30">
                         <h5>
-                          Advance Filter
+                          Advance Filter{" "}
                           <Link href="#">
                             <span className="link-reset">Reset</span>
                           </Link>
                         </h5>
                       </div>
                       <div className="filter-block mb-30">
-                        <div className="form-group select-style select-style-icon">
+                        <div className="form-group select-style">
                           <select className="form-control form-icons select-active">
                             <option>New York, US</option>
                             <option>London</option>
@@ -1134,7 +486,7 @@ export default function CompaniesGrid() {
                           <ul className="list-checkbox">
                             <li>
                               <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
+                                <input type="checkbox" defaultChecked />
                                 <span className="text-small">All</span>
                                 <span className="checkmark" />
                               </label>
@@ -1184,191 +536,29 @@ export default function CompaniesGrid() {
                         </div>
                       </div>
                       <div className="filter-block mb-20">
-                        <h5 className="medium-heading mb-25">Salary Range</h5>
-                        <div className="list-checkbox pb-20">
-                          <div className="row position-relative mt-10 mb-20">
-                            <div className="col-sm-12 box-slider-range">
-                              <div id="slider-range" />
-                            </div>
-                            <div className="box-input-money">
-                              <input className="input-disabled form-control min-value-money" type="text" name="min-value-money" disabled={true} defaultValue="" />
-                              <input className="form-control min-value" type="hidden" name="min-value" defaultValue="" />
-                            </div>
-                          </div>
-                          <div className="box-number-money">
-                            <div className="row mt-30">
-                              <div className="col-sm-6 col-6">
-                                <span className="font-sm color-brand-1">$0</span>
-                              </div>
-                              <div className="col-sm-6 col-6 text-end">
-                                <span className="font-sm color-brand-1">$500</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="form-group mb-20">
-                          <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">All</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">145</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">$0k - $20k</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">56</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">$20k - $40k</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">37</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">$40k - $60k</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">75</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">$60k - $80k</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">98</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">$80k - $100k</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">14</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">$100k - $200k</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">25</span>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="filter-block mb-30">
-                        <h5 className="medium-heading mb-10">Popular Keyword</h5>
-                        <div className="form-group">
-                          <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">Software</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">24</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Developer</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">45</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Web</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">57</span>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="filter-block mb-30">
-                        <h5 className="medium-heading mb-10">Position</h5>
+                        <h5 className="medium-heading mb-25">Company size</h5>
                         <div className="form-group">
                           <ul className="list-checkbox">
                             <li>
                               <label className="cb-container">
                                 <input type="checkbox" />
-                                <span className="text-small">Senior</span>
+                                <span className="text-small">0-50 Employees</span>
                                 <span className="checkmark" />
                               </label>
-                              <span className="number-item">12</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">Junior</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">35</span>
+                              <span className="number-item">143</span>
                             </li>
                             <li>
                               <label className="cb-container">
                                 <input type="checkbox" />
-                                <span className="text-small">Fresher</span>
+                                <span className="text-small">51-150 Employees</span>
                                 <span className="checkmark" />
                               </label>
-                              <span className="number-item">56</span>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="filter-block mb-30">
-                        <h5 className="medium-heading mb-10">Experience Level</h5>
-                        <div className="form-group">
-                          <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Internship</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">56</span>
+                              <span className="number-item">65</span>
                             </li>
                             <li>
                               <label className="cb-container">
                                 <input type="checkbox" />
-                                <span className="text-small">Entry Level</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">87</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">Associate</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">24</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Mid Level</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">45</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Director</span>
+                                <span className="text-small">151-300 Employees</span>
                                 <span className="checkmark" />
                               </label>
                               <span className="number-item">76</span>
@@ -1376,119 +566,18 @@ export default function CompaniesGrid() {
                             <li>
                               <label className="cb-container">
                                 <input type="checkbox" />
-                                <span className="text-small">Executive</span>
+                                <span className="text-small">301-500 Employees</span>
                                 <span className="checkmark" />
                               </label>
                               <span className="number-item">89</span>
                             </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="filter-block mb-30">
-                        <h5 className="medium-heading mb-10">Onsite/Remote</h5>
-                        <div className="form-group">
-                          <ul className="list-checkbox">
                             <li>
                               <label className="cb-container">
                                 <input type="checkbox" />
-                                <span className="text-small">On-site</span>
+                                <span className="text-small">500+ Employees</span>
                                 <span className="checkmark" />
                               </label>
-                              <span className="number-item">12</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">Remote</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">65</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Hybrid</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">58</span>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="filter-block mb-30">
-                        <h5 className="medium-heading mb-10">Job Posted</h5>
-                        <div className="form-group">
-                          <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">All</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">78</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">1 day</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">65</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">7 days</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">24</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">30 days</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">56</span>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="filter-block mb-20">
-                        <h5 className="medium-heading mb-15">Job type</h5>
-                        <div className="form-group">
-                          <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Full Time</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">25</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">Part Time</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">64</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Remote Jobs</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">78</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Freelancer</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">97</span>
+                              <span className="number-item">34</span>
                             </li>
                           </ul>
                         </div>
