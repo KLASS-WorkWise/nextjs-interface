@@ -222,7 +222,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                         />
                         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                           <li>
-                            <Link href="/">
+                            <Link href="/page-account">
                               <span
                                 style={{
                                   display: "block",

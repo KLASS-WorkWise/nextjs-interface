@@ -22,8 +22,10 @@ export default function Signin() {
 
     const res = await signIn("credentials", {
       redirect: false,
-      username: "hoangle191205@gmail.com",
-      password: "123456789",
+
+      username,
+      password,
+
     });
 
     setLoading(false);
@@ -47,17 +49,36 @@ export default function Signin() {
                 <p className="font-sm text-muted mb-30">
                   Access to all features. No credit card required.
                 </p>
+
                 <button
                   type="button"
                   className="btn social-login hover-up mb-20"
-                  onClick={() => signIn("google")}
+                  onClick={() => signIn("google", { callbackUrl: "/" })}
                 >
                   <img
                     src="assets/imgs/template/icons/icon-google.svg"
                     alt="jobbox"
+                    width={24}
+                    height={24}
                   />
                   <strong>Sign in with Google</strong>
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => signIn("github", { callbackUrl: "/" })}
+                  className="btn social-login hover-up mb-20"
+                >
+                  <img
+                    src="assets/imgs/template/icons/github.svg"
+                    alt="jobbox"
+                    width={24}
+                    height={24}
+                  />
+                  <strong>Sign in with GitHub</strong>
+                </button>
+
+
                 <div className="divider-text-center">
                   <span>Or continue with</span>
                 </div>
@@ -101,7 +122,7 @@ export default function Signin() {
                     <span className="text-small">Remember me</span>
                     <span className="checkmark" />
                   </label>
-                  <Link href="/page-contact">
+                  <Link href="/page-reset-password">
                     <span className="text-muted">Forgot Password</span>
                   </Link>
                 </div>
