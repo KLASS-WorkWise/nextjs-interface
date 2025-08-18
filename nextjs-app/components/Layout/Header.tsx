@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
+import CompanyRegistrationModal from "../Company/company-registration-modal";
 
 interface HeaderProps {
   handleOpen: () => void;
@@ -41,6 +42,11 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownOpen]);
+
+  const [openModal, setOpenModal] = useState(false)
+
+  const handleOpen2 = () => setOpenModal(true)
+  const handleClose = () => setOpenModal(false)
 
   return (
     <>
@@ -134,33 +140,40 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       onClick={() => setDropdownOpen((v) => !v)}
                     />
 
-                    {/* Nút Đăng tuyển ngay kiểu mới */}
-                    <Link
-                      href="/recruiter/register"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 8,
-                        textDecoration: "none",
-                        background: "transparent",
-                        padding: "4px 8px",
-                      }}
-                    >
-                      <div style={{ lineHeight: 1.2 }}>
-                        <div style={{ fontSize: 13, color: "#888" }}>
-                          Bạn là nhà tuyển dụng?
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 14,
-                            fontWeight: 600,
-                            color: "blue",
-                          }}
-                        >
-                          Đăng tuyển ngay »
-                        </div>
-                      </div>
-                    </Link>
+                      {/* Button Link để mở Modal */}
+      <Link
+        href="#"
+        onClick={(e) => {
+          e.preventDefault()     // không chuyển trang
+          handleOpen2()
+        }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          textDecoration: "none",
+          background: "transparent",
+          padding: "4px 8px",
+        }}
+      >
+        <div style={{ lineHeight: 1.2 }}>
+          <div style={{ fontSize: 13, color: "#888" }}>
+            Bạn là nhà tuyển dụng?
+          </div>
+          <div
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: "blue",
+            }}
+          >
+            Đăng tuyển ngay »
+          </div>
+        </div>
+      </Link>
+
+      {/* Modal đăng ký */}
+      <CompanyRegistrationModal isOpen={openModal} onClose={handleClose} />
 
                     {/* Dropdown menu */}
                     {dropdownOpen && (
