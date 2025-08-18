@@ -1,6 +1,8 @@
 ﻿import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Settings, KeyRound, LogOut } from 'lucide-react';
 import CompanyRegistrationModal from "../Company/company-registration-modal";
 
 interface HeaderProps {
@@ -146,6 +148,40 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       onClick={() => setDropdownOpen((v) => !v)}
                     />
 
+<<<<<<< HEAD
+                    {/* Nút Đăng tuyển ngay */}
+                    <Link
+                      href="/recruiter/register"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        textDecoration: "none",
+                        background: "transparent",
+                        padding: "0 12px",
+                        marginLeft: "12px",
+                        height: "50px",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <div style={{ lineHeight: 1.2, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                        <div style={{ fontSize: 13, color: "#888", textAlign: "left" }}>
+                          Bạn là nhà tuyển dụng?
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                            color: "blue",
+                            textAlign: "left",
+                            marginTop: 2,
+                          }}
+                        >
+                          Đăng tuyển ngay
+                        </div>
+                      </div>
+                    </Link>
+=======
                       {/* Button Link để mở Modal */}
       <Link
         href="#"
@@ -180,6 +216,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
 
       {/* Modal đăng ký */}
       <CompanyRegistrationModal isOpen={openModal} onClose={handleClose} />
+>>>>>>> origin/khacdoai
 
                     {/* Dropdown menu */}
                     {dropdownOpen && (
