@@ -1,6 +1,8 @@
 ﻿import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Settings, KeyRound, LogOut } from 'lucide-react';
 
 interface HeaderProps {
   handleOpen: () => void;
@@ -13,6 +15,12 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
+  };
 
   useEffect(() => {
     document.addEventListener("scroll", () => {
@@ -134,7 +142,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       onClick={() => setDropdownOpen((v) => !v)}
                     />
 
-                    {/* Nút Đăng tuyển ngay kiểu mới */}
+                    {/* Nút Đăng tuyển ngay */}
                     <Link
                       href="/recruiter/register"
                       style={{
@@ -143,11 +151,14 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                         gap: 8,
                         textDecoration: "none",
                         background: "transparent",
-                        padding: "4px 8px",
+                        padding: "0 12px",
+                        marginLeft: "12px",
+                        height: "50px",
+                        justifyContent: "center",
                       }}
                     >
-                      <div style={{ lineHeight: 1.2 }}>
-                        <div style={{ fontSize: 13, color: "#888" }}>
+                      <div style={{ lineHeight: 1.2, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                        <div style={{ fontSize: 13, color: "#888", textAlign: "left" }}>
                           Bạn là nhà tuyển dụng?
                         </div>
                         <div
@@ -155,9 +166,11 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                             fontSize: 14,
                             fontWeight: 600,
                             color: "blue",
+                            textAlign: "left",
+                            marginTop: 2,
                           }}
                         >
-                          Đăng tuyển ngay »
+                          Đăng tuyển ngay
                         </div>
                       </div>
                     </Link>
@@ -223,40 +236,73 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                           <li>
                             <Link href="/page-account">
-                              <span
-                                style={{
-                                  display: "block",
-                                  padding: "8px 0",
-                                  color: "#333",
-                                  fontWeight: 500,
-                                }}
-                              >
-                                Quản lý tài khoản
+                              <span className="dropdown-link" style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 10,
+                                padding: "10px 0",
+                                color: "#333",
+                                fontWeight: 500,
+                                borderRadius: 8,
+                                cursor: "pointer",
+                                transition: "background 0.2s, color 0.2s",
+                              }}>
+                                <Settings size={18} />
+                                <span>Quản lý tài khoản</span>
                               </span>
                             </Link>
                           </li>
                           <li>
                             <Link href="/page-reset-password">
-                              <span
-                                style={{
-                                  display: "block",
-                                  padding: "8px 0",
-                                  color: "#333",
-                                  fontWeight: 500,
-                                }}
-                              >
-                                Reset Password
+                              <span className="dropdown-link" style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 10,
+                                padding: "10px 0",
+                                color: "#333",
+                                fontWeight: 500,
+                                borderRadius: 8,
+                                cursor: "pointer",
+                                transition: "background 0.2s, color 0.2s",
+                              }}>
+                                <KeyRound size={18} />
+                                <span>Reset Password</span>
                               </span>
                             </Link>
                           </li>
                         </ul>
                         <button
-                          className="btn btn-primary w-100 mt-3"
-                          style={{ marginTop: 18, fontWeight: 500 }}
-                          onClick={() => signOut()}
+                          className="btn-logout w-100"
+                          style={{
+                            marginTop: 18,
+                            fontWeight: 500,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 10,
+                            background: "#ff4d4f",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: 8,
+                            fontSize: 16,
+                            padding: "10px 0",
+                            cursor: "pointer",
+                          }}
+                          onClick={handleLogout}
                         >
-                          Đăng xuất
+                          <LogOut size={20} />
+                          <span>Đăng xuất</span>
                         </button>
+                        {/* CSS đơn giản cho hover và nút logout */}
+                        <style>{`
+      .dropdown-link:hover {
+        background: #e6f0fa;
+        color: #1976d2;
+      }
+      .btn-logout:hover {
+        background: #d32f2f;
+      }
+    `}</style>
                       </div>
                     )}
                   </div>
