@@ -13,10 +13,12 @@ interface HeaderProps {
 
 const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
   const [scroll, setScroll] = useState(false);
-  const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  const { data: session } = useSession();
+  const role = session?.user?.roles;
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
@@ -76,45 +78,37 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
             <div className="header-nav">
               <nav className="nav-main-menu">
                 <ul className="main-menu">
-                  <li>
-                    <Link href="/"><span>Home</span></Link>
-                  </li>
-                  <li className="has-children">
-                    <Link href="/jobs-grid"><span>Find a Job</span></Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/jobs-grid"><span>Jobs Grid</span></Link></li>
-                      <li><Link href="/job-details-2"><span>Jobs Details</span></Link></li>
-                    </ul>
-                  </li>
-                  <li className="has-children">
-                    <Link href="/companies-grid"><span>Recruiters</span></Link>
-                    <ul className="sub-menu">
+
+                  {/* chưa log */}
+                  {!session?.user && (
+                    <>
+                      <li><Link href="/"><span>Home</span></Link></li>
+                      <li><Link href="/jobs-grid"><span>Find a Job</span></Link></li>
                       <li><Link href="/companies-grid"><span>Recruiters</span></Link></li>
-                    </ul>
-                  </li>
-                  <li className="has-children">
-                    <Link href="/candidates-grid"><span>Candidates</span></Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/candidates-grid"><span>Candidates Grid</span></Link></li>
-                      <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
-                    </ul>
-                  </li>
-                  <li className="has-children">
-                    <Link href="/blog-grid"><span>Pages</span></Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/page-about"><span>About Us</span></Link></li>
-                    </ul>
-                  </li>
-                  <li className="has-children">
-                    <Link href="/blog-grid"><span>Blog</span></Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/blog-grid-2"><span>Blog Grid</span></Link></li>
-                      <li><Link href="/blog-details"><span>Blog Single</span></Link></li>
-                    </ul>
-                  </li>
-                  <li>
-                    <Link href="/page-contact"><span>Contact</span></Link>
-                  </li>
+                      <li><Link href="/candidates-grid"><span>Candidates</span></Link></li>
+                      <li><Link href="/blog-grid"><span>Blog</span></Link></li>
+                      <li><Link href="/page-contact"><span>Contact</span></Link></li>
+                    </>
+                  )}
+
+                  {/* log với user */}
+                  {session?.user && role?.includes("Users") && (
+                    <>
+                      <li><Link href="/jobs-grid"><span>Việc làm phù hợp</span></Link></li>
+                      <li><Link href="/page-resume"><span>Tạo CV</span></Link></li>
+                      <li><Link href="/page-account"><span>Tài khoản của tôi</span></Link></li>
+                    </>
+                  )}
+
+                  {/* Nếu là Employer */}
+                  {session?.user && role?.includes("Employers") && (
+                    <>
+                      <li><Link href="/employer-dashboard"><span>Quản lý tuyển dụng</span></Link></li>
+                      <li><Link href="/company-profile"><span>Công ty của tôi</span></Link></li>
+                      <li><Link href="/page-account"><span>Tài khoản</span></Link></li>
+                    </>
+                  )}
+
                 </ul>
               </nav>
             </div>
@@ -147,25 +141,24 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       }}
                       onClick={() => setDropdownOpen((v) => !v)}
                     />
-
-<<<<<<< HEAD
-                    {/* Nút Đăng tuyển ngay */}
+                    {/* Button Link để mở Modal */}
                     <Link
-                      href="/recruiter/register"
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()     // không chuyển trang
+                        handleOpen2()
+                      }}
                       style={{
                         display: "flex",
                         alignItems: "center",
                         gap: 8,
                         textDecoration: "none",
                         background: "transparent",
-                        padding: "0 12px",
-                        marginLeft: "12px",
-                        height: "50px",
-                        justifyContent: "center",
+                        padding: "4px 8px",
                       }}
                     >
-                      <div style={{ lineHeight: 1.2, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                        <div style={{ fontSize: 13, color: "#888", textAlign: "left" }}>
+                      <div style={{ lineHeight: 1.2 }}>
+                        <div style={{ fontSize: 13, color: "#888" }}>
                           Bạn là nhà tuyển dụng?
                         </div>
                         <div
@@ -173,50 +166,15 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                             fontSize: 14,
                             fontWeight: 600,
                             color: "blue",
-                            textAlign: "left",
-                            marginTop: 2,
                           }}
                         >
-                          Đăng tuyển ngay
+                          Đăng tuyển ngay »
                         </div>
                       </div>
                     </Link>
-=======
-                      {/* Button Link để mở Modal */}
-      <Link
-        href="#"
-        onClick={(e) => {
-          e.preventDefault()     // không chuyển trang
-          handleOpen2()
-        }}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          textDecoration: "none",
-          background: "transparent",
-          padding: "4px 8px",
-        }}
-      >
-        <div style={{ lineHeight: 1.2 }}>
-          <div style={{ fontSize: 13, color: "#888" }}>
-            Bạn là nhà tuyển dụng?
-          </div>
-          <div
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: "blue",
-            }}
-          >
-            Đăng tuyển ngay »
-          </div>
-        </div>
-      </Link>
 
-      {/* Modal đăng ký */}
-      <CompanyRegistrationModal isOpen={openModal} onClose={handleClose} />
->>>>>>> origin/khacdoai
+                    {/* Modal đăng ký */}
+                    <CompanyRegistrationModal isOpen={openModal} onClose={handleClose} />
 
                     {/* Dropdown menu */}
                     {dropdownOpen && (
