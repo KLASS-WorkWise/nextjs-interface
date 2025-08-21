@@ -76,7 +76,7 @@ export default function Reset() {
                                     // Bước 1: nhập email
                                     <form className="login-register text-start mt-20" onSubmit={handleSubmit}>
                                         <p className="font-sm text-muted mb-30">
-                                            Enter email address associated with your account and we'll send you a link to reset your password
+                                            Enter email address associated with your account and we ll send you a link to reset your password
                                         </p>
                                         <div className="form-group">
                                             <label className="form-label" htmlFor="input-1">
