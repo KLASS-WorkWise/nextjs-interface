@@ -3,6 +3,8 @@
 import Layout from "@/components/Layout/Layout";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -14,6 +16,7 @@ export default function Register() {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const router = useRouter();  // chuyển hướng
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -38,11 +41,13 @@ export default function Register() {
         repassword: form.repassword,
       }),
     });
-    if (res.ok) {
-      setSuccess("Đăng ký thành công!");
-    } else {
-      setError("Đăng ký thất bại");
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error || data.message || "Đăng ký thất bại");
+      return;
     }
+    setSuccess("Đăng ký thành công!");
+    router.push("/page-signin"); // Chuyển hướng sang trang login
   };
 
   return (
@@ -55,7 +60,11 @@ export default function Register() {
                 <p className="font-sm text-brand-2">Register </p>
                 <h2 className="mt-10 mb-5 text-brand-1">Start for free Today</h2>
                 <p className="font-sm text-muted mb-30">Access to all features. No credit card required.</p>
-                <button className="btn social-login hover-up mb-20">
+                <button
+                  className="btn social-login hover-up mb-20"
+                  type="button"
+                  onClick={() => signIn("google", { callbackUrl: "/" })}
+                >
                   <img src="assets/imgs/template/icons/icon-google.svg" alt="jobbox" />
                   <strong>Sign up with Google</strong>
                 </button>

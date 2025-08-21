@@ -1,8 +1,14 @@
+"use client"
 import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
 import BlogSlider from "@/components/sliders/Blog";
+import { useSession } from "next-auth/react";
+
 
 export default function JobGrid() {
+  const { data: session } = useSession();
+  const role = session?.user?.roles;
+
   return (
     <>
       <Layout>
@@ -300,8 +306,17 @@ export default function JobGrid() {
                             Showing <strong>41-60 </strong>of <strong>944 </strong>jobs
                           </span>
                         </div>
-                        <div className="col-xl-6 col-lg-7 text-lg-end mt-sm-15">
+
+                        <div className="col-xl-6 col-lg-7 text-lg-end mt-sm-15 ">
                           <div className="display-flex2">
+                            {role?.includes("Employers") && (
+                              <Link href="/jobs-create">
+                                <button className="btn btn-primary" style={{ marginRight: "16px" }}>
+                                  Create Job
+                                </button>
+                              </Link>
+                            )}
+
                             <div className="box-border mr-10">
                               <span className="text-sortby">Show:</span>
                               <div className="dropdown dropdown-sort">
@@ -388,7 +403,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>UI / UX Designer fulltime</span>
                               </Link>
                             </h6>
@@ -444,7 +459,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>Full Stack Engineer</span>
                               </Link>
                             </h6>
@@ -496,7 +511,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>Java Software Engineer</span>
                               </Link>
                             </h6>
@@ -552,7 +567,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>Frontend Developer</span>
                               </Link>
                             </h6>
@@ -604,7 +619,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/-2">
                                 <span>React Native Web Developer</span>
                               </Link>
                             </h6>
@@ -652,7 +667,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/-2">
                                 <span>Senior System Engineer</span>
                               </Link>
                             </h6>
@@ -664,11 +679,11 @@ export default function JobGrid() {
                             </div>
                             <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
                             <div className="mt-30">
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">PHP</span>
                               </Link>
 
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">Android</span>
                               </Link>
                             </div>
@@ -704,7 +719,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>Products Manager</span>
                               </Link>
                             </h6>
@@ -716,11 +731,11 @@ export default function JobGrid() {
                             </div>
                             <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
                             <div className="mt-30">
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">ASP .Net</span>
                               </Link>
 
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">Figma</span>
                               </Link>
                             </div>
@@ -756,7 +771,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>Lead Quality Control QA</span>
                               </Link>
                             </h6>
@@ -768,15 +783,15 @@ export default function JobGrid() {
                             </div>
                             <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
                             <div className="mt-30">
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">iOS</span>
                               </Link>
 
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">Laravel</span>
                               </Link>
 
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">Golang</span>
                               </Link>
                             </div>
@@ -812,7 +827,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>UI / UX Designer fulltime</span>
                               </Link>
                             </h6>
@@ -868,7 +883,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>Full Stack Engineer</span>
                               </Link>
                             </h6>
@@ -920,7 +935,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>Java Software Engineer</span>
                               </Link>
                             </h6>
@@ -976,7 +991,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>Frontend Developer</span>
                               </Link>
                             </h6>
@@ -1028,7 +1043,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>React Native Web Developer</span>
                               </Link>
                             </h6>
@@ -1076,7 +1091,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>Senior System Engineer</span>
                               </Link>
                             </h6>
@@ -1088,11 +1103,11 @@ export default function JobGrid() {
                             </div>
                             <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
                             <div className="mt-30">
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">PHP</span>
                               </Link>
 
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">Android</span>
                               </Link>
                             </div>
@@ -1128,7 +1143,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>Products Manager</span>
                               </Link>
                             </h6>
@@ -1140,11 +1155,11 @@ export default function JobGrid() {
                             </div>
                             <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
                             <div className="mt-30">
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">ASP .Net</span>
                               </Link>
 
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">Figma</span>
                               </Link>
                             </div>
@@ -1180,7 +1195,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>Lead Quality Control QA</span>
                               </Link>
                             </h6>
@@ -1192,15 +1207,15 @@ export default function JobGrid() {
                             </div>
                             <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
                             <div className="mt-30">
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">iOS</span>
                               </Link>
 
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">Laravel</span>
                               </Link>
 
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span className="btn btn-grey-small mr-5">Golang</span>
                               </Link>
                             </div>
@@ -1236,7 +1251,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>UI / UX Designer fulltime</span>
                               </Link>
                             </h6>
@@ -1292,7 +1307,7 @@ export default function JobGrid() {
                           </div>
                           <div className="card-block-info">
                             <h6>
-                              <Link href="/job-details">
+                              <Link href="/job-details-2">
                                 <span>Full Stack Engineer</span>
                               </Link>
                             </h6>

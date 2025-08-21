@@ -1,0 +1,258 @@
+/* CSS cho giao diện tạo Resume */
+.resume-container {
+  font-family: "Inter", Arial, sans-serif;
+  background: #fff;
+  min-height: 100vh;
+}
+.resume-header {
+  padding: 24px 32px 0 32px;
+  border-bottom: 1px solid #eee;
+}
+.resume-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.resume-desc {
+  color: #888;
+  margin-bottom: 1rem;
+}
+.resume-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+.resume-action-btn {
+  background: #f7f7f7;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.resume-main {
+  display: flex;
+  gap: 24px;
+  padding: 24px 32px;
+}
+.resume-steps {
+  width: 240px;
+  background: #fafafa;
+  border-radius: 16px;
+  padding: 24px 0 24px 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  height: fit-content;
+}
+.resume-steps h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-left: 24px;
+  margin-bottom: 16px;
+}
+.resume-steps ul {
+  list-style: none;
+  padding: 0 24px;
+  margin: 0;
+}
+.resume-steps li {
+  background: #f5f5f5;
+  margin-bottom: 12px;
+  padding: 16px 12px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.resume-steps li.active {
+  background: #111;
+  color: #fff;
+}
+.resume-form {
+  flex: 1;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  padding: 24px 32px;
+  min-width: 480px;
+  max-width: 640px;
+}
+.resume-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.resume-form-header h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.resume-progress {
+  width: 100%;
+  height: 6px;
+  background: #eee;
+  border-radius: 3px;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+.resume-progress-bar {
+  width: 20%;
+  height: 100%;
+  background: #111;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+.resume-avatar {
+  background: #fafafa;
+  border-radius: 16px;
+  padding: 18px 24px;
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.avatar-img {
+  width: 80px;
+  height: 80px;
+  background: #eee;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.avatar-upload-btn {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 6px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.avatar-note {
+  font-size: 0.9rem;
+  color: #888;
+  text-align: center;
+}
+.resume-fields {
+  margin-top: 8px;
+}
+.field-row {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+.field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+.field label {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.field input,
+.field textarea {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 2px;
+}
+.field textarea {
+  resize: none;
+}
+.field small {
+  color: #888;
+  margin-top: 2px;
+}
+.resume-form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+.back-btn {
+  background: #f7f7f7;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.next-btn {
+  background: #111;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.resume-preview {
+  width: 320px;
+  background: #fafafa;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.resume-preview h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.preview-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  min-height: 120px;
+  margin-bottom: 18px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: flex-start;
+}
+.preview-name {
+  background: #1976d2;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.preview-full-btn {
+  background: #f7f7f7;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+}
+
+.error {
+  color: #d32f2f;
+  font-size: 0.95em;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  display: block;
+}
+.avatar-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+ 

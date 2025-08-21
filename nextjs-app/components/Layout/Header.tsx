@@ -1,6 +1,9 @@
 ﻿import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Settings, KeyRound, LogOut } from 'lucide-react';
+import CompanyRegistrationModal from "../Company/company-registration-modal";
 
 interface HeaderProps {
   handleOpen: () => void;
@@ -10,9 +13,17 @@ interface HeaderProps {
 
 const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
   const [scroll, setScroll] = useState(false);
-  const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  const { data: session } = useSession();
+  const role = session?.user?.roles;
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
+  };
 
   useEffect(() => {
     document.addEventListener("scroll", () => {
@@ -42,6 +53,11 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
     };
   }, [dropdownOpen]);
 
+  const [openModal, setOpenModal] = useState(false)
+
+  const handleOpen2 = () => setOpenModal(true)
+  const handleClose = () => setOpenModal(false)
+
   return (
     <>
       <header className={scroll ? "header sticky-bar stick" : "header sticky-bar"}>
@@ -62,45 +78,144 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
             <div className="header-nav">
               <nav className="nav-main-menu">
                 <ul className="main-menu">
-                  <li>
-                    <Link href="/"><span>Home</span></Link>
-                  </li>
-                  <li className="has-children">
-                    <Link href="/jobs-grid"><span>Find a Job</span></Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/jobs-grid"><span>Jobs Grid</span></Link></li>
-                      <li><Link href="/job-details-2"><span>Jobs Details</span></Link></li>
-                    </ul>
-                  </li>
-                  <li className="has-children">
-                    <Link href="/companies-grid"><span>Recruiters</span></Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/companies-grid"><span>Recruiters</span></Link></li>
-                    </ul>
-                  </li>
-                  <li className="has-children">
-                    <Link href="/candidates-grid"><span>Candidates</span></Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/candidates-grid"><span>Candidates Grid</span></Link></li>
-                      <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
-                    </ul>
-                  </li>
-                  <li className="has-children">
-                    <Link href="/blog-grid"><span>Pages</span></Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/page-about"><span>About Us</span></Link></li>
-                    </ul>
-                  </li>
-                  <li className="has-children">
-                    <Link href="/blog-grid"><span>Blog</span></Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/blog-grid-2"><span>Blog Grid</span></Link></li>
-                      <li><Link href="/blog-details"><span>Blog Single</span></Link></li>
-                    </ul>
-                  </li>
-                  <li>
-                    <Link href="/page-contact"><span>Contact</span></Link>
-                  </li>
+
+                  {/* chưa log */}
+                  {!session?.user && (
+                    <>
+                      <li><Link href="/"><span>Home</span></Link></li>
+
+                      <li>
+                        <Link href="/jobs-grid"><span>Find a Job</span></Link>
+                      </li>
+
+                      <li>
+                        <Link href="/companies-grid"><span>Recruiters</span></Link>
+                      </li>
+
+                      <li className="has-children">
+                        <Link href="/candidates-grid"><span>Candidates</span></Link>
+                        <ul className="sub-menu">
+                          <li><Link href="/page-ressume"><span>Create Cv</span></Link></li>
+                          <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
+                        </ul>
+                      </li>
+
+                      <li>
+                        <Link href="/page-about"><span>About Us</span></Link>
+                      </li>
+
+                      <li>
+                        <Link href="/blog-grid-2"><span>Blog</span></Link>
+                      </li>
+
+                      <li>
+                        <Link href="/page-contact"><span>Contact</span></Link>
+                      </li>
+                    </>
+                  )}
+
+                  {/* log với user */}
+                  {session?.user && role?.includes("Users") && (
+                    <>
+                      <li><Link href="/"><span>Home</span></Link></li>
+
+                      <li>
+                        <Link href="/jobs-grid"><span>Find a Job</span></Link>
+                      </li>
+
+                      <li>
+                        <Link href="/companies-grid"><span>Recruiters</span></Link>
+                      </li>
+
+                      <li className="has-children">
+                        <Link href="/candidates-grid"><span>Candidates</span></Link>
+                        <ul className="sub-menu">
+                          <li><Link href="/page-ressume"><span>Create Cv</span></Link></li>
+                          <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
+                        </ul>
+                      </li>
+
+                      <li>
+                        <Link href="/page-about"><span>About Us</span></Link>
+                      </li>
+
+                      <li>
+                        <Link href="/blog-grid-2"><span>Blog</span></Link>
+                      </li>
+
+                      <li>
+                        <Link href="/page-contact"><span>Contact</span></Link>
+                      </li>
+                    </>
+                  )}
+
+                  {/* Nếu là Employer */}
+                  {session?.user && role?.includes("Employers") && (
+                    <>
+                      <li><Link href="/"><span>Home</span></Link></li>
+
+                      <li>
+                        <Link href="/jobs-grid"><span> Manager Job</span></Link>
+                      </li>
+
+                      <li>
+                        <Link href="/companies-grid"><span>Manager Recruiters</span></Link>
+                      </li>
+
+                      <li>
+                        <Link href="/candidates-grid"><span>Manager Candidates</span></Link>
+                      </li>
+
+                      <li>
+                        <Link href="/page-about"><span>About Us</span></Link>
+                      </li>
+
+                      <li>
+                        <Link href="/blog-grid-2"><span>Blog</span></Link>
+                      </li>
+
+                      <li>
+                        <Link href="/page-contact"><span>Contact</span></Link>
+                      </li>
+                    </>
+                  )}
+
+                  {/* log voi admin */}
+                  {session?.user && role?.includes("Administrators") && (
+                    <>
+                      <>
+                        <li><Link href="/"><span>Home</span></Link></li>
+
+                        <li>
+                          <Link href="/jobs-grid"><span>Find a Job</span></Link>
+                        </li>
+
+                        <li>
+                          <Link href="/companies-grid"><span>Recruiters</span></Link>
+                        </li>
+
+                        <li className="has-children">
+                          <Link href="/candidates-grid"><span>Candidates</span></Link>
+                          <ul className="sub-menu">
+                            <li><Link href="/page-ressume"><span>Create Cv</span></Link></li>
+                            <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
+                          </ul>
+                        </li>
+
+                        <li>
+                          <Link href="/page-about"><span>About Us</span></Link>
+                        </li>
+
+                        <li>
+                          <Link href="/blog-grid-2"><span>Blog</span></Link>
+                        </li>
+
+                        <li>
+                          <Link href="/page-contact"><span>Contact</span></Link>
+                        </li>
+                      </>
+                    </>
+                  )}
                 </ul>
               </nav>
             </div>
@@ -133,34 +248,55 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       }}
                       onClick={() => setDropdownOpen((v) => !v)}
                     />
+                    {session?.user && role?.includes("Users") && (
+                      <Link
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault(); // không chuyển trang
+                          handleOpen2();
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          textDecoration: "none",
+                          background: "transparent",
+                          padding: "4px 8px",
+                        }}
+                      >
+                        <div style={{ lineHeight: 1.2 }}>
+                          <div style={{ fontSize: 13, color: "#888" }}>
+                            Bạn là nhà tuyển dụng?
+                          </div>
+                          <div
+                            style={{
+                              fontSize: 14,
+                              fontWeight: 600,
+                              color: "blue",
+                            }}
+                          >
+                            Đăng tuyển ngay »
+                          </div>
+                        </div>
+                      </Link>
+                    )}
 
-                    {/* Nút Đăng tuyển ngay kiểu mới */}
-                    <Link
-                      href="/recruiter/register"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 8,
-                        textDecoration: "none",
-                        background: "transparent",
-                        padding: "4px 8px",
-                      }}
-                    >
-                      <div style={{ lineHeight: 1.2 }}>
-                        <div style={{ fontSize: 13, color: "#888" }}>
-                          Bạn là nhà tuyển dụng?
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 14,
-                            fontWeight: 600,
-                            color: "blue",
-                          }}
-                        >
-                          Đăng tuyển ngay »
-                        </div>
+                    {/* Hiển thị tên nếu là Employers */}
+                    {session?.user && role?.includes("Employers") && (
+                      <div
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          color: "#333",
+                          padding: "4px 8px",
+                        }}
+                      >
+                        Hi, {session.user.username}
                       </div>
-                    </Link>
+                    )}
+
+                    {/* Modal đăng ký */}
+                    <CompanyRegistrationModal isOpen={openModal} onClose={handleClose} />
 
                     {/* Dropdown menu */}
                     {dropdownOpen && (
@@ -222,41 +358,74 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                         />
                         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                           <li>
-                            <Link href="/">
-                              <span
-                                style={{
-                                  display: "block",
-                                  padding: "8px 0",
-                                  color: "#333",
-                                  fontWeight: 500,
-                                }}
-                              >
-                                Quản lý tài khoản
+                            <Link href="/page-account">
+                              <span className="dropdown-link" style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 10,
+                                padding: "10px 0",
+                                color: "#333",
+                                fontWeight: 500,
+                                borderRadius: 8,
+                                cursor: "pointer",
+                                transition: "background 0.2s, color 0.2s",
+                              }}>
+                                <Settings size={18} />
+                                <span>Quản lý tài khoản</span>
                               </span>
                             </Link>
                           </li>
                           <li>
                             <Link href="/page-reset-password">
-                              <span
-                                style={{
-                                  display: "block",
-                                  padding: "8px 0",
-                                  color: "#333",
-                                  fontWeight: 500,
-                                }}
-                              >
-                                Reset Password
+                              <span className="dropdown-link" style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 10,
+                                padding: "10px 0",
+                                color: "#333",
+                                fontWeight: 500,
+                                borderRadius: 8,
+                                cursor: "pointer",
+                                transition: "background 0.2s, color 0.2s",
+                              }}>
+                                <KeyRound size={18} />
+                                <span>Reset Password</span>
                               </span>
                             </Link>
                           </li>
                         </ul>
                         <button
-                          className="btn btn-primary w-100 mt-3"
-                          style={{ marginTop: 18, fontWeight: 500 }}
-                          onClick={() => signOut()}
+                          className="btn-logout w-100"
+                          style={{
+                            marginTop: 18,
+                            fontWeight: 500,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 10,
+                            background: "#ff4d4f",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: 8,
+                            fontSize: 16,
+                            padding: "10px 0",
+                            cursor: "pointer",
+                          }}
+                          onClick={handleLogout}
                         >
-                          Đăng xuất
+                          <LogOut size={20} />
+                          <span>Đăng xuất</span>
                         </button>
+                        {/* CSS đơn giản cho hover và nút logout */}
+                        <style>{`
+      .dropdown-link:hover {
+        background: #e6f0fa;
+        color: #1976d2;
+      }
+      .btn-logout:hover {
+        background: #d32f2f;
+      }
+    `}</style>
                       </div>
                     )}
                   </div>
