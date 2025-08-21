@@ -61,13 +61,15 @@ export const authOptions: NextAuthOptions = {
           if (res.ok && data.access_token) {
             // Trả về data sẽ được lưu vào session
             return {
-              id: data.loggedInUser.id,
-              username: data.loggedInUser.username,
-              fullName: data.loggedInUser.fullName,
-              roles: data.loggedInUser.roles,
-              accessToken: data.access_token,
-              refreshToken: data.refresh_token,
-            };
+    id: data.loggedInUser.id,
+    username: data.loggedInUser.username,
+    fullName: data.loggedInUser.fullname, 
+    roles: data.loggedInUser.roles,
+    accessToken: data.access_token,
+    refreshToken: data.refresh_token,
+    email: data.loggedInUser.email,
+
+  };
           }
           return null;
         } catch (err) {

@@ -10,11 +10,17 @@ export default function Reset() {
     const [message, setMessage] = useState("");
     const [code, setCode] = useState("");
     const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         setLoading(true);
         setMessage("");
+        if (newPassword !== confirmPassword) {
+            setMessage("Mật khẩu không khớp");
+            setLoading(false);
+            return;
+        }
         try {
             const res = await fetch("http://localhost:8080/api/auth/forgot-password", {
                 method: "POST",
@@ -65,7 +71,9 @@ export default function Reset() {
                                     <p className="font-sm text-brand-2">Forgot Password</p>
                                     <h2 className="mt-10 mb-5 text-brand-1">Reset Your Password</h2>
                                 </div>
+
                                 {step === 1 ? (
+                                    // Bước 1: nhập email
                                     <form className="login-register text-start mt-20" onSubmit={handleSubmit}>
                                         <p className="font-sm text-muted mb-30">
                                             Enter email address associated with your account and we ll send you a link to reset your password
@@ -86,19 +94,20 @@ export default function Reset() {
                                             />
                                         </div>
                                         <div className="form-group">
-                                            <button className="btn btn-brand-1 hover-up w-100" type="submit" name="continue" disabled={loading}>
+                                            <button className="btn btn-brand-1 hover-up w-100" type="submit" disabled={loading}>
                                                 {loading ? "Đang gửi..." : "Continue"}
                                             </button>
                                         </div>
                                         {message && <div className="alert alert-info text-center">{message}</div>}
                                         <div className="text-muted text-center">
-                                            Don't have an Account?
+                                            Don't have an Account?{" "}
                                             <Link href="/page-signin">
                                                 <span>Sign up</span>
                                             </Link>
                                         </div>
                                     </form>
                                 ) : (
+                                    // Bước 2: nhập mã xác nhận + mật khẩu mới
                                     <form className="login-register text-start mt-20" onSubmit={handleVerify}>
                                         <p className="font-sm text-muted mb-30">
                                             Nhập mã xác nhận đã gửi tới email và mật khẩu mới
@@ -124,6 +133,16 @@ export default function Reset() {
                                             />
                                         </div>
                                         <div className="form-group">
+                                            <label className="form-label">Nhập lại mật khẩu mới *</label>
+                                            <input
+                                                className="form-control"
+                                                type="password"
+                                                required
+                                                value={confirmPassword}
+                                                onChange={e => setConfirmPassword(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="form-group">
                                             <button className="btn btn-brand-1 hover-up w-100" type="submit" disabled={loading}>
                                                 {loading ? "Đang xử lý..." : "Đổi mật khẩu"}
                                             </button>
@@ -132,6 +151,7 @@ export default function Reset() {
                                     </form>
                                 )}
                             </div>
+
                             <div className="img-1 d-none d-lg-block">
                                 <img className="shape-1" src="assets/imgs/page/login-register/img-5.svg" alt="JobBox" />
                             </div>
