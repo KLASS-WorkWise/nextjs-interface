@@ -5,6 +5,7 @@ import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
 import BlogSlider from "@/components/sliders/Blog";
 import React, { useEffect, useState } from 'react';
+import { useSession } from "next-auth/react";
 
 interface CompanyInformation {
   id: number
@@ -39,6 +40,9 @@ export default function CompaniesGrid() {
   const [pageSize, setPageSize] = useState(12)
   const [totalRecords, setTotalRecords] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
+
+  const { data: session } = useSession();
+  const role = session?.user?.roles;
 
   const fetchCompanies = async (page = 0, size = 12) => {
     try {
@@ -245,6 +249,13 @@ export default function CompaniesGrid() {
                         </div>
                         <div className="col-xl-6 col-lg-7 text-lg-end mt-sm-15">
                           <div className="display-flex2">
+                            {role?.includes("Employers") && (
+                              <Link href="/jobs-create">
+                                <button className="btn btn-primary" style={{ marginRight: "16px" }}>
+                                  New Recruiter
+                                </button>
+                              </Link>
+                            )}
                             <div className="box-border mr-10">
                               <span className="text-sortby">Show:</span>
                               <div className="dropdown dropdown-sort">
