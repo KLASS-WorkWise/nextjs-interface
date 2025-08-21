@@ -4,6 +4,7 @@ import type React from "react"
 import { X, Building2, MapPin, ImageIcon } from "lucide-react"
 import Image from "next/image"
 import "./company-registration-modal.css"
+import { useSession } from "next-auth/react"
 
 interface CompanyRegistrationModalProps {
   isOpen: boolean
@@ -12,11 +13,12 @@ interface CompanyRegistrationModalProps {
 
 interface FormData {
   companyName: string
-  employee: string
+  minEmployee?: number
+  maxEmployee?: number
   email: string
   phone: string
-  logoUrl: string
-  bannerUrl: string
+  logo: string
+  banner: string
   address: string
   location: string
   website: string
@@ -33,16 +35,17 @@ export default function CompanyRegistrationModal({ isOpen, onClose }: CompanyReg
   const [descriptionLength, setDescriptionLength] = useState(0)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [bannerPreview, setBannerPreview] = useState<string | null>(null)
-  const [logoFile, setLogoFile] = useState<File | null>(null)
-  const [bannerFile, setBannerFile] = useState<File | null>(null)
+  const { data: session } = useSession();
+  const userId = session?.user?.id || "default-user-id"; // replace with actual user ID logic
 
   const [formData, setFormData] = useState<FormData>({
     companyName: "",
-    employee: "",
+    minEmployee: undefined,
+    maxEmployee: undefined,
     email: "",
     phone: "",
-    logoUrl: "",
-    bannerUrl: "",
+    logo: "",
+    banner: "",
     address: "",
     location: "",
     website: "",
@@ -53,8 +56,27 @@ export default function CompanyRegistrationModal({ isOpen, onClose }: CompanyReg
     linkedin: "",
   })
 
+  const [selectedCompanySizeIdx, setSelectedCompanySizeIdx] = useState<number | null>(null)
+
+  // company size options (min/max for backend)
+  const companySizeOptions = [
+    { label: "1 - 10", min: 1, max: 10 },
+    { label: "11 - 50", min: 11, max: 50 },
+    { label: "51 - 200", min: 51, max: 200 },
+    { label: "201 - 500", min: 201, max: 500 },
+    { label: "501 - 1000", min: 501, max: 1000 },
+    { label: "1000+", min: 1001, max: 9999999 },
+  ]
+
+  const handleCompanySizeSelect = (idx: number) => {
+    const opt = companySizeOptions[idx]
+    if (!opt) return
+    setFormData((p) => ({ ...p, minEmployee: opt.min, maxEmployee: opt.max }))
+    setSelectedCompanySizeIdx(idx)
+  }
+
   // single-step validation (required fields)
-  const isValid = Boolean(formData.companyName && formData.employee && formData.industry && formData.email && formData.phone)
+  const isValid = Boolean(formData.companyName&& formData.industry && formData.email && formData.phone)
 
   useEffect(() => {
     // when modal closes, revoke previews
@@ -78,30 +100,39 @@ export default function CompanyRegistrationModal({ isOpen, onClose }: CompanyReg
     setFormData((prev) => ({ ...prev, [field]: value }))
 
     if (field === "description") setDescriptionLength(value.length)
-    if (field === "logoUrl") setLogoPreview(value || null)
-    if (field === "bannerUrl") setBannerPreview(value || null)
+    if (field === "logo") setLogoPreview(value || null)
+    if (field === "banner") setBannerPreview(value || null)
   }
 
-  const handleFileChange = (type: "logo" | "banner", file?: File) => {
+  // Chuyển file upload thành base64 string lưu vào formData.logo và formData.banner
+  const handleFileChange = async (type: "logo" | "banner", file?: File) => {
+    const toBase64 = (file: File) =>
+      new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = error => reject(error);
+      });
+
     if (type === "logo") {
       if (logoPreview) URL.revokeObjectURL(logoPreview)
       if (file) {
-        setLogoFile(file)
         setLogoPreview(URL.createObjectURL(file))
-        setFormData((p) => ({ ...p, logoUrl: "" }))
+        const base64 = await toBase64(file)
+        setFormData((p) => ({ ...p, logo: base64 }))
       } else {
-        setLogoFile(null)
         setLogoPreview(null)
+        setFormData((p) => ({ ...p, logo: "" })) // truyền chuỗi rỗng thay vì null
       }
     } else {
       if (bannerPreview) URL.revokeObjectURL(bannerPreview)
       if (file) {
-        setBannerFile(file)
         setBannerPreview(URL.createObjectURL(file))
-        setFormData((p) => ({ ...p, bannerUrl: "" }))
+        const base64 = await toBase64(file)
+        setFormData((p) => ({ ...p, banner: base64 }))
       } else {
-        setBannerFile(null)
         setBannerPreview(null)
+        setFormData((p) => ({ ...p, banner: "" })) // truyền chuỗi rỗng thay vì null
       }
     }
   }
@@ -111,39 +142,38 @@ export default function CompanyRegistrationModal({ isOpen, onClose }: CompanyReg
   const handleCancel = () => {
     setFormData({
       companyName: "",
-      employee: "",
       email: "",
       phone: "",
-      logoUrl: "",
-      bannerUrl: "",
+      logo: "",
+      banner: "",
       address: "",
       location: "",
       website: "",
       industry: "",
       description: "",
-  foundedYear: "",
+      foundedYear: "",
       facebook: "",
       linkedin: "",
     })
+    setSelectedCompanySizeIdx(null)
     setDescriptionLength(0)
     if (logoPreview) URL.revokeObjectURL(logoPreview)
     if (bannerPreview) URL.revokeObjectURL(bannerPreview)
     setLogoPreview(null)
     setBannerPreview(null)
-  setLogoFile(null)
-  setBannerFile(null)
     onClose()
   }
 
   const triggerLogoInput = () => logoInputRef.current?.click()
   const triggerBannerInput = () => bannerInputRef.current?.click()
 
-  const onDropLogo = (file?: File) => handleFileChange('logo', file)
-  const onDropBanner = (file?: File) => handleFileChange('banner', file)
+  const onDropLogo = (file?: File) => { if (file) handleFileChange('logo', file); else handleFileChange('logo'); }
+  const onDropBanner = (file?: File) => { if (file) handleFileChange('banner', file); else handleFileChange('banner'); }
 
   const removeLogo = () => handleFileChange('logo', undefined)
   const removeBanner = () => handleFileChange('banner', undefined)
 
+  // Sửa lại handleSubmit để không ép logo/banner thành chuỗi rỗng nếu null
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!isValid) {
@@ -155,13 +185,23 @@ export default function CompanyRegistrationModal({ isOpen, onClose }: CompanyReg
     try {
       const payload = new window.FormData()
       Object.entries(formData).forEach(([k, v]) => {
-        if (v !== undefined && v !== null) payload.append(k, String(v))
+        if (v !== undefined && v !== null) {
+          if (k === 'minEmployee' || k === 'maxEmployee') return
+          if (k === 'logo') payload.append('logo', v)
+          else if (k === 'banner') payload.append('banner', v)
+          else payload.append(k, String(v))
+        }
       })
-      payload.set("employee", String(Number.parseInt(formData.employee || "0")))
-      if (logoFile) payload.append("logo", logoFile, logoFile.name)
-      if (bannerFile) payload.append("banner", bannerFile, bannerFile.name)
+      // append numeric min/max explicitly for backend
+      if (formData.minEmployee !== undefined) payload.append('minEmployee', String(formData.minEmployee))
+      if (formData.maxEmployee !== undefined) payload.append('maxEmployee', String(formData.maxEmployee))
 
-      const response = await fetch("http://localhost:8080/api/company/11/company-info", {
+      // Đảm bảo các trường address, location, website luôn có mặt
+      if (!formData.address) payload.append('address', "")
+      if (!formData.location) payload.append('location', "")
+      if (!formData.website) payload.append('website', "")
+
+      const response = await fetch(`http://localhost:8080/api/employers/${userId}/upgrade-to-employer`, {
         method: "POST",
         body: payload,
       })
@@ -263,14 +303,40 @@ export default function CompanyRegistrationModal({ isOpen, onClose }: CompanyReg
                           </div>
 
                           <div>
-                            <label htmlFor="employee" className="block text-sm font-semibold text-gray-700">Số lượng nhân viên *</label>
-                            <input id="employee" type="number" min="1" value={formData.employee} onChange={(e) => handleInputChange("employee", e.target.value)} placeholder="Ví dụ: 50" required className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base" />
+                            <label htmlFor="companySize" className="block text-sm font-semibold text-gray-700">Quy mô công ty *</label>
+                            <select
+                              id="companySize"
+                              value={selectedCompanySizeIdx !== null ? selectedCompanySizeIdx : ""}
+                              onChange={(e) => {
+                                const idx = Number(e.target.value)
+                                if (!Number.isNaN(idx)) handleCompanySizeSelect(idx)
+                              }}
+                              required
+                              className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
+                            >
+                              <option value="">Chọn quy mô công ty</option>
+                              {companySizeOptions.map((o, i) => (
+                                <option key={o.label} value={i}>{o.label}</option>
+                              ))}
+                            </select>
                             <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mt-3">Email liên hệ *</label>
                             <input id="email" type="email" value={formData.email} onChange={(e) => handleInputChange("email", e.target.value)} placeholder="contact@company.com" required className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base" />
                             <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mt-3">Số điện thoại *</label>
                             <input id="phone" type="tel" value={formData.phone} onChange={(e) => handleInputChange("phone", e.target.value)} placeholder="0123 456 789" required className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base" />
                             <label htmlFor="foundedYear" className="block text-sm font-semibold text-gray-700 mt-3">Năm thành lập</label>
                             <input id="foundedYear" type="text" value={formData.foundedYear} onChange={(e) => handleInputChange("foundedYear", e.target.value)} placeholder="Nhập năm thành lập công ty" className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base" />
+
+                            {/* Thêm input cho address, location, website vào form */}
+                            <div className="space-y-2">
+                              <label htmlFor="address" className="block text-sm font-semibold text-gray-700 mt-3">Địa chỉ công ty</label>
+                              <input id="address" type="text" value={formData.address} onChange={(e) => handleInputChange("address", e.target.value)} placeholder="Nhập địa chỉ công ty" className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base" />
+
+                              <label htmlFor="location" className="block text-sm font-semibold text-gray-700 mt-3">Tỉnh/Thành phố</label>
+                              <input id="location" type="text" value={formData.location} onChange={(e) => handleInputChange("location", e.target.value)} placeholder="Nhập tỉnh/thành phố" className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base" />
+
+                              <label htmlFor="website" className="block text-sm font-semibold text-gray-700 mt-3">Website công ty</label>
+                              <input id="website" type="text" value={formData.website} onChange={(e) => handleInputChange("website", e.target.value)} placeholder="https://company.com" className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base" />
+                            </div>
 
                             <div className="crm-upload-grid mt-4">
                               <div className="crm-upload-card">
