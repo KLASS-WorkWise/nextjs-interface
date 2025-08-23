@@ -8,14 +8,11 @@ export const metadata: Metadata = {
   generator: "v0.app",
 };
 
-export default function RootLayout({
+// export default function RootLayout({
+export default function ResumeLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
+}) {
+  return <div className="resume-layout">{children}</div>;
 }

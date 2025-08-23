@@ -30,16 +30,20 @@ export function CVList({
 
         <div className={styles.resumeGrid}>
           {Array.isArray(resumes) && resumes.length > 0 ? (
-            resumes.map((resume) =>
-              typeof resume.id === "number" ? (
-                <CVCard
-                  key={resume.id}
-                  resume={resume}
-                  onEdit={() => onEditCV(resume)}
-                  onDelete={() => onDeleteCV(resume.id)}
-                />
-              ) : null
-            )
+            resumes.map((resume) => {
+              const id = resume?.id;
+              if (typeof id === "number" && id !== null && id !== undefined) {
+                return (
+                  <CVCard
+                    key={id}
+                    resume={resume}
+                    onEdit={() => onEditCV(resume)}
+                    onDelete={() => onDeleteCV(id)}
+                  />
+                );
+              }
+              return null;
+            })
           ) : (
             <div>Chưa có CV nào</div>
           )}

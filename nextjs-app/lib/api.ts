@@ -1,11 +1,13 @@
 import { ResumeData } from "@/components/resume-builder";
 import axios from "axios";
 import { id } from "date-fns/locale";
+import { getSession } from "next-auth/react";
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
-const API_TOKEN =
-  "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MywidHlwZSI6ImFjY2Vzc190b2tlbiIsInN1YiI6ImtoYWNEb2FpIiwiaWF0IjoxNzU1OTIwNzc5LCJleHAiOjE3NTU5MjQzNzl9.AG3GahvbzXz_FAOSdC7RaHugGr7MFA_mSOq3d6yZv5U";
+const session = await getSession();
+const accessToken = session?.accessToken;
+const API_TOKEN = accessToken || "";
 
 export const api = axios.create({
   baseURL,
