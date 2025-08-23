@@ -91,35 +91,52 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                           <span>Home</span>
                         </Link>
                       </li>
+
                       <li>
                         <Link href="/jobs-grid">
                           <span>Find a Job</span>
                         </Link>
                       </li>
+
                       <li>
                         <Link href="/companies-grid">
                           <span>Recruiters</span>
                         </Link>
                       </li>
-                      <li>
+
+                      <li className="has-children">
                         <Link href="/candidates-grid">
                           <span>Candidates</span>
                         </Link>
+                        <ul className="sub-menu">
+                          <li>
+                            <Link href="/page-ressume">
+                              <span>Create Cv</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/candidate-profile">
+                              <span>Candidate Profile</span>
+                            </Link>
+                          </li>
+                        </ul>
                       </li>
+
                       <li>
-                        <Link href="/blog-grid">
+                        <Link href="/page-about">
+                          <span>About Us</span>
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link href="/blog-grid-2">
                           <span>Blog</span>
                         </Link>
                       </li>
+
                       <li>
                         <Link href="/page-contact">
                           <span>Contact</span>
-                        </Link>
-                      </li>
-                      {/* test resume */}
-                      <li>
-                        <Link href="/page-resume">
-                          <span>Tạo CV</span>
                         </Link>
                       </li>
                     </>
@@ -129,41 +146,166 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                   {session?.user && role?.includes("Users") && (
                     <>
                       <li>
+                        <Link href="/">
+                          <span>Home</span>
+                        </Link>
+                      </li>
+
+                      <li>
                         <Link href="/jobs-grid">
-                          <span>Việc làm phù hợp</span>
+                          <span>Find a Job</span>
                         </Link>
                       </li>
+
                       <li>
-                        <Link href="/page-resume">
-                          <span>Tạo CV</span>
+                        <Link href="/companies-grid">
+                          <span>Recruiters</span>
                         </Link>
                       </li>
+
+                      <li className="has-children">
+                        <Link href="/candidates-grid">
+                          <span>Candidates</span>
+                        </Link>
+                        <ul className="sub-menu">
+                          <li>
+                            <Link href="/page-resume">
+                              <span>Create Cv</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/candidate-profile">
+                              <span>Candidate Profile</span>
+                            </Link>
+                          </li>
+                        </ul>
+                      </li>
+
                       <li>
-                        <Link href="/page-account">
-                          <span>Tài khoản của tôi</span>
+                        <Link href="/page-about">
+                          <span>About Us</span>
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link href="/blog-grid-2">
+                          <span>Blog</span>
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link href="/page-contact">
+                          <span>Contact</span>
                         </Link>
                       </li>
                     </>
                   )}
 
                   {/* Nếu là Employer */}
-                  {session?.user && role?.includes("Employers") && (
+                  {session?.user && role?.includes("  ") && (
                     <>
                       <li>
-                        <Link href="/employer-dashboard">
-                          <span>Quản lý tuyển dụng</span>
+                        <Link href="/">
+                          <span>Home</span>
                         </Link>
                       </li>
+
                       <li>
-                        <Link href="/company-profile">
-                          <span>Công ty của tôi</span>
+                        <Link href="/jobs-grid">
+                          <span> Manager Job</span>
                         </Link>
                       </li>
+
                       <li>
-                        <Link href="/page-account">
-                          <span>Tài khoản</span>
+                        <Link href="/companies-grid">
+                          <span>Manager Recruiters</span>
                         </Link>
                       </li>
+
+                      <li>
+                        <Link href="/candidates-grid">
+                          <span>Manager Candidates</span>
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link href="/page-about">
+                          <span>About Us</span>
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link href="/blog-grid-2">
+                          <span>Blog</span>
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link href="/page-contact">
+                          <span>Contact</span>
+                        </Link>
+                      </li>
+                    </>
+                  )}
+
+                  {/* log voi admin */}
+                  {session?.user && role?.includes("Administrators") && (
+                    <>
+                      <>
+                        <li>
+                          <Link href="/">
+                            <span>Home</span>
+                          </Link>
+                        </li>
+
+                        <li>
+                          <Link href="/jobs-grid">
+                            <span>Find a Job</span>
+                          </Link>
+                        </li>
+
+                        <li>
+                          <Link href="/companies-grid">
+                            <span>Recruiters</span>
+                          </Link>
+                        </li>
+
+                        <li className="has-children">
+                          <Link href="/candidates-grid">
+                            <span>Candidates</span>
+                          </Link>
+                          <ul className="sub-menu">
+                            <li>
+                              <Link href="/page-ressume">
+                                <span>Create Cv</span>
+                              </Link>
+                            </li>
+                            <li>
+                              <Link href="/candidate-profile">
+                                <span>Candidate Profile</span>
+                              </Link>
+                            </li>
+                          </ul>
+                        </li>
+
+                        <li>
+                          <Link href="/page-about">
+                            <span>About Us</span>
+                          </Link>
+                        </li>
+
+                        <li>
+                          <Link href="/blog-grid-2">
+                            <span>Blog</span>
+                          </Link>
+                        </li>
+
+                        <li>
+                          <Link href="/page-contact">
+                            <span>Contact</span>
+                          </Link>
+                        </li>
+                      </>
                     </>
                   )}
                 </ul>
@@ -198,37 +340,52 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       }}
                       onClick={() => setDropdownOpen((v) => !v)}
                     />
-                    {/* Button Link để mở Modal */}
-                    <Link
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault(); // không chuyển trang
-                        handleOpen2();
-                      }}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 8,
-                        textDecoration: "none",
-                        background: "transparent",
-                        padding: "4px 8px",
-                      }}
-                    >
-                      <div style={{ lineHeight: 1.2 }}>
-                        <div style={{ fontSize: 13, color: "#888" }}>
-                          Bạn là nhà tuyển dụng?
+                    {session?.user && role?.includes("Users") && (
+                      <Link
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault(); // không chuyển trang
+                          handleOpen2();
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          textDecoration: "none",
+                          background: "transparent",
+                          padding: "4px 8px",
+                        }}
+                      >
+                        <div style={{ lineHeight: 1.2 }}>
+                          <div style={{ fontSize: 13, color: "#888" }}>
+                            Bạn là nhà tuyển dụng?
+                          </div>
+                          <div
+                            style={{
+                              fontSize: 14,
+                              fontWeight: 600,
+                              color: "blue",
+                            }}
+                          >
+                            Đăng tuyển ngay »
+                          </div>
                         </div>
-                        <div
-                          style={{
-                            fontSize: 14,
-                            fontWeight: 600,
-                            color: "blue",
-                          }}
-                        >
-                          Đăng tuyển ngay »
-                        </div>
+                      </Link>
+                    )}
+
+                    {/* Hiển thị tên nếu là Employers */}
+                    {session?.user && role?.includes("Employers") && (
+                      <div
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          color: "#333",
+                          padding: "4px 8px",
+                        }}
+                      >
+                        Hi, {session.user.username}
                       </div>
-                    </Link>
+                    )}
 
                     {/* Modal đăng ký */}
                     <CompanyRegistrationModal
