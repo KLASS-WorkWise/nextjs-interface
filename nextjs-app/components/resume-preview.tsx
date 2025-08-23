@@ -44,7 +44,12 @@ export function ResumePreview({
     setIsSaving(true);
     try {
       const apiData = mapFormToApi(data);
-      const createResume = await resumeApi.saveMyResume(apiData);
+      if (data.id) {
+        await resumeApi.updateMyResume(data.id, apiData);
+      } else {
+        await resumeApi.saveMyResume(apiData);
+      }
+      // await resumeApi.saveMyResume(apiData);
 
       toast({
         title: "Lưu CV thành công!",

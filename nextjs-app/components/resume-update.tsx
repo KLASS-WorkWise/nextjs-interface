@@ -148,30 +148,73 @@ export function ResumeUpdate({
 
   const methods = useForm<ResumeData>({
     mode: "onChange",
-    defaultValues: initialData || {
-      personalInfo: {
-        fullName: "",
-        email: "",
-        phone: "",
-        jobTitle: "",
-        summary: "",
-      },
-      experience: [],
-      education: [],
-      skills: [],
-      activities: [],
-      awards: [],
-    },
+    defaultValues: initialData
+      ? { ...initialData, id: initialData.id }
+      : {
+          id: undefined,
+          personalInfo: {
+            fullName: "",
+            email: "",
+            phone: "",
+            jobTitle: "",
+            summary: "",
+          },
+          experience: [],
+          education: [],
+          skills: [],
+          activities: [],
+          awards: [],
+        },
   });
   // Reset form when initialData changes (for edit)
+  // Reset form only when initialData changes and after mount
   useEffect(() => {
-    if (initialData) {
-      console.log("[ResumeUpdate] initialData:", initialData);
-      methods.reset(initialData);
-    } else {
-      console.log("[ResumeUpdate] initialData is undefined or null");
+    if (mounted) {
+      if (initialData && typeof initialData === "object") {
+        // Edit: fill form with old data
+        methods.reset({
+          id: initialData.id,
+          personalInfo: {
+            fullName: initialData.personalInfo?.fullName || "",
+            email: initialData.personalInfo?.email || "",
+            phone: initialData.personalInfo?.phone || "",
+            jobTitle: initialData.personalInfo?.jobTitle || "",
+            summary: initialData.personalInfo?.summary || "",
+            profileImage: initialData.personalInfo?.profileImage || "",
+          },
+          experience: Array.isArray(initialData.experience)
+            ? initialData.experience
+            : [],
+          education: Array.isArray(initialData.education)
+            ? initialData.education
+            : [],
+          skills: Array.isArray(initialData.skills) ? initialData.skills : [],
+          activities: Array.isArray(initialData.activities)
+            ? initialData.activities
+            : [],
+          awards: Array.isArray(initialData.awards) ? initialData.awards : [],
+        });
+      } else {
+        // Create new: always reset to empty
+        methods.reset({
+          id: undefined,
+          personalInfo: {
+            fullName: "",
+            email: "",
+            phone: "",
+            jobTitle: "",
+            summary: "",
+            profileImage: "",
+          },
+          experience: [],
+          education: [],
+          skills: [],
+          activities: [],
+          awards: [],
+        });
+      }
     }
-  }, [initialData, methods]);
+  }, [initialData, mounted, methods]);
 
   const {
     handleSubmit,
@@ -268,16 +311,16 @@ export function ResumeUpdate({
   };
 
   const onSubmit = async (data: ResumeData) => {
+    console.log("[ResumeUpdate] Submit id:", data.id);
     try {
+      // Đảm bảo id luôn được truyền khi update
       if (data.id) {
-        // Update existing resume
         await resumeApi.updateMyResume(data.id, mapFormToApi(data));
-        if (onSave) onSave(data);
+        if (onSave) onSave({ ...data, id: data.id });
         setShowPreview(true);
       } else {
-        // Create new resume (fallback)
         await resumeApi.saveMyResume(mapFormToApi(data));
-        if (onSave) onSave(data);
+        if (onSave) onSave({ ...data });
         setShowPreview(true);
       }
     } catch (error) {
