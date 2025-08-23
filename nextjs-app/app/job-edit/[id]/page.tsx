@@ -80,6 +80,7 @@ export default function JobEdit() {
       ...form,
       requiredSkills: form.requiredSkills.split(",").map((s: string) => s.trim()).filter(Boolean),
       minExperience: form.minExperience ? Number(form.minExperience) : null,
+      endAt: form.endAt ? `${form.endAt}T00:00:00` : "",
     };
     try {
       const res = await fetch(`http://localhost:8080/api/job-postings/${id}`, {
