@@ -173,8 +173,8 @@ export function ModernTemplate({
                 gap: isCompact ? "0.125rem" : "0.75rem",
               }}
             >
-              {data.experience.map((exp, idx) => (
-                <div key={exp.id || idx}>
+              {data.experience.map((exp) => (
+                <div key={exp.id}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3

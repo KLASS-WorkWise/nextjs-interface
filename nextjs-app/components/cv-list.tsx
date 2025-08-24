@@ -1,9 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { CVCard } from "@/components/cv-card";
 import type { ResumeData } from "@/components/resume-builder";
-import styles from "./cv-list.module.css";
 
 interface CVListProps {
   resumes: ResumeData[];
@@ -19,33 +17,41 @@ export function CVList({
   onDeleteCV,
 }: CVListProps) {
   return (
-    <div className={styles.listContainer}>
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>CV đã tạo trên TopCV</h1>
-          <Button onClick={onCreateNew} className={styles.createButton}>
+    <div className="py-4">
+      <div className="container">
+        {/* Header */}
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h1 className="h4 fw-bold m-0">CV đã tạo trên JobPost</h1>
+          <button
+            className="btn btn-primary fw-semibold px-3"
+            onClick={onCreateNew}
+          >
             + Tạo CV
-          </Button>
+          </button>
         </div>
 
-        <div className={styles.resumeGrid}>
+        {/* Resume grid */}
+        <div className="row g-3">
           {Array.isArray(resumes) && resumes.length > 0 ? (
             resumes.map((resume) => {
               const id = resume?.id;
               if (typeof id === "number" && id !== null && id !== undefined) {
                 return (
-                  <CVCard
-                    key={id}
-                    resume={resume}
-                    onEdit={() => onEditCV(resume)}
-                    onDelete={() => onDeleteCV(id)}
-                  />
+                  <div className="col-md-4" key={id}>
+                    <CVCard
+                      resume={resume}
+                      onEdit={() => onEditCV(resume)}
+                      onDelete={() => onDeleteCV(id)}
+                    />
+                  </div>
                 );
               }
               return null;
             })
           ) : (
-            <div>Chưa có CV nào</div>
+            <div className="text-center text-muted py-5">
+              Chưa có CV nào
+            </div>
           )}
         </div>
       </div>

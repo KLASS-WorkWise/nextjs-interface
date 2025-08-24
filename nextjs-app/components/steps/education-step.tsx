@@ -1,17 +1,6 @@
 "use client";
 
 import { useFormContext, useFieldArray } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Plus, Trash2, GraduationCap } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
 import type { ResumeData } from "../resume-builder";
@@ -76,163 +65,144 @@ export function EducationStep() {
     move(oldIndex, newIndex);
   };
 
-  const renderEducationItem = (
-    field: any,
-    index: number,
-    isDragging?: boolean
-  ) => (
-    <Card key={field.id} className={isDragging ? "shadow-lg" : ""}>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base">Học vấn {index + 1}</CardTitle>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => remove(index)}
-            className="text-destructive hover:text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div
-          className="grid grid-cols-1 gap-4"
-          style={{ gridTemplateColumns: "repeat(1, minmax(0, 1fr))" }}
+  const renderEducationItem = (field: any, index: number, isDragging?: boolean) => (
+    <div key={field.id} className={`card mb-4 ${isDragging ? "shadow-lg" : ""}`}>
+      <div className="card-header d-flex justify-content-between align-items-center">
+        <h6 className="mb-0">Học vấn {index + 1}</h6>
+        <button
+          type="button"
+          className="btn btn-link text-danger p-0"
+          onClick={() => remove(index)}
         >
-          <style jsx>{`
-            @media (min-width: 768px) {
-              .grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-              }
-            }
-          `}</style>
-          <div className="space-y-2">
-            <Label htmlFor={`institution-${index}`}>Trường học *</Label>
-            <Input
+          <Trash2 size={18} />
+        </button>
+      </div>
+
+      <div className="card-body">
+        <div className="row g-3">
+          <div className="col-md-6">
+            <label className="form-label" htmlFor={`institution-${index}`}>
+              Trường học *
+            </label>
+            <input
               id={`institution-${index}`}
-              {...register(`education.${index}.institution`, {
-                required: true,
-              })}
+              className="form-control"
+              {...register(`education.${index}.institution`, { required: true })}
               placeholder="Tên trường học"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={`degree-${index}`}>Bằng cấp *</Label>
-            <Select
-              value={watch(`education.${index}.degree`)}
-              onValueChange={(value) =>
-                setValue(`education.${index}.degree`, value)
-              }
+          <div className="col-md-6">
+            <label className="form-label" htmlFor={`degree-${index}`}>
+              Bằng cấp *
+            </label>
+            <select
+              id={`degree-${index}`}
+              className="form-select"
+              {...register(`education.${index}.degree`, { required: true })}
+              value={watch(`education.${index}.degree`) || ""}
+              onChange={(e) => setValue(`education.${index}.degree`, e.target.value)}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn bằng cấp" />
-              </SelectTrigger>
-              <SelectContent>
-                {degreeOptions.map((degree) => (
-                  <SelectItem key={degree} value={degree}>
-                    {degree}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <option value="">Chọn bằng cấp</option>
+              {degreeOptions.map((degree) => (
+                <option key={degree} value={degree}>
+                  {degree}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={`field-${index}`}>Chuyên ngành *</Label>
-            <Select
-              value={watch(`education.${index}.field`)}
-              onValueChange={(value) =>
-                setValue(`education.${index}.field`, value)
-              }
+          <div className="col-md-6">
+            <label className="form-label" htmlFor={`field-${index}`}>
+              Chuyên ngành *
+            </label>
+            <select
+              id={`field-${index}`}
+              className="form-select"
+              {...register(`education.${index}.field`, { required: true })}
+              value={watch(`education.${index}.field`) || ""}
+              onChange={(e) => setValue(`education.${index}.field`, e.target.value)}
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn chuyên ngành" />
-              </SelectTrigger>
-              <SelectContent>
-                {majorOptions.map((major) => (
-                  <SelectItem key={major} value={major}>
-                    {major}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <option value="">Chọn chuyên ngành</option>
+              {majorOptions.map((major) => (
+                <option key={major} value={major}>
+                  {major}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={`gpa-${index}`}>GPA</Label>
-            <Input
+          <div className="col-md-6">
+            <label className="form-label" htmlFor={`gpa-${index}`}>
+              GPA
+            </label>
+            <input
               id={`gpa-${index}`}
+              className="form-control"
               {...register(`education.${index}.gpa`)}
               placeholder="3.5/4.0"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={`startDate-${index}`}>Ngày bắt đầu *</Label>
-            <Input
-              id={`startDate-${index}`}
+          <div className="col-md-6">
+            <label className="form-label" htmlFor={`startDate-${index}`}>
+              Ngày bắt đầu *
+            </label>
+            <input
               type="date"
+              id={`startDate-${index}`}
+              className="form-control"
               {...register(`education.${index}.startDate`, { required: true })}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={`endDate-${index}`}>Ngày tốt nghiệp *</Label>
-            <Input
-              id={`endDate-${index}`}
+          <div className="col-md-6">
+            <label className="form-label" htmlFor={`endDate-${index}`}>
+              Ngày tốt nghiệp *
+            </label>
+            <input
               type="date"
+              id={`endDate-${index}`}
+              className="form-control"
               {...register(`education.${index}.endDate`, { required: true })}
             />
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <GraduationCap className="h-5 w-5" />
-          <h3 className="text-lg font-semibold">Học vấn</h3>
+    <div className="education-step">
+      {/* Header */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <div className="d-flex align-items-center gap-2">
+          <GraduationCap size={20} />
+          <h5 className="mb-0">Học vấn</h5>
         </div>
-        <Button onClick={addEducation} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
+        <button type="button" onClick={addEducation} className="btn btn-primary btn-sm">
+          <Plus size={16} className="me-1" />
           Thêm học vấn
-        </Button>
+        </button>
       </div>
 
+      {/* Khi chưa có học vấn */}
       {fields.length === 0 && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-8">
-              <GraduationCap className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
-                Chưa có thông tin học vấn nào. Hãy thêm trình độ học vấn của
-                bạn!
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="card">
+          <div className="card-body text-center py-5 text-muted">
+            <GraduationCap size={40} className="mb-3" />
+            <p>Chưa có thông tin học vấn nào. Hãy thêm trình độ học vấn của bạn!</p>
+          </div>
+        </div>
       )}
 
+      {/* Khi có học vấn */}
       {fields.length > 0 && (
         <div>
-          <div
-            className="mb-4 p-3 rounded-lg"
-            style={{
-              backgroundColor:
-                "color-mix(in srgb, var(--muted) 50%, transparent)",
-              border:
-                "2px dashed color-mix(in srgb, var(--muted-foreground) 20%, transparent)",
-            }}
-          >
-            <p className="text-sm text-muted-foreground text-center">
-              💡 Kéo và thả để sắp xếp lại thứ tự học vấn
-            </p>
+          <div className="mb-3 p-3 rounded border border-dashed text-center text-muted small">
+            💡 Kéo và thả để sắp xếp lại thứ tự học vấn
           </div>
+
           <DragDropList
             items={fields}
             onReorder={handleReorder}
@@ -241,6 +211,15 @@ export function EducationStep() {
           />
         </div>
       )}
+
+      {/* CSS nhỏ cho placeholder */}
+      <style jsx>{`
+        .form-control::placeholder,
+        .form-select::placeholder {
+          font-size: 0.875rem;
+          color: #6c757d;
+        }
+      `}</style>
     </div>
   );
 }

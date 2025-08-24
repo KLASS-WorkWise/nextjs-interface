@@ -540,7 +540,7 @@ export function ResumeUpdate({
               <Button
                 variant="outline"
                 onClick={() => setShowPreview(true)}
-                className="w-full mt-4 text-sm"
+                className="w-full mt-4 text-sm d-flex justify-content-center align-items-center"
               >
                 Xem toàn màn hình
               </Button>

@@ -1,14 +1,14 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Save } from "lucide-react";
+
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import type { ResumeData } from "./resume-builder";
 import type { CustomizationOptions } from "./customization-panel";
 import { ModernTemplate } from "./resume-templates/modern-template";
 import { ClassicTemplate } from "./resume-templates/classic-template";
-import axios from "axios";
+
 import styles from "./resume-preview.module.css";
 import { mapFormToApi, resumeApi } from "@/lib/api";
 

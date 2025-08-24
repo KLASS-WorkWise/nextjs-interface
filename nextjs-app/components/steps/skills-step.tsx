@@ -1,13 +1,9 @@
 "use client"
 
 import { useFormContext, useFieldArray } from "react-hook-form"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import type { ResumeData } from "../resume-builder"
 import { Plus, Trash2, Zap } from "lucide-react"
 import { DragDropList } from "../drag-drop-list"
-import type { ResumeData } from "../resume-builder"
 
 export function SkillsStep() {
   const { register, control } = useFormContext<ResumeData>()
@@ -17,7 +13,7 @@ export function SkillsStep() {
   })
 
   const addSkill = () => {
-    append("") // Now just adding empty string instead of object
+    append("") // thêm kỹ năng rỗng
   }
 
   const handleReorder = (oldIndex: number, newIndex: number) => {
@@ -25,68 +21,72 @@ export function SkillsStep() {
   }
 
   const renderSkillItem = (field: any, index: number, isDragging?: boolean) => (
-    <Card key={field.id} className={isDragging ? "shadow-lg" : ""}>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base">Kỹ năng {index + 1}</CardTitle>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => remove(index)}
-            className="text-destructive hover:text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor={`skill-${index}`}>Tên kỹ năng *</Label>
-          <Input
+    <div
+      key={field.id}
+      className={`card mb-3 ${isDragging ? "shadow-lg border-primary" : ""}`}
+    >
+      <div className="card-header d-flex justify-content-between align-items-center">
+        <h6 className="mb-0">Kỹ năng {index + 1}</h6>
+        <button
+          type="button"
+          className="btn btn-outline-danger btn-sm"
+          onClick={() => remove(index)}
+        >
+          <Trash2 size={16} />
+        </button>
+      </div>
+      <div className="card-body">
+        <div className="mb-3">
+          <label htmlFor={`skill-${index}`} className="form-label">
+            Tên kỹ năng *
+          </label>
+          <input
             id={`skill-${index}`}
             {...register(`skills.${index}`, { required: true })}
             placeholder="JavaScript, Photoshop, Marketing..."
+            className="form-control"
           />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Zap className="h-5 w-5" />
-          <h3 className="text-lg font-semibold">Kỹ năng</h3>
+    <div className="mb-4">
+      {/* Header */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <div className="d-flex align-items-center gap-2">
+          <Zap size={20} />
+          <h5 className="mb-0">Kỹ năng</h5>
         </div>
-        <Button onClick={addSkill} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
+        <button type="button" onClick={addSkill} className="btn btn-primary d-flex align-items-center gap-2">
+          <Plus size={16} />
           Thêm kỹ năng
-        </Button>
+        </button>
       </div>
 
+      {/* Trường hợp chưa có skill */}
       {fields.length === 0 && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-8">
-              <Zap className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">Chưa có kỹ năng nào. Hãy thêm những kỹ năng của bạn!</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="card text-center">
+          <div className="card-body py-5">
+            <Zap size={40} className="text-muted mb-3" />
+            <p className="text-muted">
+              Chưa có kỹ năng nào. Hãy thêm những kỹ năng của bạn!
+            </p>
+          </div>
+        </div>
       )}
 
+      {/* Có skill */}
       {fields.length > 0 && (
         <div>
           <div
-            className="mb-4 p-3 rounded-lg"
-            style={{
-              backgroundColor: "color-mix(in srgb, var(--muted) 50%, transparent)",
-              border: "2px dashed color-mix(in srgb, var(--muted-foreground) 20%, transparent)",
-            }}
+            className="alert alert-secondary text-center py-2 mb-3"
+            style={{ border: "2px dashed #ccc" }}
           >
-            <p className="text-sm text-muted-foreground text-center">💡 Kéo và thả để sắp xếp lại thứ tự kỹ năng</p>
+            💡 Kéo và thả để sắp xếp lại thứ tự kỹ năng
           </div>
+
           <DragDropList
             items={fields}
             onReorder={handleReorder}
