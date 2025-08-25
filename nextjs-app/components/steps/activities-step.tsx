@@ -1,11 +1,6 @@
 "use client";
 
 import { useFormContext, useFieldArray } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2, Users } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
 import type { ResumeData } from "../resume-builder";
@@ -37,107 +32,113 @@ export function ActivitiesStep() {
     index: number,
     isDragging?: boolean
   ) => (
-    <Card key={field.id} className={isDragging ? "shadow-lg" : ""}>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base">Hoạt động {index + 1}</CardTitle>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => remove(index)}
-            className="text-destructive hover:text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor={`activityTitle-${index}`}>Tên hoạt động *</Label>
-            <Input
+    <div className={`card mb-3 ${isDragging ? "shadow-lg border-primary" : ""}`} key={field.id}>
+      <div className="card-header d-flex justify-content-between align-items-center">
+        <h6 className="mb-0">Hoạt động {index + 1}</h6>
+        <button
+          type="button"
+          className="btn btn-outline-danger btn-sm"
+          onClick={() => remove(index)}
+        >
+          <Trash2 size={16} />
+        </button>
+      </div>
+      <div className="card-body">
+        <div className="row g-3">
+          <div className="col-md-6">
+            <label htmlFor={`activityTitle-${index}`} className="form-label">
+              Tên hoạt động *
+            </label>
+            <input
+              type="text"
               id={`activityTitle-${index}`}
+              className="form-control"
               {...register(`activities.${index}.title`, { required: true })}
               placeholder="Tình nguyện viên, Chủ tịch CLB..."
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={`organization-${index}`}>Tổ chức *</Label>
-            <Input
+          <div className="col-md-6">
+            <label htmlFor={`organization-${index}`} className="form-label">
+              Tổ chức *
+            </label>
+            <input
+              type="text"
               id={`organization-${index}`}
-              {...register(`activities.${index}.organization`, {
-                required: true,
-              })}
+              className="form-control"
+              {...register(`activities.${index}.organization`, { required: true })}
               placeholder="Tên tổ chức, câu lạc bộ..."
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={`activityStartDate-${index}`}>Ngày bắt đầu *</Label>
-            <Input
-              id={`activityStartDate-${index}`}
+          <div className="col-md-6">
+            <label htmlFor={`activityStartDate-${index}`} className="form-label">
+              Ngày bắt đầu *
+            </label>
+            <input
               type="date"
+              id={`activityStartDate-${index}`}
+              className="form-control"
               {...register(`activities.${index}.startDate`, { required: true })}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={`activityEndDate-${index}`}>Ngày kết thúc</Label>
-            <Input
-              id={`activityEndDate-${index}`}
+          <div className="col-md-6">
+            <label htmlFor={`activityEndDate-${index}`} className="form-label">
+              Ngày kết thúc
+            </label>
+            <input
               type="date"
+              id={`activityEndDate-${index}`}
+              className="form-control"
               {...register(`activities.${index}.endDate`)}
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor={`activityDescription-${index}`}>Mô tả</Label>
-          <Textarea
+        <div className="mt-3">
+          <label htmlFor={`activityDescription-${index}`} className="form-label">
+            Mô tả
+          </label>
+          <textarea
             id={`activityDescription-${index}`}
+            className="form-control"
             {...register(`activities.${index}.description`)}
             placeholder="Mô tả chi tiết về hoạt động và vai trò của bạn..."
             rows={3}
           />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          <h3 className="text-lg font-semibold">Hoạt động</h3>
+    <div>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <div className="d-flex align-items-center gap-2">
+          <Users size={20} />
+          <h5 className="mb-0">Hoạt động</h5>
         </div>
-        <Button onClick={addActivity} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Thêm hoạt động
-        </Button>
+        <button type="button" onClick={addActivity} className="btn btn-primary d-flex align-items-center gap-1">
+          <Plus size={16} /> Thêm hoạt động
+        </button>
       </div>
 
       {fields.length === 0 && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-8">
-              <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
-                Chưa có hoạt động nào. Hãy thêm các hoạt động ngoại khóa của
-                bạn!
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="card text-center">
+          <div className="card-body py-5">
+            <Users size={40} className="mb-3 text-secondary" />
+            <p className="text-muted">
+              Chưa có hoạt động nào. Hãy thêm các hoạt động ngoại khóa của bạn!
+            </p>
+          </div>
+        </div>
       )}
 
       {fields.length > 0 && (
         <div>
-          <div className="mb-4 p-3 bg-muted/50 rounded-lg border-2 border-dashed border-muted-foreground/20">
-            <p className="text-sm text-muted-foreground text-center">
-              💡 Kéo và thả để sắp xếp lại thứ tự hoạt động
-            </p>
+          <div className="alert alert-secondary text-center mb-3">
+            💡 Kéo và thả để sắp xếp lại thứ tự hoạt động
           </div>
           <DragDropList
             items={fields}

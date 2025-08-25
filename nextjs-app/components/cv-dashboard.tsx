@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ResumeBuilder } from "@/components/resume-builder";
-import { CVList } from "@/components/cv-list";
+
 import { CVEmptyState } from "@/components/cv-empty-state";
 import type { ResumeData } from "@/components/resume-builder";
-import { useCallback } from "react";
+
 import { mapApiToForm, resumeApi } from "@/lib/api";
-import { set } from "date-fns";
+
 import { useToast } from "./ui/use-toast";
 import ResumeUpdate from "./resume-update";
+import { CVList } from "./cv-list";
 
 type ViewState = "empty" | "list" | "builder";
 
@@ -54,6 +54,7 @@ export function CVDashboard() {
     try {
       const getDataResumeById = await resumeApi.getResumeById(resume.id);
       const mappedResume = mapApiToForm(getDataResumeById);
+      console.log("[Edit Icon Clicked] Resume data:", mappedResume);
       setEditingResume(mappedResume);
       setCurrentView("builder");
     } catch (error) {
@@ -94,11 +95,23 @@ export function CVDashboard() {
   };
 
   if (currentView === "builder") {
+    // Nếu đang tạo mới CV
+    if (editingResume === null) {
+      return (
+        <ResumeUpdate
+          onBack={handleBackToList}
+          onSave={handleCVSaved}
+          initialData={undefined}
+        />
+      );
+    }
+    // Nếu đang edit, chỉ render khi đã có dữ liệu
+    if (!editingResume) return <div>Đang tải dữ liệu...</div>;
     return (
       <ResumeUpdate
         onBack={handleBackToList}
         onSave={handleCVSaved}
-        initialData={editingResume || undefined}
+        initialData={editingResume}
       />
     );
   }

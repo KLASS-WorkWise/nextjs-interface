@@ -1,21 +1,6 @@
-import { ResumeData } from "@/components/resume-builder";
 import axios from "axios";
-import { id } from "date-fns/locale";
+
 import { getSession } from "next-auth/react";
-
-// const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
-
-// const session = await getSession();
-// const accessToken = session?.accessToken;
-// const API_TOKEN = accessToken || "";
-
-// export const api = axios.create({
-//   baseURL,
-//   headers: {
-//     "Content-Type": "application/json",
-//     Authorization: `Bearer ${API_TOKEN}`,
-//   },
-// });
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
@@ -162,31 +147,56 @@ export function mapApiToForm(apiData: ApiResumeData & { id?: number }): any {
 
 export const resumeApi = {
   getMyResume: async (): Promise<ApiResumeData> => {
-    try {
-      const response = await api.get("/api/resumes");
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching resume:", error);
-      throw new Error("Unable to fetch resume");
-    }
+    const session = await getSession();
+    const accessToken = session?.accessToken;
+    const response = await api.get("/api/resumes", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.data;
   },
 
   getResumeById: async (id: number | string): Promise<ApiResumeData> => {
-    const response = await api.get(`/api/resumes/${id}`);
+    const session = await getSession();
+    const accessToken = session?.accessToken;
+    const response = await api.get(`/api/resumes/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     return response.data;
   },
 
   saveMyResume: async (data: ApiResumeData): Promise<any> => {
-    const response = await api.post("/api/resumes/me", data);
+    const session = await getSession();
+    const accessToken = session?.accessToken;
+    const response = await api.post("/api/resumes/me", data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     return response.data;
   },
 
   updateMyResume: async (id: number, data: ApiResumeData): Promise<any> => {
-    const response = await api.patch(`/api/resumes/me/${id}`, data);
+    const session = await getSession();
+    const accessToken = session?.accessToken;
+    const response = await api.patch(`/api/resumes/me/${id}`, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     return response.data;
   },
 
   deleteResume: async (id: number | string): Promise<void> => {
-    await api.delete(`/api/resumes/${id}`);
+    const session = await getSession();
+    const accessToken = session?.accessToken;
+    await api.delete(`/api/resumes/${id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
   },
 };

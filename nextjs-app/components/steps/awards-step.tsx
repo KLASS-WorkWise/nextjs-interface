@@ -1,11 +1,6 @@
 "use client";
 
 import { useFormContext, useFieldArray } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2, Award } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
 import type { ResumeData } from "../resume-builder";
@@ -32,96 +27,105 @@ export function AwardsStep() {
   };
 
   const renderAwardItem = (field: any, index: number, isDragging?: boolean) => (
-    <Card key={field.id} className={isDragging ? "shadow-lg" : ""}>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base">Giải thưởng {index + 1}</CardTitle>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => remove(index)}
-            className="text-destructive hover:text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor={`awardTitle-${index}`}>Tên giải thưởng *</Label>
-            <Input
+    <div
+      key={field.id}
+      className={`card mb-3 ${isDragging ? "shadow-lg border-primary" : ""}`}
+    >
+      <div className="card-header d-flex justify-content-between align-items-center">
+        <h6 className="mb-0">Giải thưởng {index + 1}</h6>
+        <button
+          type="button"
+          className="btn btn-outline-danger btn-sm"
+          onClick={() => remove(index)}
+        >
+          <Trash2 size={16} />
+        </button>
+      </div>
+      <div className="card-body">
+        <div className="row g-3">
+          <div className="col-md-6">
+            <label htmlFor={`awardTitle-${index}`} className="form-label">
+              Tên giải thưởng *
+            </label>
+            <input
               id={`awardTitle-${index}`}
-              {...register(`awards.${index}.title`, { required: true })}
+              type="text"
+              className="form-control"
               placeholder="Học sinh giỏi, Chứng chỉ TOEIC..."
+              {...register(`awards.${index}.title`, { required: true })}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={`issuer-${index}`}>Đơn vị trao *</Label>
-            <Input
+          <div className="col-md-6">
+            <label htmlFor={`issuer-${index}`} className="form-label">
+              Đơn vị trao *
+            </label>
+            <input
               id={`issuer-${index}`}
-              {...register(`awards.${index}.issuer`, { required: true })}
+              type="text"
+              className="form-control"
               placeholder="Trường học, tổ chức..."
+              {...register(`awards.${index}.issuer`, { required: true })}
             />
           </div>
 
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor={`awardDate-${index}`}>Ngày nhận *</Label>
-            <Input
+          <div className="col-md-12">
+            <label htmlFor={`awardDate-${index}`} className="form-label">
+              Ngày nhận *
+            </label>
+            <input
               id={`awardDate-${index}`}
               type="date"
+              className="form-control"
               {...register(`awards.${index}.date`, { required: true })}
             />
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <Label htmlFor={`awardDescription-${index}`}>Mô tả</Label>
-          <Textarea
-            id={`awardDescription-${index}`}
-            {...register(`awards.${index}.description`)}
-            placeholder="Mô tả chi tiết về giải thưởng..."
-            rows={2}
-          />
+          <div className="col-12">
+            <label htmlFor={`awardDescription-${index}`} className="form-label">
+              Mô tả
+            </label>
+            <textarea
+              id={`awardDescription-${index}`}
+              rows={2}
+              className="form-control"
+              placeholder="Mô tả chi tiết về giải thưởng..."
+              {...register(`awards.${index}.description`)}
+            />
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Award className="h-5 w-5" />
-          <h3 className="text-lg font-semibold">Giải thưởng & Chứng chỉ</h3>
+    <div className="mb-4">
+      {/* Header */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <div className="d-flex align-items-center gap-2">
+          <Award size={20} />
+          <h5 className="mb-0">Giải thưởng & Chứng chỉ</h5>
         </div>
-        <Button onClick={addAward} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Thêm giải thưởng
-        </Button>
+        <button type="button" className="btn btn-primary d-flex align-items-center gap-2" onClick={addAward}>
+          <Plus size={16} /> Thêm giải thưởng
+        </button>
       </div>
 
+      {/* Empty state */}
       {fields.length === 0 && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-8">
-              <Award className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
-                Chưa có giải thưởng nào. Hãy thêm các giải thưởng và chứng chỉ
-                của bạn!
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="card">
+          <div className="card-body text-center py-5 text-muted">
+            <Award size={40} className="mb-3" />
+            <p>Chưa có giải thưởng nào. Hãy thêm các giải thưởng và chứng chỉ của bạn!</p>
+          </div>
+        </div>
       )}
 
+      {/* List with drag-drop */}
       {fields.length > 0 && (
         <div>
-          <div className="mb-4 p-3 bg-muted/50 rounded-lg border-2 border-dashed border-muted-foreground/20">
-            <p className="text-sm text-muted-foreground text-center">
-              💡 Kéo và thả để sắp xếp lại thứ tự giải thưởng
-            </p>
+          <div className="alert alert-secondary text-center small mb-3">
+            💡 Kéo và thả để sắp xếp lại thứ tự giải thưởng
           </div>
           <DragDropList
             items={fields}

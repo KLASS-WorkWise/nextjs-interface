@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -8,17 +7,16 @@ import type { ResumeData } from "./resume-builder";
 import type { CustomizationOptions } from "./customization-panel";
 import { ModernTemplate } from "./resume-templates/modern-template";
 import { ClassicTemplate } from "./resume-templates/classic-template";
-import axios from "axios";
-import styles from "./resume-preview.module.css";
 import { mapFormToApi, resumeApi } from "@/lib/api";
+import styles from "./resume-preview.module.css";
 
 interface ResumePreviewProps {
   data: ResumeData;
   template?: string;
   customization?: CustomizationOptions;
   isCompact?: boolean;
-  onSave?: (resumeData: ResumeData) => void; // Thêm callback để chuyển về danh sách CV sau khi lưu
-  resumeData?: ResumeData; // Thêm prop để nhận dữ liệu resume từ parent component
+  onSave?: (resumeData: ResumeData) => void;
+  resumeData?: ResumeData;
 }
 
 const defaultCustomization: CustomizationOptions = {
@@ -33,8 +31,8 @@ export function ResumePreview({
   template = "modern",
   customization = defaultCustomization,
   isCompact = false,
-  onSave, // Nhận callback onSave từ props
-  resumeData, // Nhận resumeData từ props
+  onSave,
+  resumeData,
 }: ResumePreviewProps) {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
@@ -44,14 +42,19 @@ export function ResumePreview({
     setIsSaving(true);
     try {
       const apiData = mapFormToApi(data);
-      const createResume = await resumeApi.saveMyResume(apiData);
+      if (data.id) {
+        await resumeApi.updateMyResume(data.id, apiData);
+      } else {
+        await resumeApi.saveMyResume(apiData);
+      }
 
       toast({
         title: "Lưu CV thành công!",
         description: "CV của bạn đã được lưu lên server.",
       });
+
       if (onSave) {
-        onSave(data); // Truyền dữ liệu CV đã lưu về parent component
+        onSave(data);
       }
     } catch (error: any) {
       console.error("Error saving CV:", error);
@@ -92,33 +95,36 @@ export function ResumePreview({
   };
 
   return (
-    <Card
-      className={isCompact ? "" : "mx-auto"}
+    <div
+      className={`card ${isCompact ? "" : "mx-auto shadow"}`}
       style={isCompact ? {} : { maxWidth: "56rem" }}
     >
-      <CardContent
-        className={isCompact ? "" : "p-8"}
-        style={isCompact ? { padding: "0" } : {}}
+      <div
+        className={`card-body ${isCompact ? "p-0" : "p-4"}`}
+        style={isCompact ? {} : {}}
       >
         {!isCompact && (
           <div className={styles.saveButtonContainer}>
             <button
               onClick={handleSaveCV}
               disabled={isSaving}
-              className={styles.saveButton}
+              className={`btn btn-primary d-flex align-items-center gap-2 ${styles.saveButton}`}
             >
-              <Save className={`h-4 w-4 ${isSaving ? "animate-spin" : ""}`} />
+              <Save
+                size={16}
+                className={isSaving ? "spinner-border spinner-border-sm" : ""}
+              />
               {isSaving ? "Đang lưu..." : "Lưu CV"}
             </button>
           </div>
         )}
         <div
-          className={isCompact ? "" : "shadow-lg"}
+          className={!isCompact ? "shadow-lg" : ""}
           style={isCompact ? {} : { aspectRatio: "8.5 / 11" }}
         >
           {renderTemplate()}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

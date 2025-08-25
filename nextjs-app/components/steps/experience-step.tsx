@@ -1,21 +1,9 @@
 "use client";
 
 import { useFormContext, useFieldArray } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import type { ResumeData } from "../resume-builder";
 import { Plus, Trash2, Briefcase } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
-import type { ResumeData } from "../resume-builder";
-import styles from "./experience-step.module.css";
 
 export function ExperienceStep() {
   const { register, control, watch, setValue } = useFormContext<ResumeData>();
@@ -67,143 +55,129 @@ export function ExperienceStep() {
     move(oldIndex, newIndex);
   };
 
-  const renderExperienceItem = (
-    field: any,
-    index: number,
-    isDragging?: boolean
-  ) => {
+  const renderExperienceItem = (field: any, index: number, isDragging?: boolean) => {
     return (
-      <Card key={field.id} className={isDragging ? "shadow-lg" : ""}>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Kinh nghiệm {index + 1}</CardTitle>
-            <button
-              onClick={() => remove(index)}
-              className={styles.deleteButton}
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div
-            className="grid grid-cols-1 gap-4"
-            style={{ gridTemplateColumns: "repeat(1, minmax(0, 1fr))" }}
+      <div key={field.id} className={`card mb-4 ${isDragging ? "shadow-lg" : ""}`}>
+        <div className="card-header d-flex justify-content-between align-items-center">
+          <h6 className="mb-0">Kinh nghiệm {index + 1}</h6>
+          <button
+            type="button"
+            className="btn btn-link text-danger p-0"
+            onClick={() => remove(index)}
           >
-            <style jsx>{`
-              @media (min-width: 768px) {
-                .grid {
-                  grid-template-columns: repeat(2, minmax(0, 1fr));
-                }
-              }
-            `}</style>
-            <div className="space-y-2">
-              <Label htmlFor={`company-${index}`}>Công ty *</Label>
-              <Input
+            <Trash2 size={18} />
+          </button>
+        </div>
+        <div className="card-body">
+          <div className="row g-3">
+            <div className="col-md-6">
+              <label className="form-label" htmlFor={`company-${index}`}>
+                Công ty *
+              </label>
+              <input
                 id={`company-${index}`}
+                className="form-control"
                 {...register(`experience.${index}.company`, { required: true })}
                 placeholder="Tên công ty"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor={`position-${index}`}>Vị trí *</Label>
-              <Select
-                value={watch(`experience.${index}.position`)}
-                onValueChange={(value) =>
-                  setValue(`experience.${index}.position`, value)
+            <div className="col-md-6">
+              <label className="form-label" htmlFor={`position-${index}`}>
+                Vị trí *
+              </label>
+              <select
+                id={`position-${index}`}
+                className="form-select"
+                {...register(`experience.${index}.position`, { required: true })}
+                value={watch(`experience.${index}.position`) || ""}
+                onChange={(e) =>
+                  setValue(`experience.${index}.position`, e.target.value)
                 }
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn vị trí công việc" />
-                </SelectTrigger>
-                <SelectContent>
-                  {positionOptions.map((position) => (
-                    <SelectItem key={position} value={position}>
-                      {position}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <option value="">Chọn vị trí công việc</option>
+                {positionOptions.map((position) => (
+                  <option key={position} value={position}>
+                    {position}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor={`startDate-${index}`}>Ngày bắt đầu *</Label>
-              <Input
-                id={`startDate-${index}`}
+            {/* Ngày bắt đầu & Ngày kết thúc cùng 1 hàng */}
+            <div className="col-md-6">
+              <label className="form-label" htmlFor={`startDate-${index}`}>
+                Ngày bắt đầu *
+              </label>
+              <input
                 type="date"
-                {...register(`experience.${index}.startDate`, {
-                  required: true,
-                })}
+                id={`startDate-${index}`}
+                className="form-control"
+                {...register(`experience.${index}.startDate`, { required: true })}
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor={`endDate-${index}`}>Ngày kết thúc</Label>
-              <Input
-                id={`endDate-${index}`}
+            <div className="col-md-6">
+              <label className="form-label" htmlFor={`endDate-${index}`}>
+                Ngày kết thúc
+              </label>
+              <input
                 type="date"
+                id={`endDate-${index}`}
+                className="form-control"
                 {...register(`experience.${index}.endDate`)}
               />
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={`description-${index}`}>Mô tả công việc</Label>
-            <Textarea
-              id={`description-${index}`}
-              {...register(`experience.${index}.description`)}
-              placeholder="Mô tả chi tiết về công việc, thành tích đạt được..."
-              rows={3}
-            />
+            <div className="col-12">
+              <label className="form-label" htmlFor={`description-${index}`}>
+                Mô tả công việc
+              </label>
+              <textarea
+                id={`description-${index}`}
+                className="form-control"
+                rows={3}
+                {...register(`experience.${index}.description`)}
+                placeholder="Mô tả chi tiết về công việc, thành tích đạt được..."
+              />
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   };
 
   return (
-    <div className="space-y-6">
-      <div className={styles.headerContainer}>
-        <div className={styles.titleContainer}>
-          <Briefcase className="h-5 w-5" />
-          <h3 className={styles.title}>Kinh nghiệm làm việc</h3>
+    <div className="experience-step">
+      {/* Header */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <div className="d-flex align-items-center gap-2">
+          <Briefcase size={20} />
+          <h5 className="mb-0">Kinh nghiệm làm việc</h5>
         </div>
-        <button onClick={addExperience} className={styles.addButton}>
-          <Plus className="h-4 w-4" />
+        <button type="button" onClick={addExperience} className="btn btn-primary btn-sm">
+          <Plus size={16} className="me-1" />
           Thêm kinh nghiệm
         </button>
       </div>
 
+      {/* Khi chưa có kinh nghiệm */}
       {fields.length === 0 && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-8">
-              <Briefcase className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
-                Chưa có kinh nghiệm làm việc nào. Hãy thêm kinh nghiệm đầu tiên
-                của bạn!
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="card">
+          <div className="card-body text-center py-5 text-muted">
+            <Briefcase size={40} className="mb-3" />
+            <p>Chưa có kinh nghiệm làm việc nào. Hãy thêm kinh nghiệm đầu tiên của bạn!</p>
+          </div>
+        </div>
       )}
 
+      {/* Khi có kinh nghiệm */}
       {fields.length > 0 && (
         <div>
-          <div
-            className="mb-4 p-3 rounded-lg"
-            style={{
-              backgroundColor:
-                "color-mix(in srgb, var(--muted) 50%, transparent)",
-              border:
-                "2px dashed color-mix(in srgb, var(--muted-foreground) 20%, transparent)",
-            }}
-          >
-            <p className="text-sm text-muted-foreground text-center">
-              💡 Kéo và thả để sắp xếp lại thứ tự kinh nghiệm
-            </p>
+          <div className="mb-3 p-3 rounded border border-dashed text-center text-muted small">
+            💡 Kéo và thả để sắp xếp lại thứ tự kinh nghiệm
           </div>
+
           <DragDropList
             items={fields}
             onReorder={handleReorder}
@@ -212,6 +186,16 @@ export function ExperienceStep() {
           />
         </div>
       )}
+
+      {/* CSS nhỏ cho placeholder */}
+      <style jsx>{`
+        .form-control::placeholder,
+        .form-select::placeholder,
+        textarea::placeholder {
+          font-size: 0.875rem;
+          color: #6c757d;
+        }
+      `}</style>
     </div>
   );
 }

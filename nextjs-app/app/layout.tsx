@@ -1,4 +1,3 @@
-
 import "@/public/assets/css/style.css";
 import "@/styles/globals.css";
 import { NextAuthProvider } from "@/components/providers/authProviders";
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
   title: "Jobbox - Job Portal HTML Template",
   description: "Jobbox - Job Portal HTML Template",
   icons: {
-    icon: '/favicon.ico',
+    icon: "/favicon.ico",
   },
 };
 
