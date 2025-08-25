@@ -53,46 +53,85 @@ export function ClassicTemplate({
 
   return (
     <div
-      className={`${fontFamily} bg-white text-dark p-3 ${isCompact ? "" : "p-4"} print-safe`}
+      className={`${fontFamily} bg-white text-dark p-3 ${
+        isCompact ? "" : "p-4"
+      } print-safe`}
       style={{ borderRadius: "8px", border: "1px solid #dee2e6" }}
     >
-      {/* Classic centered header */}
-      <div
-        className={`text-center border-bottom border-2 border-dark pb-3 mb-4 print-safe`}
-      >
-        {data.personalInfo.profileImage && (
-          <div className="mb-3 d-flex justify-content-center">
-            <Avatar className={isCompact ? "me-2" : ""} style={{ width: isCompact ? 32 : 80, height: isCompact ? 32 : 80 }}>
-              <AvatarImage src={data.personalInfo.profileImage || "/placeholder.svg"} />
-              <AvatarFallback className="bg-light text-dark">
-                {data.personalInfo.fullName?.charAt(0)?.toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        )}
-        <h1 className={`fw-bold ${sizes.name} mb-2`}>
-          {data.personalInfo.fullName || "Họ và tên"}
-        </h1>
-        <div className={`${sizes.text}`}>
-          {data.personalInfo.email && <p className="mb-1">{data.personalInfo.email}</p>}
-          {data.personalInfo.phone && <p className="mb-1">{data.personalInfo.phone}</p>}
-          {data.personalInfo.jobTitle && <p className="mb-1">{data.personalInfo.jobTitle}</p>}
+      {/* Header: avatar left, info right */}
+      <div className="d-flex align-items-center bg-primary text-white rounded-4 p-3 mb-4">
+        <div
+          style={{
+            width: isCompact ? 48 : 80,
+            height: isCompact ? 48 : 80,
+            borderRadius: "50%",
+            overflow: "hidden",
+            border: "3px solid #fff",
+            background: "#fff",
+            flexShrink: 0,
+            marginRight: isCompact ? 16 : 24,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Avatar
+            style={{
+              width: isCompact ? 40 : 72,
+              height: isCompact ? 40 : 72,
+              borderRadius: "50%",
+              overflow: "hidden",
+            }}
+          >
+            <AvatarImage
+              src={data.personalInfo.profileImage || "/placeholder.svg"}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "50%",
+              }}
+            />
+            <AvatarFallback className="bg-light text-dark">
+              {data.personalInfo.fullName?.charAt(0)?.toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+        <div>
+          <h1 className={`fw-bold ${sizes.name} mb-1 text-white`}>
+            {data.personalInfo.fullName || "Họ và tên"}
+          </h1>
+          {data.personalInfo.email && (
+            <div className="small">{data.personalInfo.email}</div>
+          )}
+          {data.personalInfo.phone && (
+            <div className="small">{data.personalInfo.phone}</div>
+          )}
+          {data.personalInfo.jobTitle && (
+            <div className="small">{data.personalInfo.jobTitle}</div>
+          )}
         </div>
       </div>
 
       <div>
         {data.personalInfo.summary && (
           <section className={spacing}>
-            <h2 className={`fw-bold ${sizes.heading} text-center text-uppercase mb-2`}>
+            <h2
+              className={`fw-bold ${sizes.heading} text-center text-uppercase mb-2`}
+            >
               Mô tả bản thân
             </h2>
-            <p className={`${sizes.text} text-justify`}>{data.personalInfo.summary}</p>
+            <p className={`${sizes.text} text-justify`}>
+              {data.personalInfo.summary}
+            </p>
           </section>
         )}
 
         {data.experience.length > 0 && (
           <section className={spacing}>
-            <h2 className={`fw-bold ${sizes.heading} text-center text-uppercase mb-3`}>
+            <h2
+              className={`fw-bold ${sizes.heading} text-center text-uppercase mb-3`}
+            >
               Kinh nghiệm làm việc
             </h2>
             <div>
@@ -106,7 +145,9 @@ export function ClassicTemplate({
                     </p>
                   </div>
                   {exp.description && (
-                    <p className={`${sizes.text} mt-1 text-justify`}>{exp.description}</p>
+                    <p className={`${sizes.text} mt-1 text-justify`}>
+                      {exp.description}
+                    </p>
                   )}
                 </div>
               ))}
@@ -116,7 +157,9 @@ export function ClassicTemplate({
 
         {data.education.length > 0 && (
           <section className={spacing}>
-            <h2 className={`fw-bold ${sizes.heading} text-center text-uppercase mb-3`}>
+            <h2
+              className={`fw-bold ${sizes.heading} text-center text-uppercase mb-3`}
+            >
               Học vấn
             </h2>
             <div>
@@ -125,7 +168,9 @@ export function ClassicTemplate({
                   <h3 className={`fw-bold ${sizes.text}`}>
                     {edu.degree} - {edu.field}
                   </h3>
-                  <p className={`fst-italic ${sizes.text}`}>{edu.institution}</p>
+                  <p className={`fst-italic ${sizes.text}`}>
+                    {edu.institution}
+                  </p>
                   <p className={`text-secondary ${sizes.text}`}>
                     {edu.startDate} - {edu.endDate}
                   </p>
@@ -138,32 +183,38 @@ export function ClassicTemplate({
 
         {data.skills.length > 0 && (
           <section className={spacing}>
-            <h2 className={`fw-bold ${sizes.heading} text-center text-uppercase mb-3`}>
+            <h2
+              className={`fw-bold ${sizes.heading} text-center text-uppercase mb-3`}
+            >
               Kỹ năng
             </h2>
             <div className="text-center">
-              <p className={sizes.text}>
-                {data.skills.join(" • ")}
-              </p>
+              <p className={sizes.text}>{data.skills.join(" • ")}</p>
             </div>
           </section>
         )}
 
         {data.activities.length > 0 && (
           <section className={spacing}>
-            <h2 className={`fw-bold ${sizes.heading} text-center text-uppercase mb-3`}>
+            <h2
+              className={`fw-bold ${sizes.heading} text-center text-uppercase mb-3`}
+            >
               Hoạt động
             </h2>
             <div>
               {data.activities.map((activity) => (
                 <div key={activity.id} className="text-center mb-2">
                   <h3 className={`fw-bold ${sizes.text}`}>{activity.title}</h3>
-                  <p className={`fst-italic ${sizes.text}`}>{activity.organization}</p>
+                  <p className={`fst-italic ${sizes.text}`}>
+                    {activity.organization}
+                  </p>
                   <p className={`text-secondary ${sizes.text}`}>
                     {activity.startDate} - {activity.endDate || "Hiện tại"}
                   </p>
                   {activity.description && (
-                    <p className={`${sizes.text} mt-1 text-justify`}>{activity.description}</p>
+                    <p className={`${sizes.text} mt-1 text-justify`}>
+                      {activity.description}
+                    </p>
                   )}
                 </div>
               ))}
@@ -173,7 +224,9 @@ export function ClassicTemplate({
 
         {data.awards.length > 0 && (
           <section className={spacing}>
-            <h2 className={`fw-bold ${sizes.heading} text-center text-uppercase mb-3`}>
+            <h2
+              className={`fw-bold ${sizes.heading} text-center text-uppercase mb-3`}
+            >
               Giải thưởng & Chứng chỉ
             </h2>
             <div>
@@ -183,7 +236,9 @@ export function ClassicTemplate({
                   <p className={`fst-italic ${sizes.text}`}>{award.issuer}</p>
                   <p className={`text-secondary ${sizes.text}`}>{award.date}</p>
                   {award.description && (
-                    <p className={`${sizes.text} mt-1 text-justify`}>{award.description}</p>
+                    <p className={`${sizes.text} mt-1 text-justify`}>
+                      {award.description}
+                    </p>
                   )}
                 </div>
               ))}

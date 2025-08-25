@@ -48,11 +48,16 @@ export function PersonalInfoStep() {
             src={profileImage || "/placeholder.svg"}
             alt="avatar"
             className="rounded-circle border mb-3"
-            style={{ width: "80px", height: "80px", objectFit: "cover" }}
+            style={{ width: "100px", height: "100px", objectFit: "cover" }}
           />
 
+          
+
           <div className="d-flex align-items-center gap-2">
-            <label htmlFor="profile-image" className="btn btn-outline-secondary btn-sm">
+            <label
+              htmlFor="profile-image"
+              className="btn btn-outline-secondary btn-sm"
+            >
               <i className="bi bi-upload me-1"></i> Tải ảnh lên
             </label>
             <input

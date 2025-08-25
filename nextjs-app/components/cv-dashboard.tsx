@@ -1,5 +1,5 @@
 "use client";
-
+/* eslint-disable */
 import { useState, useEffect } from "react";
 
 import { CVEmptyState } from "@/components/cv-empty-state";

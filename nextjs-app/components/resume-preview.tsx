@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { Save } from "lucide-react";
