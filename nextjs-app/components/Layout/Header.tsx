@@ -95,7 +95,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       <li className="has-children">
                         <Link href="/candidates-grid"><span>Candidates</span></Link>
                         <ul className="sub-menu">
-                          <li><Link href="/page-ressume"><span>Create Cv</span></Link></li>
+                          <li><Link href="/page-resume"><span>Create Cv</span></Link></li>
                           <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
                         </ul>
                       </li>
@@ -130,7 +130,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       <li className="has-children">
                         <Link href="/candidates-grid"><span>Candidates</span></Link>
                         <ul className="sub-menu">
-                          <li><Link href="/page-ressume"><span>Create Cv</span></Link></li>
+                          <li><Link href="/page-resume"><span>Create Cv</span></Link></li>
                           <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
                         </ul>
                       </li>
@@ -197,7 +197,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                         <li className="has-children">
                           <Link href="/candidates-grid"><span>Candidates</span></Link>
                           <ul className="sub-menu">
-                            <li><Link href="/page-ressume"><span>Create Cv</span></Link></li>
+                            <li><Link href="/page-resume"><span>Create Cv</span></Link></li>
                             <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
                           </ul>
                         </li>

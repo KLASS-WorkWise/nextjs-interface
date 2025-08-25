@@ -14,10 +14,11 @@ export const api = axios.create({
 // Thêm interceptor để gắn token trước khi gửi request
 api.interceptors.request.use(async (config) => {
   const session = await getSession();
-  const token = session?.accessToken;
+  const accessToken = session?.accessToken;
+  console.log("accessToken:", accessToken);
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
   }
   return config;
 });
