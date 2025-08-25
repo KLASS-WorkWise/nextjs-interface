@@ -9,3 +9,156 @@
   /* background: #eee; */
   height: calc((100% - 30px) / 2) !important;
 }
+
+/* Overlay che mờ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+/* Hộp modal */
+.modal-box {
+  background: #fff;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+  animation: scaleIn 0.25s ease-in-out;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+/* Nút đóng */
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #666;
+  border: none;
+  background: none;
+}
+.modal-close:hover {
+  color: #000;
+}
+
+/* Title */
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.modal-title .highlight {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+/* Input + Select + Textarea */
+.modal-input {
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.modal-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+  outline: none;
+}
+
+/* Progress bar */
+.progress-bar {
+  width: 100%;
+  background: #e5e7eb;
+  border-radius: 8px;
+  height: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+  transition: width 0.3s ease-in-out;
+}
+
+/* Buttons */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+.btn-cancel {
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+  transition: background 0.2s;
+}
+.btn-cancel:hover {
+  background: #f3f4f6;
+}
+.btn-submit {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-submit:hover {
+  background: linear-gradient(90deg, #1d4ed8, #1e40af);
+  transform: translateY(-1px);
+}
+.btn-submit:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+/* Nút Apply Now */
+.btn-apply {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.btn-apply:hover {
+  background: linear-gradient(90deg, #1d4ed8, #1e40af);
+  transform: translateY(-1px);
+}
+
+.btn-apply:active {
+  transform: translateY(1px);
+}
