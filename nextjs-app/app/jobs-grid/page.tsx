@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -5,7 +6,111 @@ import Layout from "@/components/Layout/Layout";
 import BlogSlider from "@/components/sliders/Blog";
 import { useSession } from "next-auth/react";
 
+import { toast } from "react-toastify";
 
+
+import "@/styles/globals.css";
+import { applyService } from "@/services/applyService";
+
+// Tách Modal ra component riêng
+// Tách Modal ra component riêng
+function ApplyModal({
+  job,
+  resumes,
+  selectedResumeId,
+  setSelectedResumeId,
+  resumeLink,
+  setResumeLink,
+  setFile,
+  message,
+  setMessage,
+  progress,
+  submitting,
+  onClose,
+  onSubmit,
+}: any) {
+  return (
+  <>
+  <div className="modal-overlay">
+    <div className="modal-box">
+      {/* Nút đóng */}
+      <button className="modal-close" onClick={onClose}>
+        ✕
+      </button>
+
+      <h2 className="modal-title">
+        Apply for <span className="highlight">{job.jobTitle}</span>
+      </h2>
+
+      {/* Dropdown resume có sẵn */}
+      <select
+        value={selectedResumeId}
+        onChange={(e) => setSelectedResumeId(e.target.value)}
+        className="modal-input"
+      >
+        <option value="">-- Chọn Resume có sẵn --</option>
+        {resumes.map((resume: any) => (
+          <option key={resume.id} value={resume.id}>
+            {resume.title || `Resume #${resume.id}`}
+          </option>
+        ))}
+      </select>
+
+      {/* Resume link */}
+      <input
+        type="text"
+        placeholder="Resume Link"
+        value={resumeLink}
+        onChange={(e) => setResumeLink(e.target.value)}
+        className="modal-input"
+      />
+
+      {/* Upload file */}
+      <input
+        type="file"
+        onChange={(e) => {
+          const selectedFile = e.target.files?.[0];
+          if (selectedFile) setFile(selectedFile);
+        }}
+        className="modal-input"
+      />
+
+      {/* Cover Letter */}
+      <textarea
+        placeholder="Cover Letter"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        className="modal-input"
+        rows={4}
+      />
+
+      {/* Progress bar */}
+      {progress > 0 && (
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+      )}
+
+      {/* Buttons */}
+      <div className="modal-actions">
+        <button className="btn-cancel" onClick={onClose}>
+          Cancel
+        </button>
+        <button className="btn-submit" onClick={onSubmit} disabled={submitting}>
+          {submitting ? "Applying..." : "Submit"}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  
+</>
+
+  );
+}
 export default function JobGrid() {
   const { data: session } = useSession();
   const role = session?.user?.roles;
@@ -13,6 +118,16 @@ export default function JobGrid() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [jobsLoading, setJobsLoading] = useState(false);
   const [jobsError, setJobsError] = useState("");
+
+  const [modalJob, setModalJob] = useState<any | null>(null);
+
+  const [resumes, setResumes] = useState<any[]>([]);
+  const [selectedResumeId, setSelectedResumeId] = useState<string>("");
+  const [resumeLink, setResumeLink] = useState("");
+  const [message, setMessage] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -31,6 +146,77 @@ export default function JobGrid() {
     };
     fetchJobs();
   }, []);
+
+  useEffect(() => {
+    const fetchResumes = async () => {
+      try {
+        const res = await applyService.getAllResumes();
+        setResumes(Array.isArray(res) ? res : res.data || []);
+      } catch (err) {
+        console.error("Error fetching resumes:", err);
+      }
+    };
+    fetchResumes();
+  }, []);
+
+  const handleApply = async (jobId: number) => {
+    if (!selectedResumeId && !resumeLink && !file) {
+      toast.error("Vui lòng chọn Resume có sẵn hoặc nhập link hoặc upload file!");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      setProgress(0);
+
+      const formData = new FormData();
+      if (selectedResumeId) formData.append("resumesId", selectedResumeId);
+      if (resumeLink) formData.append("resumeLink", resumeLink);
+      if (file) formData.append("resumeFile", file);
+      if (message) formData.append("coverLetter", message);
+
+      const res =  await applyService.applyJobWithFile(jobId, formData, {
+        onUploadProgress: (event: ProgressEvent) => {
+          if (event.total) {
+            setProgress(Math.round((event.loaded * 100) / event.total));
+          }
+        },
+      });
+
+       toast.success("✅ Applied successfully!");
+         // ⚠️ cảnh báo nếu thiếu skill / kinh nghiệm
+  
+    if (res.data.missingSkills?.length) {
+      toast.warning("Thiếu kỹ năng: " + res.data.missingSkills.join(", "));
+    }
+
+    // ⚠️ Hiển thị cảnh báo kinh nghiệm
+    if (res.data.minExperience) {
+      toast.info(res.data.minExperience);
+    }
+
+    console.log("Apply job skills:", res.data.missingSkills);
+      console.log("Apply job response:", res.data.minExperience);
+ 
+
+      setResumeLink("");
+      setMessage("");
+      setFile(null);
+      setSelectedResumeId("");
+      setModalJob(null);
+      setProgress(0);
+    } catch (err: any) {
+      console.error("Apply job failed:", err);
+
+      const msg = err.response?.data?.message || "❌ Apply thất bại!";
+      toast.error(msg);
+      setProgress(0);
+
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <>
       <Layout>
@@ -221,7 +407,9 @@ export default function JobGrid() {
                                     <span className="text-muted">/Tháng</span>
                                   </div>
                                   <div className="col-lg-5 col-5 text-end">
-                                      <button className="btn btn-apply-now">Apply</button>
+                                       <button onClick={() => setModalJob(job)} className="btn-apply">
+                                  Apply Now
+                                </button>
                                   </div>
                                 </div>
                               </div>
@@ -646,7 +834,27 @@ export default function JobGrid() {
                 </div>
               </div>
             </div>
+            
           </section>
+             {/* Popup Modal */}
+      {modalJob && (
+        <ApplyModal
+          job={modalJob}
+          resumes={resumes}
+          selectedResumeId={selectedResumeId}
+          setSelectedResumeId={setSelectedResumeId}
+          resumeLink={resumeLink}
+          setResumeLink={setResumeLink}
+          file={file}
+          setFile={setFile}
+          message={message}
+          setMessage={setMessage}
+          progress={progress}
+          submitting={submitting}
+          onClose={() => setModalJob(null)}
+          onSubmit={() => handleApply(modalJob.id)}
+        />
+      )}
           <section className="section-box mt-50 mb-50">
             <div className="container">
               <div className="text-start">
