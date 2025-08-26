@@ -3,8 +3,13 @@ import React from "react";
 import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
 import BlogSlider from "@/components/sliders/Blog";
+import { useSession } from "next-auth/react";
 
 export default function CandidateGrid() {
+
+  const { data: session } = useSession();
+  const role = session?.user?.roles;
+
   return (
     <>
       <Layout>
@@ -168,6 +173,13 @@ export default function CandidateGrid() {
                     </div>
                     <div className="col-xl-6 col-lg-7 text-lg-end mt-sm-15">
                       <div className="display-flex2">
+                        {role?.includes("Employers") && (
+                          <Link href="/jobs-create">
+                            <button className="btn btn-primary" style={{ marginRight: "16px" }}>
+                              New Candidates
+                            </button>
+                          </Link>
+                        )}
                         <div className="box-border mr-10">
                           <span className="text-sortby">Show:</span>
                           <div className="dropdown dropdown-sort">

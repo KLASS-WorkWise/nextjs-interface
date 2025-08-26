@@ -12,6 +12,18 @@ export const api = axios.create({
   },
 });
 
+// Thêm interceptor để gắn token trước khi gửi request
+api.interceptors.request.use(async (config) => {
+  const session = await getSession();
+  const accessToken = session?.accessToken;
+  console.log("accessToken:", accessToken);
+
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+  return config;
+});
+
 export interface ApiResumeData {
   fullName: string;
   email: string;
@@ -125,7 +137,7 @@ export function mapApiToForm(apiData: ApiResumeData & { id?: number }): any {
       endDate: activity.endYear,
       description: activity.description,
     })),
-    experience: apiData.experiences.map((experience) => ({
+    experience: (apiData.experiences ?? []).map((experience) => ({
       company: experience.companyName,
       position: experience.position,
       startDate: experience.startYear ? `${experience.startYear}` : "",
