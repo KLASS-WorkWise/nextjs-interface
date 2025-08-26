@@ -3,7 +3,6 @@
 import Layout from "@/components/Layout/Layout";
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
-
 const initialState = {
   title: "",
   description: "",
@@ -28,7 +27,8 @@ export default function JobCreate() {
   const { data: session } = useSession();
   const accessToken = session?.accessToken;
   const employerId = session?.user?.id;
-
+  console.log(employerId)
+  console.log(session)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -37,6 +37,11 @@ export default function JobCreate() {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    if (!employerId) {
+    setMessage("Bạn cần đăng nhập bằng tài khoản nhà tuyển dụng!");
+    setLoading(false);
+    return;
+  }
     const payload = {
       ...form,
       requiredSkills: form.requiredSkills.split(",").map((s) => s.trim()).filter(Boolean),
@@ -53,6 +58,7 @@ export default function JobCreate() {
         },
         body: JSON.stringify(payload),
       });
+      console.log("Request payload:", payload);
       if (res.ok) {
         setMessage("Đăng việc thành công!");
         setForm(initialState);

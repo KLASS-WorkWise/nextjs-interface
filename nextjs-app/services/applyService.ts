@@ -23,22 +23,22 @@ interface Applicant {
 
 export const applyService = {
   applyJobWithFile(jobId: number, formData: FormData, config?: any) {
-    return apiClient.post(`/applicant/${jobId}/apply`, formData, {
+    return apiClient.post(`/api/applicant/${jobId}/apply`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
       ...config,
     })  as Promise<Applicant>;
   },
 
   getAllAppsByPage(page = 0, size = 5, sortBy = "appliedAt", sortDir = "desc") {
-    return apiClient.get(`/applicant`, { params: { page, size, sortBy, sortDir } })as Promise<PaginatedAppResponse>;
+    return apiClient.get(`/api/applicant`, { params: { page, size, sortBy, sortDir } })as Promise<PaginatedAppResponse>;
   },
 
   getApplicantDetail(id: number) {
-    return apiClient.get(`/applicant/detail/${id}`);
+    return apiClient.get(`/api/applicant/detail/${id}`);
   },
 
   deleteApplicant(id: number) {
-    return apiClient.delete(`/applicant/delete/${id}`);
+    return apiClient.delete(`/api/applicant/delete/${id}`);
   },
 
   getAllResumes() {

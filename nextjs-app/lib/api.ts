@@ -135,7 +135,7 @@ export function mapApiToForm(apiData: ApiResumeData & { id?: number }): any {
       endDate: activity.endYear,
       description: activity.description,
     })),
-    experience: apiData.experiences.map((experience) => ({
+    experience: (apiData.experiences ?? []).map((experience) => ({
       company: experience.companyName,
       position: experience.position,
       startDate: experience.startYear ? `${experience.startYear}` : "",

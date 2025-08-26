@@ -29,86 +29,115 @@ function ApplyModal({
   onClose,
   onSubmit,
 }: any) {
+  const [resumeType, setResumeType] = useState<"saved" | "upload" | "link">("saved");
+
   return (
-  <>
-  <div className="modal-overlay">
-    <div className="modal-box">
-      {/* Nút đóng */}
-      <button className="modal-close" onClick={onClose}>
-        ✕
-      </button>
-
-      <h2 className="modal-title">
-        Apply for <span className="highlight">{job.jobTitle}</span>
-      </h2>
-
-      {/* Dropdown resume có sẵn */}
-      <select
-        value={selectedResumeId}
-        onChange={(e) => setSelectedResumeId(e.target.value)}
-        className="modal-input"
-      >
-        <option value="">-- Chọn Resume có sẵn --</option>
-        {resumes.map((resume: any) => (
-          <option key={resume.id} value={resume.id}>
-            {resume.title || `Resume #${resume.id}`}
-          </option>
-        ))}
-      </select>
-
-      {/* Resume link */}
-      <input
-        type="text"
-        placeholder="Resume Link"
-        value={resumeLink}
-        onChange={(e) => setResumeLink(e.target.value)}
-        className="modal-input"
-      />
-
-      {/* Upload file */}
-      <input
-        type="file"
-        onChange={(e) => {
-          const selectedFile = e.target.files?.[0];
-          if (selectedFile) setFile(selectedFile);
-        }}
-        className="modal-input"
-      />
-
-      {/* Cover Letter */}
-      <textarea
-        placeholder="Cover Letter"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        className="modal-input"
-        rows={4}
-      />
-
-      {/* Progress bar */}
-      {progress > 0 && (
-        <div className="progress-bar">
-          <div
-            className="progress-fill"
-            style={{ width: `${progress}%` }}
-          ></div>
+    <div className="modal-overlay" style={{ zIndex: 9999, background: "rgba(30,41,59,0.25)", position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div className="modal-box card-grid-2" style={{ maxWidth: 520, width: "100%", borderRadius: 20, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", background: "#fff", padding: 40, position: "relative", border: "1px solid #e5e7eb" }}>
+        <button className="modal-close btn btn-grey-small" onClick={onClose} style={{ position: "absolute", top: 18, right: 18, fontSize: 22, border: "none", background: "none", cursor: "pointer", color: "#334155" }}>
+          <span aria-label="Đóng">&times;</span>
+        </button>
+        <div style={{ textAlign: "center", marginBottom: 28 }}>
+          <h2 className="modal-title mb-0" style={{ fontWeight: 800, fontSize: 26, color: "#1e293b", letterSpacing: "-1px" }}>
+            Apply for <span className="highlight" style={{ color: "#2563eb" }}>{job.jobTitle}</span>
+          </h2>
         </div>
-      )}
-
-      {/* Buttons */}
-      <div className="modal-actions">
-        <button className="btn-cancel" onClick={onClose}>
-          Cancel
-        </button>
-        <button className="btn-submit" onClick={onSubmit} disabled={submitting}>
-          {submitting ? "Applying..." : "Submit"}
-        </button>
+        {/* Chọn loại resume */}
+        <div className="mb-20" style={{ display: "flex", gap: 16, justifyContent: "center" }}>
+          <label>
+            <input type="radio" name="resumeType" value="saved" checked={resumeType === "saved"} onChange={() => setResumeType("saved")} />
+            <span style={{ marginLeft: 6 }}>Resume có sẵn</span>
+          </label>
+          <label>
+            <input type="radio" name="resumeType" value="upload" checked={resumeType === "upload"} onChange={() => setResumeType("upload")} />
+            <span style={{ marginLeft: 6 }}>Upload File</span>
+          </label>
+          <label>
+            <input type="radio" name="resumeType" value="link" checked={resumeType === "link"} onChange={() => setResumeType("link")} />
+            <span style={{ marginLeft: 6 }}>Resume Link</span>
+          </label>
+        </div>
+        {/* Hiển thị trường theo lựa chọn */}
+        {resumeType === "saved" && (
+          <div className="mb-18">
+            <label className="font-sm color-brand-1 mb-5" style={{ fontWeight: 600 }}>Resume có sẵn</label>
+            <select
+              value={selectedResumeId}
+              onChange={(e) => setSelectedResumeId(e.target.value)}
+              className="form-input"
+              style={{ width: "100%", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 15 }}
+            >
+              <option value="">-- Chọn Resume --</option>
+              {resumes.map((resume: any) => (
+                <option key={resume.id} value={resume.id}>
+                  {resume.title || `Resume #${resume.id}`}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        {resumeType === "upload" && (
+          <div className="mb-18">
+            <label className="font-sm color-brand-1 mb-5" style={{ fontWeight: 600 }}>Upload Resume File</label>
+            <input
+              type="file"
+              onChange={(e) => {
+                const selectedFile = e.target.files?.[0];
+                if (selectedFile) setFile(selectedFile);
+              }}
+              className="form-input"
+              style={{ width: "100%", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 15 }}
+            />
+          </div>
+        )}
+        {resumeType === "link" && (
+          <div className="mb-18">
+            <label className="font-sm color-brand-1 mb-5" style={{ fontWeight: 600 }}>Resume Link</label>
+            <input
+              type="text"
+              placeholder="Nhập link resume"
+              value={resumeLink}
+              onChange={(e) => setResumeLink(e.target.value)}
+              className="form-input"
+              style={{ width: "100%", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 15 }}
+            />
+          </div>
+        )}
+        <div className="mb-18">
+          <label className="font-sm color-brand-1 mb-5" style={{ fontWeight: 600 }}>Cover Letter</label>
+          <textarea
+            placeholder="Viết cover letter..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className="form-input"
+            rows={4}
+            style={{ width: "100%", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 15 }}
+          />
+        </div>
+        {progress > 0 && (
+          <div className="progress-bar mb-15" style={{ height: 8, background: "#e0e7ef", borderRadius: 4 }}>
+            <div
+              className="progress-fill"
+              style={{
+                width: `${progress}%`,
+                background: "#2563eb",
+                height: "100%",
+                borderRadius: 4,
+                transition: "width 0.3s",
+              }}
+            ></div>
+          </div>
+        )}
+        <div className="modal-actions mt-20" style={{ display: "flex", justifyContent: "flex-end", gap: 14 }}>
+          <button className="btn btn-grey-small" onClick={onClose} style={{ minWidth: 90, borderRadius: 8, fontWeight: 600, fontSize: 15, background: "#f3f4f6", color: "#334155", border: "1px solid #e5e7eb", transition: "background 0.2s" }}>
+            Cancel
+          </button>
+          <button className="btn btn-primary" onClick={onSubmit} disabled={submitting} style={{ minWidth: 90, borderRadius: 8, fontWeight: 600, fontSize: 15, background: submitting ? "#93c5fd" : "#2563eb", color: "#fff", border: "none", boxShadow: submitting ? "none" : "0 2px 8px rgba(37,99,235,0.08)", transition: "background 0.2s" }}>
+            {submitting ? "Applying..." : "Submit"}
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-
-  
-</>
-
   );
 }
 export default function JobGrid() {
