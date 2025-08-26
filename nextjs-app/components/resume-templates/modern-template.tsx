@@ -78,55 +78,89 @@ export function ModernTemplate({
         }}
       />
 
-      {/* Header with accent color */}
+      {/* Header: avatar left, info right */}
       <div
-        className="rounded-lg print-safe"
+        className="rounded-lg print-safe d-flex align-items-center"
         style={{
           backgroundColor: colorScheme.primary,
           padding: isCompact ? "0.5rem" : "1.5rem",
           marginBottom: isCompact ? "0.25rem" : "1.5rem",
         }}
       >
-        <div className="flex items-center gap-4" style={{ color: "white" }}>
-          {data.personalInfo.profileImage && (
-            <Avatar
+        <div
+          style={{
+            width: isCompact ? 56 : 120,
+            height: isCompact ? 72 : 160,
+            borderRadius: "12px",
+            overflow: "hidden",
+            // border: "3px solid #fff",
+            background: "#fff",
+            flexShrink: 0,
+            marginRight: isCompact ? 16 : 24,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Avatar
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "0",
+              overflow: "hidden",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <AvatarImage
+              src={data.personalInfo.profileImage || "/placeholder.svg"}
               style={{
-                height: isCompact ? "2rem" : "5rem",
-                width: isCompact ? "2rem" : "5rem",
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: "0",
               }}
-            >
-              <AvatarImage
-                src={data.personalInfo.profileImage || "/placeholder.svg"}
-              />
-              <AvatarFallback
-                style={{
-                  backgroundColor: colorScheme.secondary,
-                  color: "white",
-                }}
-              >
-                {data.personalInfo.fullName?.charAt(0)?.toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
-          )}
-          <div>
-            <h1 className="font-bold" style={getSizeStyles("name")}>
-              {data.personalInfo.fullName || "Họ và tên"}
-            </h1>
-            <div
+            />
+            <AvatarFallback
               style={{
-                ...getSizeStyles("text"),
-                opacity: 0.9,
+                backgroundColor: colorScheme.secondary,
+                color: "white",
+                width: "100%",
+                height: "100%",
                 display: "flex",
-                flexDirection: "column",
-                gap: isCompact ? "0" : "0.25rem",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: isCompact ? 24 : 48,
+                borderRadius: "0",
               }}
             >
-              {data.personalInfo.email && <p>{data.personalInfo.email}</p>}
-              {data.personalInfo.phone && <p>{data.personalInfo.phone}</p>}
-              {data.personalInfo.jobTitle && (
-                <p>{data.personalInfo.jobTitle}</p>
-              )}
-            </div>
+              {data.personalInfo.fullName?.charAt(0)?.toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+        <div style={{ color: "white" }}>
+          <h1 className="font-bold" style={getSizeStyles("name")}>
+            {data.personalInfo.fullName || "Họ và tên"}
+          </h1>
+          <div
+            style={{
+              ...getSizeStyles("text"),
+              opacity: 0.9,
+              display: "flex",
+              flexDirection: "column",
+              gap: isCompact ? "0" : "0.25rem",
+            }}
+          >
+            {data.personalInfo.email && (
+              <p style={{ color: "#fff" }}>{data.personalInfo.email}</p>
+            )}
+            {data.personalInfo.phone && (
+              <p style={{ color: "#fff" }}>{data.personalInfo.phone}</p>
+            )}
+            {data.personalInfo.jobTitle && (
+              <p style={{ color: "#fff" }}>{data.personalInfo.jobTitle}</p>
+            )}
           </div>
         </div>
       </div>
@@ -144,6 +178,7 @@ export function ModernTemplate({
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
+                borderRadius: "4px",
               }}
             >
               MÔ TẢ BẢN THÂN

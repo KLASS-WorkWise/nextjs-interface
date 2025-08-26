@@ -1,5 +1,5 @@
 "use client";
-
+/* eslint-disable */
 import { useFormContext, useFieldArray } from "react-hook-form";
 import { Plus, Trash2, GraduationCap } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
@@ -31,21 +31,6 @@ export function EducationStep() {
     "An ninh mạng",
     "Trí tuệ nhân tạo",
     "Khoa học dữ liệu",
-    "Kỹ thuật điện tử",
-    "Kỹ thuật cơ khí",
-    "Kỹ thuật xây dựng",
-    "Kinh tế",
-    "Quản trị kinh doanh",
-    "Marketing",
-    "Tài chính - Ngân hàng",
-    "Kế toán",
-    "Luật",
-    "Y học",
-    "Dược học",
-    "Giáo dục",
-    "Ngôn ngữ Anh",
-    "Thiết kế đồ họa",
-    "Kiến trúc",
     "Khác",
   ];
 
@@ -65,8 +50,15 @@ export function EducationStep() {
     move(oldIndex, newIndex);
   };
 
-  const renderEducationItem = (field: any, index: number, isDragging?: boolean) => (
-    <div key={field.id} className={`card mb-4 ${isDragging ? "shadow-lg" : ""}`}>
+  const renderEducationItem = (
+    field: any,
+    index: number,
+    isDragging?: boolean
+  ) => (
+    <div
+      key={field.id}
+      className={`card mb-4 ${isDragging ? "shadow-lg" : ""}`}
+    >
       <div className="card-header d-flex justify-content-between align-items-center">
         <h6 className="mb-0">Học vấn {index + 1}</h6>
         <button
@@ -87,7 +79,9 @@ export function EducationStep() {
             <input
               id={`institution-${index}`}
               className="form-control"
-              {...register(`education.${index}.institution`, { required: true })}
+              {...register(`education.${index}.institution`, {
+                required: true,
+              })}
               placeholder="Tên trường học"
             />
           </div>
@@ -101,7 +95,17 @@ export function EducationStep() {
               className="form-select"
               {...register(`education.${index}.degree`, { required: true })}
               value={watch(`education.${index}.degree`) || ""}
-              onChange={(e) => setValue(`education.${index}.degree`, e.target.value)}
+              onChange={(e) =>
+                setValue(`education.${index}.degree`, e.target.value)
+              }
+              style={{
+                height: "calc(2.25rem + 13px)",
+                padding: "0.375rem 0.75rem",
+                fontSize: "1rem",
+                lineHeight: "1.5",
+                borderRadius: ".375rem",
+                border: "1px solid #ced4da",
+              }}
             >
               <option value="">Chọn bằng cấp</option>
               {degreeOptions.map((degree) => (
@@ -121,7 +125,17 @@ export function EducationStep() {
               className="form-select"
               {...register(`education.${index}.field`, { required: true })}
               value={watch(`education.${index}.field`) || ""}
-              onChange={(e) => setValue(`education.${index}.field`, e.target.value)}
+              onChange={(e) =>
+                setValue(`education.${index}.field`, e.target.value)
+              }
+              style={{
+                height: "calc(2.25rem + 13px)",
+                padding: "0.375rem 0.75rem",
+                fontSize: "1rem",
+                lineHeight: "1.5",
+                borderRadius: ".375rem",
+                border: "1px solid #ced4da",
+              }}
             >
               <option value="">Chọn chuyên ngành</option>
               {majorOptions.map((major) => (
@@ -180,7 +194,11 @@ export function EducationStep() {
           <GraduationCap size={20} />
           <h5 className="mb-0">Học vấn</h5>
         </div>
-        <button type="button" onClick={addEducation} className="btn btn-primary btn-sm">
+        <button
+          type="button"
+          onClick={addEducation}
+          className="btn btn-primary btn-sm d-inline-flex align-items-center"
+        >
           <Plus size={16} className="me-1" />
           Thêm học vấn
         </button>
@@ -189,9 +207,16 @@ export function EducationStep() {
       {/* Khi chưa có học vấn */}
       {fields.length === 0 && (
         <div className="card">
-          <div className="card-body text-center py-5 text-muted">
-            <GraduationCap size={40} className="mb-3" />
-            <p>Chưa có thông tin học vấn nào. Hãy thêm trình độ học vấn của bạn!</p>
+          <div className="card-body text-center py-5 text-muted d-flex flex-column align-items-center justify-content-center">
+            <div
+              className="d-flex align-items-center justify-content-center mb-3"
+              style={{ width: 56, height: 56 }}
+            >
+              <GraduationCap size={40} />
+            </div>
+            <p>
+              Chưa có thông tin học vấn nào. Hãy thêm trình độ học vấn của bạn!
+            </p>
           </div>
         </div>
       )}

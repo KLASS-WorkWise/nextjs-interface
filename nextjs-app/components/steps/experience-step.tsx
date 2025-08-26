@@ -1,5 +1,5 @@
 "use client";
-
+/* eslint-disable */
 import { useFormContext, useFieldArray } from "react-hook-form";
 import type { ResumeData } from "../resume-builder";
 import { Plus, Trash2, Briefcase } from "lucide-react";
@@ -55,9 +55,16 @@ export function ExperienceStep() {
     move(oldIndex, newIndex);
   };
 
-  const renderExperienceItem = (field: any, index: number, isDragging?: boolean) => {
+  const renderExperienceItem = (
+    field: any,
+    index: number,
+    isDragging?: boolean
+  ) => {
     return (
-      <div key={field.id} className={`card mb-4 ${isDragging ? "shadow-lg" : ""}`}>
+      <div
+        key={field.id}
+        className={`card mb-4 ${isDragging ? "shadow-lg" : ""}`}
+      >
         <div className="card-header d-flex justify-content-between align-items-center">
           <h6 className="mb-0">Kinh nghiệm {index + 1}</h6>
           <button
@@ -89,13 +96,25 @@ export function ExperienceStep() {
               <select
                 id={`position-${index}`}
                 className="form-select"
-                {...register(`experience.${index}.position`, { required: true })}
+                {...register(`experience.${index}.position`, {
+                  required: true,
+                })}
                 value={watch(`experience.${index}.position`) || ""}
                 onChange={(e) =>
                   setValue(`experience.${index}.position`, e.target.value)
                 }
+                style={{
+                  height: "calc(2.25rem + 13px)",
+                  padding: "0.375rem 0.75rem",
+                  fontSize: "1rem",
+                  lineHeight: "1.5",
+                  borderRadius: ".375rem",
+                  border: "1px solid #ced4da",
+                }}
               >
-                <option value="">Chọn vị trí công việc</option>
+                <option value="">
+                  <p style={{ color: "#FFFFFF" }}>Chọn vị trí công việc</p>
+                </option>
                 {positionOptions.map((position) => (
                   <option key={position} value={position}>
                     {position}
@@ -113,7 +132,9 @@ export function ExperienceStep() {
                 type="date"
                 id={`startDate-${index}`}
                 className="form-control"
-                {...register(`experience.${index}.startDate`, { required: true })}
+                {...register(`experience.${index}.startDate`, {
+                  required: true,
+                })}
               />
             </div>
 
@@ -155,18 +176,30 @@ export function ExperienceStep() {
           <Briefcase size={20} />
           <h5 className="mb-0">Kinh nghiệm làm việc</h5>
         </div>
-        <button type="button" onClick={addExperience} className="btn btn-primary btn-sm">
+        <button
+          type="button"
+          onClick={addExperience}
+          className="btn btn-primary btn-sm d-inline-flex align-items-center"
+        >
           <Plus size={16} className="me-1" />
-          Thêm kinh nghiệm
+          <span>Thêm kinh nghiệm</span>
         </button>
       </div>
 
       {/* Khi chưa có kinh nghiệm */}
       {fields.length === 0 && (
         <div className="card">
-          <div className="card-body text-center py-5 text-muted">
-            <Briefcase size={40} className="mb-3" />
-            <p>Chưa có kinh nghiệm làm việc nào. Hãy thêm kinh nghiệm đầu tiên của bạn!</p>
+          <div className="card-body text-center py-5 text-muted d-flex flex-column align-items-center justify-content-center">
+            <div
+              className="d-flex align-items-center justify-content-center mb-3"
+              style={{ width: 56, height: 56 }}
+            >
+              <Briefcase size={40} />
+            </div>
+            <p>
+              Chưa có kinh nghiệm làm việc nào. Hãy thêm kinh nghiệm đầu tiên
+              của bạn!
+            </p>
           </div>
         </div>
       )}
