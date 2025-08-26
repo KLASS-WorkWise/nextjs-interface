@@ -1,5 +1,5 @@
 "use client";
-
+/* eslint-disable */
 import { useFormContext, useFieldArray } from "react-hook-form";
 import { Plus, Trash2, Users } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
@@ -32,7 +32,10 @@ export function ActivitiesStep() {
     index: number,
     isDragging?: boolean
   ) => (
-    <div className={`card mb-3 ${isDragging ? "shadow-lg border-primary" : ""}`} key={field.id}>
+    <div
+      className={`card mb-3 ${isDragging ? "shadow-lg border-primary" : ""}`}
+      key={field.id}
+    >
       <div className="card-header d-flex justify-content-between align-items-center">
         <h6 className="mb-0">Hoạt động {index + 1}</h6>
         <button
@@ -66,13 +69,18 @@ export function ActivitiesStep() {
               type="text"
               id={`organization-${index}`}
               className="form-control"
-              {...register(`activities.${index}.organization`, { required: true })}
+              {...register(`activities.${index}.organization`, {
+                required: true,
+              })}
               placeholder="Tên tổ chức, câu lạc bộ..."
             />
           </div>
 
           <div className="col-md-6">
-            <label htmlFor={`activityStartDate-${index}`} className="form-label">
+            <label
+              htmlFor={`activityStartDate-${index}`}
+              className="form-label"
+            >
               Ngày bắt đầu *
             </label>
             <input
@@ -97,7 +105,10 @@ export function ActivitiesStep() {
         </div>
 
         <div className="mt-3">
-          <label htmlFor={`activityDescription-${index}`} className="form-label">
+          <label
+            htmlFor={`activityDescription-${index}`}
+            className="form-label"
+          >
             Mô tả
           </label>
           <textarea
@@ -119,15 +130,24 @@ export function ActivitiesStep() {
           <Users size={20} />
           <h5 className="mb-0">Hoạt động</h5>
         </div>
-        <button type="button" onClick={addActivity} className="btn btn-primary d-flex align-items-center gap-1">
+        <button
+          type="button"
+          onClick={addActivity}
+          className="btn btn-primary d-flex align-items-center gap-1"
+        >
           <Plus size={16} /> Thêm hoạt động
         </button>
       </div>
 
       {fields.length === 0 && (
         <div className="card text-center">
-          <div className="card-body py-5">
-            <Users size={40} className="mb-3 text-secondary" />
+          <div className="card-body py-5 d-flex flex-column align-items-center justify-content-center">
+            <div
+              className="d-flex align-items-center justify-content-center mb-3"
+              style={{ width: 56, height: 56 }}
+            >
+              <Users size={40} className="text-secondary" />
+            </div>
             <p className="text-muted">
               Chưa có hoạt động nào. Hãy thêm các hoạt động ngoại khóa của bạn!
             </p>

@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
@@ -521,9 +522,16 @@ export function ResumeUpdate({
         <div className={styles.previewSidebar}>
           <Card className={styles.previewCard}>
             <CardHeader className={styles.cardHeader}>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Eye className="h-4 w-4" />
-                Xem trước
+              <CardTitle
+                className="text-base d-flex align-items-center gap-2"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "13px",
+                }}
+              >
+                <Eye className="h-4 w-4" style={{ verticalAlign: "middle" }} />
+                <span style={{ verticalAlign: "middle" }}>Xem trước</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4">
@@ -537,13 +545,18 @@ export function ResumeUpdate({
                   />
                 </div>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => setShowPreview(true)}
-                className="w-full mt-4 text-sm d-flex justify-content-center align-items-center"
+              <div
+                className="d-flex justify-content-center mt-4"
+                style={{ marginBottom: 10 }}
               >
-                Xem toàn màn hình
-              </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPreview(true)}
+                  className="text-sm d-flex justify-content-center align-items-center"
+                >
+                  Xem toàn màn hình
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

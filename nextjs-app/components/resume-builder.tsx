@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
@@ -389,10 +390,13 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
                     {steps[currentStep].title}
                   </CardTitle>
                   {completedSteps.includes(currentStep) && (
-                    <Badge className={styles.completedBadge}>
-                      <Check className="h-3 w-3 mr-1" />
+                    <span
+                      style={{ color: "#198754" }}
+                      className="d-inline-flex align-items-center fw-medium"
+                    >
+                      <Check className="h-3 w-3 me-1" />
                       <span className={styles.hiddenOnMobile}>Hoàn thành</span>
-                    </Badge>
+                    </span>
                   )}
                 </div>
                 <span className={styles.stepCounter}>

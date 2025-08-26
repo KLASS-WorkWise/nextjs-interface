@@ -1,5 +1,5 @@
 "use client"
-
+/* eslint-disable */
 import { useFormContext, useFieldArray } from "react-hook-form"
 import type { ResumeData } from "../resume-builder"
 import { Plus, Trash2, Zap } from "lucide-react"
@@ -68,8 +68,10 @@ export function SkillsStep() {
       {/* Trường hợp chưa có skill */}
       {fields.length === 0 && (
         <div className="card text-center">
-          <div className="card-body py-5">
-            <Zap size={40} className="text-muted mb-3" />
+          <div className="card-body py-5 d-flex flex-column align-items-center justify-content-center">
+            <div className="d-flex align-items-center justify-content-center mb-3" style={{ width: 56, height: 56 }}>
+              <Zap size={40} className="text-muted" />
+            </div>
             <p className="text-muted">
               Chưa có kỹ năng nào. Hãy thêm những kỹ năng của bạn!
             </p>

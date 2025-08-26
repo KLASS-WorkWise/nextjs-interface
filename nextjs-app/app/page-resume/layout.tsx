@@ -1,12 +1,6 @@
 import type React from "react";
-import type { Metadata } from "next";
-import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "Resume Builder",
-  description: "Create professional resumes with ease",
-  generator: "v0.app",
-};
+import "./globals.css";
 
 // export default function RootLayout({
 export default function ResumeLayout({

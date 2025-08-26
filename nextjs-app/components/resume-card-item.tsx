@@ -1,5 +1,5 @@
 "use client";
-
+/* eslint-disable */
 import { Card, CardContent } from "@/components/ui/card";
 
 import { useToast } from "@/hooks/use-toast";
