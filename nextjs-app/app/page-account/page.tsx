@@ -7,10 +7,10 @@ import { Camera } from 'lucide-react';
 
 export default function AccountPage() {
     const { data: session } = useSession();
-
-    console.log("thông tin session", session);
+    // console.log("test thử ", session);
 
     const [fullName, setFullName] = useState("");
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [avatar, setAvatar] = useState("/assets/imgs/avatar/logoLogin.jpg");
     const [message, setMessage] = useState("");
@@ -19,12 +19,19 @@ export default function AccountPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        if (session?.user) {
-            setFullName(session.user.fullName || session.user.name || "");
-            setEmail(session.user.email || "");
-        }
+        const fetchUser = async () => {
+            const userId = session?.user?.id;
+            if (userId) {
+                const userRes = await fetch(`http://localhost:8080/api/users/${userId}`);
+                const userData = await userRes.json();
+                setFullName(userData.fullName || userData.name || "");
+                setEmail(userData.email || "");
+                setUsername(userData.username || "");
+                // Nếu có avatar thì setAvatar(userData.avatar);
+            }
+        };
+        fetchUser();
     }, [session]);
-
 
     const handleAvatarClick = () => setShowModal(true);
 
@@ -37,41 +44,38 @@ export default function AccountPage() {
 
     const handleRemove = () => setPreview(null);
 
-
     const handleUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage("");
-        // Lấy accessToken từ session
         const accessToken = session?.accessToken;
-        console.log("Access token sau xem có lấy được không:", accessToken);
-
-        console.log("Thông tin cập nhật:", {
-            fullName,
-            email,
-            avatar,
-            accessToken
-        });
-
-        if (!accessToken) {
+        const userId = session?.user?.id;
+        if (!accessToken || !userId) {
             setMessage("Bạn chưa đăng nhập hoặc token hết hạn!");
             return;
         }
         try {
-            const res = await fetch("http://localhost:8080/api/users/update-profile", {
+            const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${accessToken}`,
+                    // "Authorization": `Bearer ${accessToken}`,
                 },
                 body: JSON.stringify({
                     fullName,
                     email,
                     avatar,
-                    // thêm các trường khác nếu cần
                 }),
             });
             if (res.ok) {
                 setMessage("Cập nhật thành công!");
+                // Fetch lại user từ backend để cập nhật giao diện
+                const userRes = await fetch(`http://localhost:8080/api/users/${userId}`, {
+                    headers: { "Authorization": `Bearer ${accessToken}` }
+                });
+                const userData = await userRes.json();
+                setFullName(userData.fullName || userData.name || "");
+                setEmail(userData.email || "");
+                // Nếu có avatar thì setAvatar(userData.avatar);
             } else {
                 setMessage("Có lỗi xảy ra, vui lòng thử lại.");
             }
@@ -109,6 +113,18 @@ export default function AccountPage() {
                                             disabled
                                         />
                                     </div>
+
+                                    <div className="form-group mb-20">
+                                        <label className="form-label">User Name </label>
+                                        <input
+                                            className="form-control"
+                                            type="text"
+                                            value={username}
+                                            onChange={e => setUsername(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+
                                     <button className="btn btn-success w-100" type="submit">
                                         Lưu
                                     </button>
@@ -126,7 +142,6 @@ export default function AccountPage() {
                                         className="rounded-circle"
                                         style={{ width: 80, height: 80, objectFit: "cover" }}
                                     />
-
                                     {/* Icon camera ở góc avatar */}
                                     <span
                                         style={{
@@ -183,7 +198,7 @@ export default function AccountPage() {
                                     </div>
                                 </div>
                                 <div style={{ color: "red", fontSize: 13 }}>
-                                    Nếu ảnh của bạn có dung lượng trên 10M  B, vui lòng giảm dung lượng ảnh!
+                                    Nếu ảnh của bạn có dung lượng trên 10MB, vui lòng giảm dung lượng ảnh!
                                 </div>
                             </div>
                             <div style={{ flex: 1, textAlign: "center" }}>
