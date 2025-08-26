@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -204,7 +203,7 @@ export default function JobGrid() {
       if (file) formData.append("resumeFile", file);
       if (message) formData.append("coverLetter", message);
 
-      const res =  await applyService.applyJobWithFile(jobId, formData, {
+      const res = await applyService.applyJobWithFile(jobId, formData, {
         onUploadProgress: (event: ProgressEvent) => {
           if (event.total) {
             setProgress(Math.round((event.loaded * 100) / event.total));
@@ -212,21 +211,21 @@ export default function JobGrid() {
         },
       });
 
-       toast.success("✅ Applied successfully!");
-         // ⚠️ cảnh báo nếu thiếu skill / kinh nghiệm
-  
-    if (res.data.missingSkills?.length) {
-      toast.warning("Thiếu kỹ năng: " + res.data.missingSkills.join(", "));
-    }
+      toast.success("✅ Applied successfully!");
+      // ⚠️ cảnh báo nếu thiếu skill / kinh nghiệm
 
-    // ⚠️ Hiển thị cảnh báo kinh nghiệm
-    if (res.data.minExperience) {
-      toast.info(res.data.minExperience);
-    }
+      if (res.data.missingSkills?.length) {
+        toast.warning("Thiếu kỹ năng: " + res.data.missingSkills.join(", "));
+      }
 
-    console.log("Apply job skills:", res.data.missingSkills);
+      // ⚠️ Hiển thị cảnh báo kinh nghiệm
+      if (res.data.minExperience) {
+        toast.info(res.data.minExperience);
+      }
+
+      console.log("Apply job skills:", res.data.missingSkills);
       console.log("Apply job response:", res.data.minExperience);
- 
+
 
       setResumeLink("");
       setMessage("");
@@ -318,16 +317,20 @@ export default function JobGrid() {
                           <div className="display-flex2">
                             {role?.includes("Employers") && (
                               <>
+
                                 <Link href="/job-create">
                                   <button className="btn btn-primary" style={{ marginRight: "16px" }}>
                                     Create Job
                                   </button>
                                 </Link>
+
                                 <Link href="/dashboard-employers/my-jobs">
-                                  <button className="btn btn-secondary" style={{ marginRight: "16px" }}>
-                                    Manage Jobs
+                                  <button className="btn btn-primary" style={{ marginRight: "16px" }}>
+                                    Manager Job
                                   </button>
                                 </Link>
+
+
                               </>
                             )}
 
@@ -443,9 +446,9 @@ export default function JobGrid() {
                                     <span className="text-muted">/Tháng</span>
                                   </div>
                                   <div className="col-lg-5 col-5 text-end">
-                                       <button onClick={() => setModalJob(job)} className="btn-apply">
-                                  Apply Now
-                                </button>
+                                    <button onClick={() => setModalJob(job)} className="btn-apply">
+                                      Apply Now
+                                    </button>
                                   </div>
                                 </div>
                               </div>
@@ -870,27 +873,27 @@ export default function JobGrid() {
                 </div>
               </div>
             </div>
-            
+
           </section>
-             {/* Popup Modal */}
-      {modalJob && (
-        <ApplyModal
-          job={modalJob}
-          resumes={resumes}
-          selectedResumeId={selectedResumeId}
-          setSelectedResumeId={setSelectedResumeId}
-          resumeLink={resumeLink}
-          setResumeLink={setResumeLink}
-          file={file}
-          setFile={setFile}
-          message={message}
-          setMessage={setMessage}
-          progress={progress}
-          submitting={submitting}
-          onClose={() => setModalJob(null)}
-          onSubmit={() => handleApply(modalJob.id)}
-        />
-      )}
+          {/* Popup Modal */}
+          {modalJob && (
+            <ApplyModal
+              job={modalJob}
+              resumes={resumes}
+              selectedResumeId={selectedResumeId}
+              setSelectedResumeId={setSelectedResumeId}
+              resumeLink={resumeLink}
+              setResumeLink={setResumeLink}
+              file={file}
+              setFile={setFile}
+              message={message}
+              setMessage={setMessage}
+              progress={progress}
+              submitting={submitting}
+              onClose={() => setModalJob(null)}
+              onSubmit={() => handleApply(modalJob.id)}
+            />
+          )}
           <section className="section-box mt-50 mb-50">
             <div className="container">
               <div className="text-start">
