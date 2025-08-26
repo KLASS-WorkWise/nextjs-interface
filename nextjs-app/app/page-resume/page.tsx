@@ -1,11 +1,10 @@
+import Layout from "@/components/Layout/Layout";
 import { CVDashboard } from "@/components/cv-dashboard";
-// import { ResumeBuilder } from "@/components/resume-builder"
 
 export default function HomePage() {
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "var(--background)" }}>
-      {/* <ResumeBuilder /> */}
+    <Layout>
       <CVDashboard />
-    </div>
+    </Layout>
   );
 }

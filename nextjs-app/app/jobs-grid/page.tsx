@@ -102,11 +102,18 @@ export default function JobGrid() {
                         <div className="col-xl-6 col-lg-7 text-lg-end mt-sm-15 ">
                           <div className="display-flex2">
                             {role?.includes("Employers") && (
-                              <Link href="/job-create">
-                                <button className="btn btn-primary" style={{ marginRight: "16px" }}>
-                                  Create Job
-                                </button>
-                              </Link>
+                              <>
+                                <Link href="/job-create">
+                                  <button className="btn btn-primary" style={{ marginRight: "16px" }}>
+                                    Create Job
+                                  </button>
+                                </Link>
+                                <Link href="/dashboard-employers/my-jobs">
+                                  <button className="btn btn-secondary" style={{ marginRight: "16px" }}>
+                                    Manage Jobs
+                                  </button>
+                                </Link>
+                              </>
                             )}
 
                             <div className="box-border mr-10">
@@ -221,7 +228,7 @@ export default function JobGrid() {
                                     <span className="text-muted">/Tháng</span>
                                   </div>
                                   <div className="col-lg-5 col-5 text-end">
-                                      <button className="btn btn-apply-now">Apply</button>
+                                    <button className="btn btn-apply-now">Apply</button>
                                   </div>
                                 </div>
                               </div>
@@ -229,7 +236,7 @@ export default function JobGrid() {
                           </div>
                         </div>
                       ))}
-                    </div> 
+                    </div>
 
                   </div>
                   <div className="paginations">
