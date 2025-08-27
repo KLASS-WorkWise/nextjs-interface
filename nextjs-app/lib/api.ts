@@ -78,7 +78,7 @@ export function mapFormToApi(formData: any): ApiResumeData {
       endYear: edu.endDate || "",
       GPA: edu.gpa || "",
     })),
-    
+
     awards: (formData.awards || []).map((award: any) => ({
       awardName: award.title || "",
       // Chỉ lấy năm (YYYY) từ chuỗi "YYYY-MM" để gửi lên backend dạng số hoặc chuỗi năm

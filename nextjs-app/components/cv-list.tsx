@@ -8,6 +8,7 @@ interface CVListProps {
   onCreateNew: () => void;
   onEditCV: (resume: ResumeData) => void;
   onDeleteCV: (index: number) => void;
+  onPreviewCV: (resume: ResumeData) => void;
 }
 
 export function CVList({
@@ -15,6 +16,7 @@ export function CVList({
   onCreateNew,
   onEditCV,
   onDeleteCV,
+  onPreviewCV,
 }: CVListProps) {
   return (
     <div className="py-4">
@@ -42,6 +44,7 @@ export function CVList({
                       resume={resume}
                       onEdit={() => onEditCV(resume)}
                       onDelete={() => onDeleteCV(id)}
+                      onPreview={() => onPreviewCV(resume)}
                     />
                   </div>
                 );
@@ -49,9 +52,7 @@ export function CVList({
               return null;
             })
           ) : (
-            <div className="text-center text-muted py-5">
-              Chưa có CV nào
-            </div>
+            <div className="text-center text-muted py-5">Chưa có CV nào</div>
           )}
         </div>
       </div>

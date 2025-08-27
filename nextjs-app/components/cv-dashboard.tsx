@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable */
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import { CVEmptyState } from "@/components/cv-empty-state";
 import type { ResumeData } from "@/components/resume-builder";
@@ -9,15 +10,19 @@ import { mapApiToForm, resumeApi } from "@/lib/api";
 
 import { useToast } from "./ui/use-toast";
 import ResumeUpdate from "./resume-update";
+import { ViewCv } from "./view-cv";
 import { CVList } from "./cv-list";
 
 type ViewState = "empty" | "list" | "builder";
 
 export function CVDashboard() {
+  const router = useRouter();
   const [currentView, setCurrentView] = useState<ViewState>("empty");
   const [resumes, setResumes] = useState<ResumeData[]>([]);
   const [editingResume, setEditingResume] = useState<ResumeData | null>(null);
   const { toast } = useToast();
+  const [previewResume, setPreviewResume] = useState<ResumeData | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const loadResumes = async () => {
     try {
@@ -94,6 +99,11 @@ export function CVDashboard() {
     setCurrentView("list");
   };
 
+  const handlePreviewCV = (resume: ResumeData) => {
+    setPreviewResume(resume);
+    setShowPreview(true);
+  };
+
   if (currentView === "builder") {
     // Nếu đang tạo mới CV
     if (editingResume === null) {
@@ -118,12 +128,59 @@ export function CVDashboard() {
 
   if (currentView === "list") {
     return (
-      <CVList
-        resumes={resumes}
-        onCreateNew={handleCreateNewCV}
-        onEditCV={handleEditCV}
-        onDeleteCV={handleDeleteCV}
-      />
+      <>
+        <CVList
+          resumes={resumes}
+          onCreateNew={handleCreateNewCV}
+          onEditCV={handleEditCV}
+          onDeleteCV={handleDeleteCV}
+          onPreviewCV={handlePreviewCV}
+        />
+        {showPreview && previewResume && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0,0,0,0.5)",
+              zIndex: 9999,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onClick={() => setShowPreview(false)}
+          >
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: 8,
+                padding: 24,
+                maxWidth: "90vw",
+                maxHeight: "90vh",
+                overflow: "auto",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowPreview(false)}
+                style={{
+                  position: "absolute",
+                  top: 24,
+                  right: 32,
+                  zIndex: 10000,
+                }}
+                className="btn btn-secondary"
+              >
+                Đóng
+              </button>
+              {/* Hiển thị ViewCv ở chế độ chỉ xem */}
+              <ViewCv data={previewResume} isCompact={false} />
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 

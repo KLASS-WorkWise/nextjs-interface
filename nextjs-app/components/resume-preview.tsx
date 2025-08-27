@@ -98,7 +98,11 @@ export function ResumePreview({
   return (
     <div
       className={`card ${isCompact ? "" : "mx-auto shadow"}`}
-      style={isCompact ? {} : { maxWidth: "56rem" }}
+      style={
+        isCompact
+          ? {}
+          : { maxWidth: "56rem", maxHeight: "90vh", overflowY: "auto" }
+      }
     >
       <div
         className={`card-body ${isCompact ? "p-0" : "p-4"}`}

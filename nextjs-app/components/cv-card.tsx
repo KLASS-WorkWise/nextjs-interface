@@ -2,6 +2,8 @@
 
 import type { ResumeData } from "./resume-builder";
 
+import { Eye } from "lucide-react";
+
 import styles from "./cv-card.module.css";
 import { ResumeCardItem } from "./resume-card-item";
 
@@ -9,9 +11,10 @@ interface CVCardProps {
   resume: ResumeData;
   onEdit: () => void;
   onDelete: () => void;
+  onPreview: () => void;
 }
 
-export function CVCard({ resume, onEdit, onDelete }: CVCardProps) {
+export function CVCard({ resume, onEdit, onDelete, onPreview }: CVCardProps) {
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("vi-VN", {
       day: "2-digit",
@@ -28,6 +31,15 @@ export function CVCard({ resume, onEdit, onDelete }: CVCardProps) {
         </div>
         <div className={styles.overlay}>
           <div className={styles.actions}>
+            {/* xem cv */}
+            <button
+              className={styles.editButton}
+              onClick={onPreview}
+              title="Xem"
+            >
+              <Eye size={20} />
+            </button>
+            {/* edit */}
             <button
               className={styles.editButton}
               onClick={onEdit}
