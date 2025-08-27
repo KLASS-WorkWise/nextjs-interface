@@ -97,16 +97,16 @@ export function ResumePreview({
 
   return (
     <div
-      className={`card ${isCompact ? "" : "mx-auto shadow"}`}
+      className={isCompact ? styles.compactPreview : `card mx-auto shadow`}
       style={
         isCompact
-          ? {}
+          ? { minWidth: 0, minHeight: 0, padding: 0, background: "#fff" }
           : { maxWidth: "56rem", maxHeight: "90vh", overflowY: "auto" }
       }
     >
       <div
-        className={`card-body ${isCompact ? "p-0" : "p-4"}`}
-        style={isCompact ? {} : {}}
+        className={isCompact ? undefined : `card-body p-4`}
+        style={isCompact ? { padding: 0 } : {}}
       >
         {!isCompact && (
           <div className={styles.saveButtonContainer}>
