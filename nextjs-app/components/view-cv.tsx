@@ -97,34 +97,20 @@ export function ViewCv({
 
   return (
     <div
-      className={`card ${isCompact ? "" : "mx-auto shadow"}`}
-      style={isCompact ? {} : { maxWidth: "56rem" }}
+      className={isCompact ? "" : "mx-auto shadow-lg"}
+      style={
+        isCompact
+          ? {}
+          : {
+              maxWidth: "56rem",
+              background: "#fff",
+              borderRadius: 12,
+              padding: 32,
+            }
+      }
     >
-      <div
-        className={`card-body ${isCompact ? "p-0" : "p-4"}`}
-        style={isCompact ? {} : {}}
-      >
-        {/* {!isCompact && (
-          <div className={styles.saveButtonContainer}>
-            <button
-              onClick={handleSaveCV}
-              disabled={isSaving}
-              className={`btn btn-primary d-flex align-items-center gap-2 ${styles.saveButton}`}
-            >
-              <Save
-                size={16}
-                className={isSaving ? "spinner-border spinner-border-sm" : ""}
-              />
-              {isSaving ? "Đang lưu..." : "Lưu CV"}
-            </button>
-          </div>
-        )} */}
-        <div
-          className={!isCompact ? "shadow-lg" : ""}
-          style={isCompact ? {} : { aspectRatio: "8.5 / 11" }}
-        >
-          {renderTemplate()}
-        </div>
+      <div style={isCompact ? {} : { aspectRatio: "8.5 / 11" }}>
+        {renderTemplate()}
       </div>
     </div>
   );
