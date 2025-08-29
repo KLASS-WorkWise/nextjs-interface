@@ -1,3 +1,41 @@
+/* Compact preview styles for sidebar/small preview */
+.compactPreview {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 1.5px solid #e5e7eb;
+  padding: 18px 12px 18px 12px;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  font-size: 13px;
+  overflow: auto;
+  max-height: 420px;
+  transition: box-shadow 0.2s;
+}
+
+.compactPreview:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
+}
+
+.compactPreview * {
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  word-break: break-word;
+}
+
+.compactPreview h1,
+.compactPreview h2,
+.compactPreview h3 {
+  font-size: 14px !important;
+  margin-bottom: 6px !important;
+}
+
+.compactPreview section {
+  margin-bottom: 12px !important;
+}
 .saveButton {
   background-color: #3b82f6;
   color: white;

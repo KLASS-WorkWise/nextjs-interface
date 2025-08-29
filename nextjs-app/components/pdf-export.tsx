@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import type { ResumeData } from "./resume-builder";
 import type { CustomizationOptions } from "./customization-panel";
 import { PrintableResume } from "./printable-resume";
+import { createRoot } from "react-dom/client";
 
 interface PDFExportProps {
   data: ResumeData;
@@ -141,4 +142,78 @@ export function PDFExport({ data, template, customization }: PDFExportProps) {
       </div>
     </div>
   );
+}
+
+// Hàm xuất PDF dùng ở bất kỳ đâu
+export async function exportResumeToPDF(
+  data: ResumeData,
+  template: string = "modern",
+  customization: CustomizationOptions = {
+    font: "inter",
+    colorScheme: "blue",
+    spacing: "normal",
+    fontSize: "medium",
+  }
+) {
+  // Tạo div tạm
+  const container = document.createElement("div");
+  container.style.display = "none";
+  document.body.appendChild(container);
+
+  // Render PrintableResume vào div tạm
+  const root = createRoot(container);
+  root.render(
+    <PrintableResume
+      data={data}
+      template={template}
+      customization={customization}
+    />
+  );
+
+  // Đợi 1 chút cho render xong
+  await new Promise((resolve) => setTimeout(resolve, 100));
+
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    document.body.removeChild(container);
+    throw new Error("Không thể mở cửa sổ in");
+  }
+
+  const printContent = container.innerHTML;
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>${data.personalInfo.fullName || "Resume"}_CV</title>
+        <meta charset="utf-8">
+        <style>
+          @page { size: A4; margin: 0.5in; }
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .print-container { width: 100%; height: 100%; margin: 0; padding: 0; box-shadow: none; }
+          .print-safe * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          .no-print { display: none !important; }
+        </style>
+      </head>
+      <body>
+        ${printContent}
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+
+  printWindow.onload = () => {
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+      document.body.removeChild(container);
+    }, 500);
+  };
 }
