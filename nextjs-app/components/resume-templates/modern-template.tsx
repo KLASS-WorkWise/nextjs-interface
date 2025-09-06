@@ -48,7 +48,12 @@ export function ModernTemplate({
   };
 
   const getSpacingStyles = () => {
-    console.log("ModernTemplate - spacing:", customization.spacing, "isCompact:", isCompact);
+    console.log(
+      "ModernTemplate - spacing:",
+      customization.spacing,
+      "isCompact:",
+      isCompact
+    );
     const spacingMap = {
       compact: isCompact ? "0.125rem" : "0.5rem",
       normal: isCompact ? "0.25rem" : "1rem",
@@ -373,29 +378,40 @@ export function ModernTemplate({
               KỸ NĂNG
             </h2>
             <div
-              className="grid"
               style={{
-                gridTemplateColumns: isCompact
-                  ? "repeat(1, minmax(0, 1fr))"
-                  : "repeat(2, minmax(0, 1fr))",
-                gap: isCompact ? "0" : "0.5rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: isCompact ? "0.25rem" : "0.5rem",
               }}
             >
               {data.skills.map((skill, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-2"
-                  style={{ ...getSizeStyles("text"), fontFamily: fontFamily }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    ...getSizeStyles("text"),
+                    fontFamily: fontFamily,
+                  }}
                 >
-                  <div
-                    className="rounded-full print-safe"
+                  <span
+                    className="print-safe"
                     style={{
-                      width: isCompact ? "0.25rem" : "0.5rem",
-                      height: isCompact ? "0.25rem" : "0.5rem",
+                      display: "inline-block",
+                      width: isCompact ? "0.5rem" : "0.75rem",
+                      height: isCompact ? "0.5rem" : "0.75rem",
                       backgroundColor: colorScheme.primary,
+                      borderRadius: "2px",
+                      marginRight: "8px",
+                      verticalAlign: "middle",
                     }}
-                  />
-                  <span className="font-medium">{skill}</span>
+                  ></span>
+                  <span
+                    className="font-medium"
+                    style={{ verticalAlign: "middle" }}
+                  >
+                    {skill}
+                  </span>
                 </div>
               ))}
             </div>

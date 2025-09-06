@@ -197,8 +197,42 @@ export function ClassicTemplate({
             >
               Kỹ năng
             </h2>
-            <div className="text-center">
-              <p className={sizes.text}>{data.skills.join(" • ")}</p>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              {data.skills.map((skill, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: isCompact ? "0.5rem" : "0.75rem",
+                      height: isCompact ? "0.5rem" : "0.75rem",
+                      backgroundColor: "#388FF3",
+                      borderRadius: "2px",
+                      marginRight: "8px",
+                      verticalAlign: "middle",
+                    }}
+                  ></span>
+                  <span
+                    className={sizes.text}
+                    style={{ verticalAlign: "middle" }}
+                  >
+                    {skill}
+                  </span>
+                </div>
+              ))}
             </div>
           </section>
         )}

@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { forwardRef } from "react"
-import type { ResumeData } from "./resume-builder"
-import type { CustomizationOptions } from "./customization-panel"
-import { ModernTemplate } from "./resume-templates/modern-template"
-import { ClassicTemplate } from "./resume-templates/classic-template"
+import { forwardRef } from "react";
+import type { ResumeData } from "./resume-builder";
+import type { CustomizationOptions } from "./customization-panel";
+import { ModernTemplate } from "./resume-templates/modern-template";
+import { ClassicTemplate } from "./resume-templates/classic-template";
 
 interface PrintableResumeProps {
-  data: ResumeData
-  template: string
-  customization: CustomizationOptions
+  data: ResumeData;
+  template: string;
+  customization: CustomizationOptions;
 }
 
 export const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
@@ -17,12 +17,24 @@ export const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
     const renderTemplate = () => {
       switch (template) {
         case "classic":
-          return <ClassicTemplate data={data} customization={customization} isCompact={false} />
+          return (
+            <ClassicTemplate
+              data={data}
+              customization={customization}
+              isCompact={false}
+            />
+          );
         case "modern":
         default:
-          return <ModernTemplate data={data} customization={customization} isCompact={false} />
+          return (
+            <ModernTemplate
+              data={data}
+              customization={customization}
+              isCompact={false}
+            />
+          );
       }
-    }
+    };
 
     return (
       <div
@@ -60,14 +72,54 @@ export const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
               .print-break {
                 page-break-before: always;
               }
+              
+              /* Reset Bootstrap print styles */
+              .d-print-inline,
+              .d-print-inline-block,
+              .d-print-block,
+              .d-print-none {
+                display: inherit !important;
+              }
+              
+              /* Ensure proper layout */
+              .d-flex {
+                display: flex !important;
+              }
+              
+              .align-items-center {
+                align-items: center !important;
+              }
+              
+              .justify-content-between {
+                justify-content: space-between !important;
+              }
+              
+              /* Ensure proper spacing */
+              .rounded-lg {
+                border-radius: 0.5rem !important;
+              }
+              
+              /* Fix text colors */
+              .text-white {
+                color: white !important;
+              }
+              
+              .text-muted {
+                color: #6b7280 !important;
+              }
+              
+              /* Ensure background colors */
+              .bg-white {
+                background-color: white !important;
+              }
             }
           `,
           }}
         />
         {renderTemplate()}
       </div>
-    )
-  },
-)
+    );
+  }
+);
 
-PrintableResume.displayName = "PrintableResume"
+PrintableResume.displayName = "PrintableResume";
