@@ -9,7 +9,7 @@ export interface ResumeTemplate {
   name: string;
   description: string;
   preview: string;
-  category: "modern" | "classic" | "creative" | "minimal";
+  category: "modern" | "classic";
 }
 
 export const resumeTemplates: ResumeTemplate[] = [

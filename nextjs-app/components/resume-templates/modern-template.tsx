@@ -26,37 +26,45 @@ export function ModernTemplate({
   const getSizeStyles = (type: "text" | "heading" | "title" | "name") => {
     const sizeMap = {
       small: {
-        text: isCompact ? "4px" : "0.75rem",
-        heading: isCompact ? "6px" : "0.875rem",
-        title: isCompact ? "8px" : "1.125rem",
-        name: isCompact ? "10px" : "1.5rem",
+        text: isCompact ? "0.65rem" : "0.75rem",
+        heading: isCompact ? "0.8rem" : "0.875rem",
+        title: isCompact ? "1rem" : "1.125rem",
+        name: isCompact ? "1.2rem" : "1.5rem",
       },
       medium: {
-        text: isCompact ? "5px" : "0.875rem",
-        heading: isCompact ? "7px" : "1rem",
-        title: isCompact ? "9px" : "1.25rem",
-        name: isCompact ? "11px" : "1.875rem",
+        text: isCompact ? "0.75rem" : "0.875rem",
+        heading: isCompact ? "0.9rem" : "1rem",
+        title: isCompact ? "1.1rem" : "1.25rem",
+        name: isCompact ? "1.4rem" : "1.875rem",
       },
       large: {
-        text: isCompact ? "6px" : "1rem",
-        heading: isCompact ? "8px" : "1.125rem",
-        title: isCompact ? "10px" : "1.5rem",
-        name: isCompact ? "12px" : "2.25rem",
+        text: isCompact ? "0.85rem" : "1rem",
+        heading: isCompact ? "1rem" : "1.125rem",
+        title: isCompact ? "1.2rem" : "1.5rem",
+        name: isCompact ? "1.7rem" : "2.25rem",
       },
     };
     return { fontSize: sizeMap[customization.fontSize][type] };
   };
 
   const getSpacingStyles = () => {
+    console.log("ModernTemplate - spacing:", customization.spacing, "isCompact:", isCompact);
     const spacingMap = {
       compact: isCompact ? "0.125rem" : "0.5rem",
       normal: isCompact ? "0.25rem" : "1rem",
       relaxed: isCompact ? "0.375rem" : "1.5rem",
     };
-    return { gap: spacingMap[customization.spacing] };
+    const gapValue = spacingMap[customization.spacing];
+    console.log("ModernTemplate - gap value:", gapValue);
+    return { gap: gapValue };
   };
 
   const spacingStyle = getSpacingStyles();
+
+  // Helper: wrap section without marginBottom (using gap instead)
+  const Section = ({ children }: { children: React.ReactNode }) => (
+    <section>{children}</section>
+  );
 
   return (
     <div
@@ -143,7 +151,10 @@ export function ModernTemplate({
         <div style={{ color: "white" }}>
           <h1
             className="font-bold"
-            style={{ fontSize: getSizeStyles("text").fontSize, fontFamily: fontFamily }}
+            style={{
+              fontSize: getSizeStyles("name").fontSize,
+              fontFamily: fontFamily,
+            }}
           >
             {data.personalInfo.fullName || "Họ và tên"}
           </h1>
@@ -179,7 +190,7 @@ export function ModernTemplate({
         }}
       >
         {data.personalInfo.summary && (
-          <section>
+          <Section>
             <h2
               className="font-semibold print-safe"
               style={{
@@ -194,14 +205,19 @@ export function ModernTemplate({
             >
               MÔ TẢ BẢN THÂN
             </h2>
-            <p style={{ fontSize: getSizeStyles("text").fontSize, fontFamily: fontFamily }}>
+            <p
+              style={{
+                fontSize: getSizeStyles("text").fontSize,
+                fontFamily: fontFamily,
+              }}
+            >
               {data.personalInfo.summary}
             </p>
-          </section>
+          </Section>
         )}
 
         {Array.isArray(data.experience) && data.experience.length > 0 && (
-          <section>
+          <Section>
             <h2
               className="font-semibold print-safe"
               style={{
@@ -266,11 +282,11 @@ export function ModernTemplate({
                 </div>
               ))}
             </div>
-          </section>
+          </Section>
         )}
 
         {data.education.length > 0 && (
-          <section>
+          <Section>
             <h2
               className="font-semibold print-safe"
               style={{
@@ -338,11 +354,11 @@ export function ModernTemplate({
                 </div>
               ))}
             </div>
-          </section>
+          </Section>
         )}
 
         {data.skills.length > 0 && (
-          <section>
+          <Section>
             <h2
               className="font-semibold print-safe"
               style={{
@@ -383,11 +399,11 @@ export function ModernTemplate({
                 </div>
               ))}
             </div>
-          </section>
+          </Section>
         )}
 
         {data.activities.length > 0 && (
-          <section>
+          <Section>
             <h2
               className="font-semibold print-safe"
               style={{
@@ -456,11 +472,11 @@ export function ModernTemplate({
                 </div>
               ))}
             </div>
-          </section>
+          </Section>
         )}
 
         {data.awards.length > 0 && (
-          <section>
+          <Section>
             <h2
               className="font-semibold print-safe"
               style={{
@@ -529,7 +545,7 @@ export function ModernTemplate({
                 </div>
               ))}
             </div>
-          </section>
+          </Section>
         )}
       </div>
     </div>

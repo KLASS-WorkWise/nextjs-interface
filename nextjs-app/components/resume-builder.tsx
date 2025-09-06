@@ -304,6 +304,7 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
           </div>
           <div className={styles.previewMainXl}>
             <ResumePreview
+              key={JSON.stringify(customization)}
               data={methods.getValues()}
               template={selectedTemplate}
               customization={customization}
@@ -468,6 +469,7 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
               <div className={styles.previewContainer}>
                 <div className={styles.previewContent}>
                   <ResumePreview
+                    key={JSON.stringify(customization)}
                     data={watch()}
                     template={selectedTemplate}
                     customization={customization}

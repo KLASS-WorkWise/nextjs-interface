@@ -43,13 +43,22 @@ export function ClassicTemplate({
   };
 
   const spacingClasses = {
-    compact: isCompact ? "mb-1" : "mb-2",
-    normal: isCompact ? "mb-2" : "mb-4",
-    relaxed: isCompact ? "mb-3" : "mb-5",
+    compact: isCompact ? "mb-3" : "mb-4",
+    normal: isCompact ? "mb-5" : "mb-6",
+    relaxed: isCompact ? "mb-6" : "mb-7",
   };
 
   const sizes = sizeClasses[customization.fontSize];
   const spacing = spacingClasses[customization.spacing];
+
+  console.log(
+    "ClassicTemplate - spacing:",
+    customization.spacing,
+    "spacing class:",
+    spacing,
+    "isCompact:",
+    isCompact
+  );
 
   return (
     <div
