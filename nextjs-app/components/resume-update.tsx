@@ -371,6 +371,7 @@ export function ResumeUpdate({
           </div>
           <div className={styles.previewMainXl}>
             <ResumePreview
+              key={JSON.stringify(customization)}
               data={methods.getValues()}
               template={selectedTemplate}
               customization={customization}

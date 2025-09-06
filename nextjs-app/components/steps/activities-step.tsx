@@ -6,7 +6,12 @@ import { DragDropList } from "../drag-drop-list";
 import type { ResumeData } from "../resume-builder";
 
 export function ActivitiesStep() {
-  const { register, control } = useFormContext<ResumeData>();
+  const {
+    register,
+    control,
+    watch,
+    formState: { errors },
+  } = useFormContext<ResumeData>();
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: "activities",
@@ -87,8 +92,23 @@ export function ActivitiesStep() {
               type="date"
               id={`activityStartDate-${index}`}
               className="form-control"
-              {...register(`activities.${index}.startDate`, { required: true })}
+              {...register(`activities.${index}.startDate`, {
+                required: true,
+                validate: (startDate) => {
+                  const endDate = watch(`activities.${index}.endDate`);
+                  const today = new Date().toISOString().slice(0, 10);
+                  if (startDate > today) return "Không quá hiện tại";
+                  if (endDate && startDate > endDate)
+                    return "Bắt đầu <= kết thúc";
+                  return true;
+                },
+              })}
             />
+            {errors?.activities?.[index]?.startDate && (
+              <div className="text-danger small mt-1">
+                {errors.activities[index].startDate.message}
+              </div>
+            )}
           </div>
 
           <div className="col-md-6">
@@ -99,8 +119,20 @@ export function ActivitiesStep() {
               type="date"
               id={`activityEndDate-${index}`}
               className="form-control"
-              {...register(`activities.${index}.endDate`)}
+              {...register(`activities.${index}.endDate`, {
+                validate: (endDate) => {
+                  if (!endDate) return true;
+                  const today = new Date().toISOString().slice(0, 10);
+                  if (endDate > today) return "Không quá hiện tại";
+                  return true;
+                },
+              })}
             />
+            {errors?.activities?.[index]?.endDate && (
+              <div className="text-danger small mt-1">
+                {errors.activities[index].endDate.message}
+              </div>
+            )}
           </div>
         </div>
 
@@ -114,6 +146,7 @@ export function ActivitiesStep() {
           <textarea
             id={`activityDescription-${index}`}
             className="form-control"
+            style={{ minHeight: 200 }}
             {...register(`activities.${index}.description`)}
             placeholder="Mô tả chi tiết về hoạt động và vai trò của bạn..."
             rows={3}

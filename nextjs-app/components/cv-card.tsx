@@ -30,9 +30,9 @@ export function CVCard({ resume, onEdit, onDelete, onPreview }: CVCardProps) {
   // Đánh dấu hàm là async
   const handleDownload = async () => {
     try {
-      await exportResumeToPDF(resume); // Giả sử bạn đã có hàm exportResumeToPDF
+      await exportResumeToPDF(resume);
       setDownload(true);
-      setTimeout(() => setDownload(false), 2000); // Reset sau 2 giây
+      setTimeout(() => setDownload(false), 2000);
     } catch {
       setDownload(false); // Xử lý lỗi nếu có
     }

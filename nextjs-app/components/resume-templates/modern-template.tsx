@@ -21,7 +21,7 @@ export function ModernTemplate({
     colorSchemes[0];
   const fontFamily =
     fontOptions.find((f) => f.value === customization.font)?.family ||
-    "font-sans";
+    '"Inter", Arial, sans-serif';
 
   const getSizeStyles = (type: "text" | "heading" | "title" | "name") => {
     const sizeMap = {
@@ -60,10 +60,11 @@ export function ModernTemplate({
 
   return (
     <div
-      className={`${fontFamily} bg-white print-safe`}
+      className={`bg-white print-safe`}
       style={{
         color: "rgb(17 24 39)",
         padding: isCompact ? "0.5rem" : "2rem",
+        fontFamily: fontFamily,
       }}
     >
       <style
@@ -85,6 +86,7 @@ export function ModernTemplate({
           backgroundColor: colorScheme.primary,
           padding: isCompact ? "0.5rem" : "1.5rem",
           marginBottom: isCompact ? "0.25rem" : "1.5rem",
+          fontFamily: fontFamily,
         }}
       >
         <div
@@ -93,7 +95,6 @@ export function ModernTemplate({
             height: isCompact ? 72 : 160,
             borderRadius: "12px",
             overflow: "hidden",
-            // border: "3px solid #fff",
             background: "#fff",
             flexShrink: 0,
             marginRight: isCompact ? 16 : 24,
@@ -140,16 +141,20 @@ export function ModernTemplate({
           </Avatar>
         </div>
         <div style={{ color: "white" }}>
-          <h1 className="font-bold" style={getSizeStyles("name")}>
+          <h1
+            className="font-bold"
+            style={{ fontSize: getSizeStyles("text").fontSize, fontFamily: fontFamily }}
+          >
             {data.personalInfo.fullName || "Họ và tên"}
           </h1>
           <div
             style={{
-              ...getSizeStyles("text"),
+              fontSize: getSizeStyles("text").fontSize,
               opacity: 0.9,
               display: "flex",
               flexDirection: "column",
               gap: isCompact ? "0" : "0.25rem",
+              fontFamily: fontFamily,
             }}
           >
             {data.personalInfo.email && (
@@ -166,24 +171,32 @@ export function ModernTemplate({
       </div>
 
       <div
-        style={{ display: "flex", flexDirection: "column", ...spacingStyle }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: spacingStyle.gap,
+          fontFamily: fontFamily,
+        }}
       >
         {data.personalInfo.summary && (
           <section>
             <h2
               className="font-semibold print-safe"
               style={{
-                ...getSizeStyles("heading"),
+                fontSize: getSizeStyles("heading").fontSize,
                 marginBottom: isCompact ? "0.125rem" : "0.5rem",
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
                 borderRadius: "4px",
+                fontFamily: fontFamily,
               }}
             >
               MÔ TẢ BẢN THÂN
             </h2>
-            <p style={getSizeStyles("text")}>{data.personalInfo.summary}</p>
+            <p style={{ fontSize: getSizeStyles("text").fontSize, fontFamily: fontFamily }}>
+              {data.personalInfo.summary}
+            </p>
           </section>
         )}
 
@@ -197,6 +210,7 @@ export function ModernTemplate({
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
+                fontFamily: fontFamily,
               }}
             >
               KINH NGHIỆM LÀM VIỆC
@@ -205,7 +219,7 @@ export function ModernTemplate({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: isCompact ? "0.125rem" : "0.75rem",
+                gap: spacingStyle.gap,
               }}
             >
               {data.experience.map((exp) => (
@@ -217,6 +231,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: colorScheme.secondary,
+                          fontFamily: fontFamily,
                         }}
                       >
                         {exp.position}
@@ -225,6 +240,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: "rgb(75 85 99)",
+                          fontFamily: fontFamily,
                         }}
                       >
                         {exp.company}
@@ -234,6 +250,7 @@ export function ModernTemplate({
                       style={{
                         ...getSizeStyles("text"),
                         color: "rgb(107 114 128)",
+                        fontFamily: fontFamily,
                       }}
                     >
                       {exp.startDate} - {exp.endDate ? "Hiện tại" : exp.endDate}
@@ -262,6 +279,7 @@ export function ModernTemplate({
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
+                fontFamily: fontFamily,
               }}
             >
               HỌC VẤN
@@ -270,7 +288,7 @@ export function ModernTemplate({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: isCompact ? "0.125rem" : "0.75rem",
+                gap: spacingStyle.gap,
               }}
             >
               {data.education.map((edu) => (
@@ -282,6 +300,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: colorScheme.secondary,
+                          fontFamily: fontFamily,
                         }}
                       >
                         {edu.degree} - {edu.field}
@@ -290,6 +309,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: "rgb(75 85 99)",
+                          fontFamily: fontFamily,
                         }}
                       >
                         {edu.institution}
@@ -299,13 +319,21 @@ export function ModernTemplate({
                       style={{
                         ...getSizeStyles("text"),
                         color: "rgb(107 114 128)",
+                        fontFamily: fontFamily,
                       }}
                     >
                       {edu.startDate} - {edu.endDate}
                     </p>
                   </div>
                   {edu.gpa && (
-                    <p style={getSizeStyles("text")}>GPA: {edu.gpa}</p>
+                    <p
+                      style={{
+                        ...getSizeStyles("text"),
+                        fontFamily: fontFamily,
+                      }}
+                    >
+                      GPA: {edu.gpa}
+                    </p>
                   )}
                 </div>
               ))}
@@ -323,6 +351,7 @@ export function ModernTemplate({
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
+                fontFamily: fontFamily,
               }}
             >
               KỸ NĂNG
@@ -340,7 +369,7 @@ export function ModernTemplate({
                 <div
                   key={idx}
                   className="flex items-center gap-2"
-                  style={getSizeStyles("text")}
+                  style={{ ...getSizeStyles("text"), fontFamily: fontFamily }}
                 >
                   <div
                     className="rounded-full print-safe"
@@ -367,6 +396,7 @@ export function ModernTemplate({
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
+                fontFamily: fontFamily,
               }}
             >
               HOẠT ĐỘNG
@@ -375,7 +405,7 @@ export function ModernTemplate({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: isCompact ? "0.125rem" : "0.5rem",
+                gap: spacingStyle.gap,
               }}
             >
               {data.activities.map((activity) => (
@@ -387,6 +417,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: colorScheme.secondary,
+                          fontFamily: fontFamily,
                         }}
                       >
                         {activity.title}
@@ -395,6 +426,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: "rgb(75 85 99)",
+                          fontFamily: fontFamily,
                         }}
                       >
                         {activity.organization}
@@ -404,6 +436,7 @@ export function ModernTemplate({
                       style={{
                         ...getSizeStyles("text"),
                         color: "rgb(107 114 128)",
+                        fontFamily: fontFamily,
                       }}
                     >
                       {activity.startDate} - {activity.endDate || "Hiện tại"}
@@ -411,7 +444,11 @@ export function ModernTemplate({
                   </div>
                   {activity.description && (
                     <p
-                      style={{ ...getSizeStyles("text"), marginTop: "0.25rem" }}
+                      style={{
+                        ...getSizeStyles("text"),
+                        marginTop: "0.25rem",
+                        fontFamily: fontFamily,
+                      }}
                     >
                       {activity.description}
                     </p>
@@ -432,6 +469,7 @@ export function ModernTemplate({
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
+                fontFamily: fontFamily,
               }}
             >
               GIẢI THƯỞNG & CHỨNG CHỈ
@@ -440,7 +478,7 @@ export function ModernTemplate({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: isCompact ? "0.125rem" : "0.5rem",
+                gap: spacingStyle.gap,
               }}
             >
               {data.awards.map((award) => (
@@ -452,6 +490,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: colorScheme.secondary,
+                          fontFamily: fontFamily,
                         }}
                       >
                         {award.title}
@@ -460,6 +499,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: "rgb(75 85 99)",
+                          fontFamily: fontFamily,
                         }}
                       >
                         {award.issuer}
@@ -469,6 +509,7 @@ export function ModernTemplate({
                       style={{
                         ...getSizeStyles("text"),
                         color: "rgb(107 114 128)",
+                        fontFamily: fontFamily,
                       }}
                     >
                       {award.date}
@@ -476,7 +517,11 @@ export function ModernTemplate({
                   </div>
                   {award.description && (
                     <p
-                      style={{ ...getSizeStyles("text"), marginTop: "0.25rem" }}
+                      style={{
+                        ...getSizeStyles("text"),
+                        marginTop: "0.25rem",
+                        fontFamily: fontFamily,
+                      }}
                     >
                       {award.description}
                     </p>

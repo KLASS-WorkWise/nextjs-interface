@@ -1,11 +1,31 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
+import { useSession } from "next-auth/react";
 import { ResumeData } from "../resume-builder";
+import { fetchCandidateById } from "../../lib/candidates-api";
 
 export function PersonalInfoStep() {
+  const { data: session } = useSession();
+  // Demo: fetch candidates on mount
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    fetchCandidateById(session.user.id)
+      .then((data) => {
+        console.log("Fetched candidates:", data);
+        if (data.user.fullName) {
+          setValue("personalInfo.fullName", data.user.fullName);
+        }
+        if (data.user.email) {
+          setValue("personalInfo.email", data.user.email);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching candidates:", err);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user?.id]);
   const {
     register,
     formState: { errors },
@@ -50,8 +70,6 @@ export function PersonalInfoStep() {
             className="rounded-circle border mb-3"
             style={{ width: "100px", height: "100px", objectFit: "cover" }}
           />
-
-          
 
           <div className="d-flex align-items-center gap-2">
             <label
@@ -150,15 +168,15 @@ export function PersonalInfoStep() {
 
         <div className="col-md-6">
           <label htmlFor="jobTitle" className="form-label">
-            Vị trí công việc *
+            Địa chỉ *
           </label>
           <input
             id="jobTitle"
             className="form-control"
             {...register("personalInfo.jobTitle", {
-              required: "Vui lòng nhập vị trí công việc",
+              required: "Vui lòng nhập địa chỉ",
             })}
-            placeholder="Senior Developer, Marketing Manager..."
+            placeholder="Vui lòng nhập địa chỉ hiện tại"
           />
           {errors.personalInfo?.jobTitle && (
             <div className="text-danger small">
@@ -176,9 +194,10 @@ export function PersonalInfoStep() {
         <textarea
           id="summary"
           className="form-control"
+          style={{ minHeight: 240 }}
           {...register("personalInfo.summary")}
           placeholder="Mô tả ngắn gọn về bản thân, mục tiêu nghề nghiệp..."
-          rows={3}
+          rows={8}
         />
         <div className="form-text">
           Viết 2-3 câu ngắn gọn về kinh nghiệm và mục tiêu của bạn
