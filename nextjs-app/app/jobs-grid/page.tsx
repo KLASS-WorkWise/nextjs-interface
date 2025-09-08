@@ -1,10 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+"use client"
 import Link from "next/link";
-
-"use client";
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
 import BlogSlider from "@/components/sliders/Blog";
 import { useSession } from "next-auth/react";
@@ -18,8 +14,6 @@ import { useRouter } from "next/navigation";
 import { savedJobService } from "@/features/applicants/services/savedJobService";
 
 // Tách Modal ra component riêng
-
-
 import { useSearchParams } from "next/navigation";
 
 
@@ -38,6 +32,18 @@ export default function JobGrid() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [jobsLoading, setJobsLoading] = useState(false);
   const [jobsError, setJobsError] = useState("");
+  // Filter state
+  const [jobTypeChecked, setJobTypeChecked] = useState<string[]>(["All"]);
+  const [location, setLocation] = useState("");
+  const [categoryChecked, setCategoryChecked] = useState<string[]>(["All"]);
+  const [salaryChecked, setSalaryChecked] = useState<string[]>(["All"]);
+  const [positionChecked, setPositionChecked] = useState<string[]>(["All"]);
+  const [degreeChecked, setDegreeChecked] = useState<string[]>(["All"]);
+  // Phân trang: mỗi trang 15 job (5 hàng, 3 cột)
+  const [currentPage, setCurrentPage] = useState(1);
+  const jobsPerPage = 15;
+  // Keyword search
+  const [keyword, setKeyword] = useState("");
 
   const [modalJob, setModalJob] = useState<any | null>(null);
 
@@ -93,18 +99,6 @@ export default function JobGrid() {
     }
     setModalJob(job);
   };
-  // Filter state
-  const [jobTypeChecked, setJobTypeChecked] = useState<string[]>(["All"]);
-  const [location, setLocation] = useState("");
-  const [categoryChecked, setCategoryChecked] = useState<string[]>(["All"]);
-  const [salaryChecked, setSalaryChecked] = useState<string[]>(["All"]);
-  const [positionChecked, setPositionChecked] = useState<string[]>(["All"]);
-  const [degreeChecked, setDegreeChecked] = useState<string[]>(["All"]);
-  // Phân trang: mỗi trang 15 job (5 hàng, 3 cột)
-  const [currentPage, setCurrentPage] = useState(1);
-  const jobsPerPage = 15;
-  // Keyword search
-  const [keyword, setKeyword] = useState("");
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -124,42 +118,6 @@ export default function JobGrid() {
     fetchJobs();
   }, []);
 
-  useEffect(() => {
-    const fetchResumes = async () => {
-      try {
-        const res = await applyService.getAllResumes();
-        setResumes(Array.isArray(res) ? res : res.data || []);
-      } catch (err) {
-        console.error("Error fetching resumes:", err);
-      }
-    };
-    fetchResumes();
-  }, []);
-  // Lấy danh sách saved jobs của user
-  useEffect(() => {
-    const fetchSavedJobs = async () => {
-      if (!session) return;
-      try {
-        const res = await savedJobService.getMySavedJobs();
-        const savedJobsMap =
-          res.data?.map((job: any) => ({
-            jobId: job.jobPostingResponseDTO?.id, // 👈 lấy id từ DTO
-            savedJobId: job.savedJobId,
-          })) || [];
-        setSavedJobs(savedJobsMap);
-      } catch (err) {
-        console.error("Error fetching saved jobs", err);
-      }
-    };
-    fetchSavedJobs();
-  }, [session]);
-  useEffect(() => {
-    console.log(
-      "Jobs:",
-      jobs.map((j) => j.id)
-    );
-    console.log("SavedJobs:", savedJobs);
-  }, [jobs, savedJobs]);
   // Helper: loại bỏ dấu tiếng Việt
   function removeVietnameseTones(str: string) {
     return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
@@ -273,6 +231,44 @@ export default function JobGrid() {
     setCurrentPage(1);
   };
 
+
+  useEffect(() => {
+    const fetchResumes = async () => {
+      try {
+        const res = await applyService.getAllResumes();
+        setResumes(Array.isArray(res) ? res : res.data || []);
+      } catch (err) {
+        console.error("Error fetching resumes:", err);
+      }
+    };
+    fetchResumes();
+  }, []);
+  // Lấy danh sách saved jobs của user
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      if (!session) return;
+      try {
+        const res = await savedJobService.getMySavedJobs();
+        const savedJobsMap =
+          res.data?.map((job: any) => ({
+            jobId: job.jobPostingResponseDTO?.id, // 👈 lấy id từ DTO
+            savedJobId: job.savedJobId,
+          })) || [];
+        setSavedJobs(savedJobsMap);
+      } catch (err) {
+        console.error("Error fetching saved jobs", err);
+      }
+    };
+    fetchSavedJobs();
+  }, [session]);
+  useEffect(() => {
+    console.log(
+      "Jobs:",
+      jobs.map((j) => j.id)
+    );
+    console.log("SavedJobs:", savedJobs);
+  }, [jobs, savedJobs]);
+
   return (
     <>
       <Layout>
@@ -292,12 +288,6 @@ export default function JobGrid() {
                     Vero repellendus magni, <br className="d-none d-xl-block" />
                     atque delectus molestias quis?
                   </div>
-                  <div
-                    className="form-find text-start mt-40 wow animate__animated animate__fadeInUp"
-                    data-wow-delay=".2s"
-                  >
-                    <form>
-                      <div className="box-industry">
                   <div className="form-find text-start mt-40 wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
                     <form onSubmit={handleSearch}>
                       {/* <div className="box-industry">
@@ -352,21 +342,19 @@ export default function JobGrid() {
                         </select>
                       </div>
                       <input
+                       
                         className="form-input input-keysearch mr-10"
+                       
                         type="text"
+                       
                         placeholder="Your keyword... "
+                     
+                        value={keyword}
+                        onChange={e => setKeyword(e.target.value)}
                       />
                       <button className="btn btn-default btn-find font-sm">
                         Search
                       </button>
-                      <input
-                        className="form-input input-keysearch mr-10"
-                        type="text"
-                        placeholder="Your keyword... "
-                        value={keyword}
-                        onChange={e => setKeyword(e.target.value)}
-                      />
-                      <button className="btn btn-default btn-find font-sm">Search</button>
                     </form>
                   </div>
                 </div>
@@ -382,9 +370,8 @@ export default function JobGrid() {
                       <div className="row">
                         <div className="col-xl-6 col-lg-5">
                           <span className="text-small text-showing">
-                            Showing <strong>41-60 </strong>of{" "}
-                            <strong>944 </strong>jobs
-                            Showing <strong>10-15 </strong>of <strong>30 </strong>jobs
+                            Showing <strong>10-15 </strong>of{" "}
+                            <strong>30 </strong>jobs
                           </span>
                         </div>
 
@@ -412,8 +399,6 @@ export default function JobGrid() {
                                   aria-expanded="false"
                                   data-bs-display="static"
                                 >
-                                  <span>12</span>
-                                <button className="btn dropdown-toggle" id="dropdownSort" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
                                   <span>15</span>
                                   <i className="fi-rr-angle-small-down" />
                                 </button>
@@ -650,75 +635,6 @@ export default function JobGrid() {
                           );
                         })}
                     </div>
-                      {jobsLoading && <div className="col-12 text-center">Đang tải dữ liệu...</div>}
-                      {jobsError && <div className="col-12 text-center text-danger">{jobsError}</div>}
-                      {!jobsLoading && !jobsError && jobs.length === 0 && <div className="col-12 text-center">Không có công việc nào</div>}
-                      {!jobsLoading && !jobsError && jobs.length > 0 && pagedJobs.map((job: any) => (
-                        <div key={job.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                          <div className="card-grid-2 hover-up">
-                            <div className="card-grid-2-image-left">
-                              <span className="flash" />
-                              <div className="image-box">
-                                <img src={job.companyLogo || "/assets/imgs/brands/brand-1.png"} alt={job.companyName || "Company"} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} />
-                              </div>
-                              <div className="right-info">
-                                <span className="fw-bold" style={{ fontSize: '1.08rem', color: '#222' }}>{job.companyName || 'Company'}</span>
-                                <div className="d-flex align-items-center font-xs color-text-paragraph mt-1">
-                                  <i className="fi-rr-marker mr-5" />
-                                  {job.location || 'Unknown'}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="card-block-info">
-                              <h6>
-                                <Link href={`/job-details-2/${job.id}`}>
-                                  <span>{job.title || "No title"}</span>
-                                </Link>
-                              </h6>
-                              <div className="mt-5">
-                                <span className="card-briefcase">{job.jobType || "Fulltime"}</span>
-                                <span className="card-time">{job.createdAt ? new Date(job.createdAt).toLocaleDateString() : ""}</span>
-                              </div>
-                              <p
-                                className="font-sm color-text-paragraph mt-15"
-                                style={{
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 1,
-                                  WebkitBoxOrient: 'vertical',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'normal',
-                                  maxWidth: '100%',
-                                  marginBottom: 0
-                                }}
-                                title={job.description || "Không có mô tả"}
-                              >
-                                {job.description || "Không có mô tả"}
-                              </p>
-                              <div className="mt-30">
-                                {Array.isArray(job.skills) && job.skills.map((skill: string, idx: number) => (
-                                  <span key={idx} className="btn btn-grey-small mr-5">{skill}</span>
-                                ))}
-                              </div>
-                              <div className="card-2-bottom mt-30">
-                                <div className="row">
-                                  <div className="col-lg-7 col-7">
-                                    <span className="card-text-price" style={{ fontSize: '1rem', color: '#2A6DF5', fontWeight: 700, letterSpacing: '0.5px', lineHeight: 1 }}>
-                                      {job.salaryRange && job.salaryRange.trim() !== "" ? job.salaryRange : (job.salary && job.salary.trim() !== "" ? job.salary : "N/A")}
-                                    </span>
-                                    <span className="text-muted" style={{ fontSize: '0.85rem', marginLeft: 2 }}>/Tháng</span>
-                                  </div>
-                                  <div className="col-lg-5 col-5 text-end">
-                                      <button className="btn btn-apply-now">Apply</button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div> 
-
                   </div>
                   <div className="paginations">
                     <ul className="pager">
@@ -847,71 +763,6 @@ export default function JobGrid() {
                         </div>
                         <div className="form-group mb-20">
                           <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">All</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">145</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">$0k - $20k</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">56</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">$20k - $40k</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">37</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">$40k - $60k</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">75</span>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="filter-block mb-30">
-                        <h5 className="medium-heading mb-10">
-                          Popular Keyword
-                        </h5>
-                        <div className="form-group">
-                          <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">Software</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">24</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Developer</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">45</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Web</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">57</span>
-                            </li>
                             {[
                               "All",
                               "Duới 20 triệu",
@@ -984,9 +835,8 @@ export default function JobGrid() {
                       </div>
                       <div className="filter-block mb-30">
                         <h5 className="medium-heading mb-10">
-                          Experience Level
+                          Required Degree
                         </h5>
-                        <h5 className="medium-heading mb-10">Required Degree</h5>
                         <div className="form-group">
                           <ul className="list-checkbox">
                             {[
