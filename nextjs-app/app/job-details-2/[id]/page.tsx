@@ -46,120 +46,134 @@ export default function JobDetails2() {
                         </div>
                         <div className="border-bottom pt-10 pb-10" />
                         <div className="job-overview">
-                          <h5 className="border-bottom pb-15 mb-30">Overview</h5>
-                          <div className="row">
+                          <h5 className="border-bottom pb-15 mb-30">Employment Information</h5>
+                          <div className="row" style={{rowGap: '18px', columnGap: '0'}}>
                             {job.title && (
-                              <div className="col-md-6 d-flex">
-                                <div className="sidebar-icon-item"><span className="icon">📝</span></div>
-                                <div className="sidebar-text-info ml-10">
-                                  <span className="text-description mb-10">Title</span>
-                                  <strong className="small-heading">{job.title}</strong>
-                                </div>
+                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
+                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+                                  {/* Title icon */}
+                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#8a94a6" strokeWidth="1.5"/><path d="M7 8h10M7 12h10M7 16h6" stroke="#8a94a6" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                                </span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Title</span>
+                                <span style={{fontWeight:600, marginLeft: 8}}>{job.title}</span>
                               </div>
                             )}
                             {job.location && (
-                              <div className="col-md-6 d-flex">
-                                <div className="sidebar-icon-item"><img src="/assets/imgs/page/job-single/location.svg" alt="jobBox" /></div>
-                                <div className="sidebar-text-info ml-10">
-                                  <span className="text-description mb-10">Location</span>
-                                  <strong className="small-heading">{job.location}</strong>
-                                </div>
+                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
+                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+                                  {/* Location icon */}
+                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 21s-6-5.686-6-10A6 6 0 0 1 18 11c0 4.314-6 10-6 10z" stroke="#8a94a6" strokeWidth="1.5"/><circle cx="12" cy="11" r="2.5" stroke="#8a94a6" strokeWidth="1.5"/></svg>
+                                </span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Location</span>
+                                <span style={{fontWeight:600, marginLeft: 8}}>{job.location}</span>
                               </div>
                             )}
                             {job.salaryRange && (
-                              <div className="col-md-6 d-flex mt-sm-15">
-                                <div className="sidebar-icon-item"><img src="/assets/imgs/page/job-single/salary.svg" alt="jobBox" /></div>
-                                <div className="sidebar-text-info ml-10">
-                                  <span className="text-description salary-icon mb-10">Salary</span>
-                                  <strong className="small-heading">{job.salaryRange}</strong>
-                                </div>
+                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
+                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+                                  {/* Salary icon */}
+                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#8a94a6" strokeWidth="1.5"/><path d="M8 12h4a2 2 0 1 0 0-4h-2a2 2 0 1 1 0-4h4" stroke="#8a94a6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                </span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Salary</span>
+                                <span style={{fontWeight:600, marginLeft: 8}}>{job.salaryRange}</span>
                               </div>
                             )}
                             {job.jobType && (
-                              <div className="col-md-6 d-flex mt-sm-15">
-                                <div className="sidebar-icon-item"><span className="icon">💼</span></div>
-                                <div className="sidebar-text-info ml-10">
-                                  <span className="text-description mb-10">Job Type</span>
-                                  <strong className="small-heading">{job.jobType}</strong>
-                                </div>
+                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
+                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+                                  {/* Job Type icon */}
+                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" stroke="#8a94a6" strokeWidth="1.5"/><path d="M16 3v4M8 3v4" stroke="#8a94a6" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                                </span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Job Type</span>
+                                <span style={{fontWeight:600, marginLeft: 8}}>{job.jobType}</span>
                               </div>
                             )}
                             {job.category && (
-                              <div className="col-md-6 d-flex mt-sm-15">
-                                <div className="sidebar-icon-item"><img src="/assets/imgs/page/job-single/job-type.svg" alt="jobBox" /></div>
-                                <div className="sidebar-text-info ml-10">
-                                  <span className="text-description jobtype-icon mb-10">Category</span>
-                                  <strong className="small-heading">{job.category}</strong>
-                                </div>
+                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
+                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+                                  {/* Category icon */}
+                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" stroke="#8a94a6" strokeWidth="1.5"/><path d="M16 3v4M8 3v4" stroke="#8a94a6" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                                </span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Category</span>
+                                <span style={{fontWeight:600, marginLeft: 8}}>{job.category}</span>
                               </div>
                             )}
                             {job.requiredSkills && job.requiredSkills.length > 0 && (
-                              <div className="col-md-6 d-flex mt-sm-15">
-                                <div className="sidebar-icon-item"><span className="icon">🛠️</span></div>
-                                <div className="sidebar-text-info ml-10">
-                                  <span className="text-description mb-10">Required Skills</span>
-                                  <strong className="small-heading">{job.requiredSkills.join(", ")}</strong>
-                                </div>
+                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
+                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+                                  {/* Skills icon */}
+                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" stroke="#8a94a6" strokeWidth="1.5"/><path d="M7 10h10M7 14h6" stroke="#8a94a6" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                                </span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Required Skills</span>
+                                <span style={{fontWeight:600, marginLeft: 8}}>{job.requiredSkills.join(", ")}</span>
                               </div>
                             )}
                             {typeof job.minExperience !== 'undefined' && (
-                              <div className="col-md-6 d-flex mt-sm-15">
-                                <div className="sidebar-icon-item"><span className="icon">⏳</span></div>
-                                <div className="sidebar-text-info ml-10">
-                                  <span className="text-description mb-10">Min Experience</span>
-                                  <strong className="small-heading">{job.minExperience} years</strong>
-                                </div>
+                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
+                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+                                  {/* Experience icon */}
+                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#8a94a6" strokeWidth="1.5"/><path d="M12 6v6l4 2" stroke="#8a94a6" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                                </span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Min Experience</span>
+                                <span style={{fontWeight:600, marginLeft: 8}}>{job.minExperience} years</span>
                               </div>
                             )}
                             {job.requiredDegree && (
-                              <div className="col-md-6 d-flex mt-sm-15">
-                                <div className="sidebar-icon-item"><span className="icon">🎓</span></div>
-                                <div className="sidebar-text-info ml-10">
-                                  <span className="text-description mb-10">Required Degree</span>
-                                  <strong className="small-heading">{job.requiredDegree}</strong>
-                                </div>
+                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
+                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+                                  {/* Degree icon */}
+                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 3L2 9l10 6 10-6-10-6z" stroke="#8a94a6" strokeWidth="1.5"/><path d="M2 17l10 6 10-6" stroke="#8a94a6" strokeWidth="1.5"/></svg>
+                                </span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Required Degree</span>
+                                <span style={{fontWeight:600, marginLeft: 8}}>{job.requiredDegree}</span>
                               </div>
                             )}
                             {job.createdAt && (
-                              <div className="col-md-6 d-flex mt-sm-15">
-                                <div className="sidebar-icon-item"><span className="icon">🗓️</span></div>
-                                <div className="sidebar-text-info ml-10">
-                                  <span className="text-description mb-10">Created At</span>
-                                  <strong className="small-heading">{new Date(job.createdAt).toLocaleDateString()}</strong>
-                                </div>
+                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
+                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+                                  {/* Created At icon */}
+                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#8a94a6" strokeWidth="1.5"/><path d="M16 2v4M8 2v4" stroke="#8a94a6" strokeWidth="1.5" strokeLinecap="round"/><path d="M3 10h18" stroke="#8a94a6" strokeWidth="1.5"/></svg>
+                                </span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Created At</span>
+                                <span style={{fontWeight:600, marginLeft: 8}}>{new Date(job.createdAt).toLocaleDateString()}</span>
                               </div>
                             )}
                             {job.endAt && (
-                              <div className="col-md-6 d-flex mt-sm-15">
-                                <div className="sidebar-icon-item"><img src="/assets/imgs/page/job-single/deadline.svg" alt="jobBox" /></div>
-                                <div className="sidebar-text-info ml-10">
-                                  <span className="text-description mb-10">Deadline</span>
-                                  <strong className="small-heading">{new Date(job.endAt).toLocaleDateString()}</strong>
-                                </div>
+                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
+                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+                                  {/* Deadline icon */}
+                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#8a94a6" strokeWidth="1.5"/><path d="M16 2v4M8 2v4" stroke="#8a94a6" strokeWidth="1.5" strokeLinecap="round"/><path d="M3 10h18" stroke="#8a94a6" strokeWidth="1.5"/></svg>
+                                </span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Deadline</span>
+                                <span style={{fontWeight:600, marginLeft: 8}}>{new Date(job.endAt).toLocaleDateString()}</span>
                               </div>
                             )}
                             {job.status && (
-                              <div className="col-md-6 d-flex mt-sm-15">
-                                <div className="sidebar-icon-item"><span className="icon">🔖</span></div>
-                                <div className="sidebar-text-info ml-10">
-                                  <span className="text-description mb-10">Status</span>
-                                  <strong className="small-heading">{job.status}</strong>
-                                </div>
+                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
+                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+                                  {/* Status icon */}
+                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#8a94a6" strokeWidth="1.5"/><path d="M8 12l2 2 4-4" stroke="#8a94a6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                </span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Status</span>
+                                <span style={{fontWeight:600, marginLeft: 8}}>{job.status}</span>
                               </div>
                             )}
                             {job.employer && job.employer.name && (
-                              <div className="col-md-6 d-flex mt-sm-15">
-                                <div className="sidebar-icon-item"><span className="icon">🏢</span></div>
-                                <div className="sidebar-text-info ml-10">
-                                  <span className="text-description mb-10">Employer</span>
-                                  <strong className="small-heading">{job.employer.name}</strong>
-                                </div>
+                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
+                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+                                  {/* Employer icon */}
+                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" stroke="#8a94a6" strokeWidth="1.5"/><circle cx="12" cy="12" r="3" stroke="#8a94a6" strokeWidth="1.5"/></svg>
+                                </span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Employer</span>
+                                <span style={{fontWeight:600, marginLeft: 8}}>{job.employer.name}</span>
                               </div>
                             )}
                           </div>
                         </div>
-                        <div className="content-single">
-                          <p>{job.description}</p>
+                        
+                        <div className="content-single" style={{background:'#fff',border:'1.5px solid #e5e8ec',borderRadius:16,padding:'28px 32px',margin:'32px 0',fontSize:'1.08rem',lineHeight:1.7,boxShadow:'0 2px 12px 0 rgba(0,0,0,0.03)'}}>
+                          <h5 className="border-bottom pb-15 mb-30">Job Description</h5>
+                          <div dangerouslySetInnerHTML={{ __html: job.description ? job.description.replace(/\n/g, '<br>') : '' }} />
                         </div>
                         <div className="author-single">
                           <span>{job.employerName}</span>
