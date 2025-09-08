@@ -1,5 +1,7 @@
 "use client";
 
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { ResumeData } from "../resume-builder";
 import type { CustomizationOptions } from "../customization-panel";
@@ -93,12 +95,11 @@ export function ModernTemplate({
             height: isCompact ? 72 : 160,
             borderRadius: "12px",
             overflow: "hidden",
-            // border: "3px solid #fff",
             background: "#fff",
             flexShrink: 0,
             marginRight: isCompact ? 16 : 24,
             display: "flex",
-            alignItems: "center",
+alignItems: "center",
             justifyContent: "center",
           }}
         >
@@ -191,7 +192,7 @@ export function ModernTemplate({
           <section>
             <h2
               className="font-semibold print-safe"
-              style={{
+style={{
                 ...getSizeStyles("heading"),
                 marginBottom: isCompact ? "0.125rem" : "0.75rem",
                 paddingBottom: "0.25rem",
@@ -208,8 +209,8 @@ export function ModernTemplate({
                 gap: isCompact ? "0.125rem" : "0.75rem",
               }}
             >
-              {data.experience.map((exp) => (
-                <div key={exp.id}>
+              {data.experience.map((exp, idx) => (
+                <div key={exp.id ?? idx}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
@@ -273,12 +274,12 @@ export function ModernTemplate({
                 gap: isCompact ? "0.125rem" : "0.75rem",
               }}
             >
-              {data.education.map((edu) => (
-                <div key={edu.id}>
+              {data.education.map((edu, idx) => (
+                <div key={edu.id ?? idx}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
-                        className="font-semibold print-safe"
+className="font-semibold print-safe"
                         style={{
                           ...getSizeStyles("text"),
                           color: colorScheme.secondary,
@@ -366,7 +367,7 @@ export function ModernTemplate({
                 marginBottom: isCompact ? "0.125rem" : "0.75rem",
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
-                borderColor: colorScheme.primary,
+borderColor: colorScheme.primary,
               }}
             >
               HOẠT ĐỘNG
@@ -378,8 +379,8 @@ export function ModernTemplate({
                 gap: isCompact ? "0.125rem" : "0.5rem",
               }}
             >
-              {data.activities.map((activity) => (
-                <div key={activity.id}>
+              {data.activities.map((activity, idx) => (
+                <div key={activity.id ?? idx}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
@@ -443,8 +444,8 @@ export function ModernTemplate({
                 gap: isCompact ? "0.125rem" : "0.5rem",
               }}
             >
-              {data.awards.map((award) => (
-                <div key={award.id}>
+              {data.awards.map((award, idx) => (
+                <div key={award.id ?? idx}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
@@ -453,7 +454,7 @@ export function ModernTemplate({
                           ...getSizeStyles("text"),
                           color: colorScheme.secondary,
                         }}
-                      >
+>
                         {award.title}
                       </h3>
                       <p
