@@ -64,13 +64,14 @@ export default function AccountPage() {
                     fullName,
                     email,
                     avatar,
+                    username,
                 }),
             });
             if (res.ok) {
                 setMessage("Cập nhật thành công!");
                 // Fetch lại user từ backend để cập nhật giao diện
                 const userRes = await fetch(`http://localhost:8080/api/users/${userId}`, {
-                    headers: { "Authorization": `Bearer ${accessToken}` }
+                    // headers: { "Authorization": `Bearer ${accessToken}` }
                 });
                 const userData = await userRes.json();
                 setFullName(userData.fullName || userData.name || "");

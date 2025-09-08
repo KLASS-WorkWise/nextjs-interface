@@ -5,6 +5,9 @@ import TopRekruterSlider from "@/components/sliders/TopRekruter";
 import BlogSlider from "@/components/sliders/Blog";
 import CategoryTab from "@/components/elements/CategoryTab";
 import Link from "next/link";
+import ChatWidget from "./ChatBotJob/page";
+import JobChatBot from "./ChatBotJob/page";
+import SocialIcons from "./SocialIcon/SocialIcons";
 
 export default function Home() {
   return (
@@ -677,6 +680,8 @@ export default function Home() {
           </div>
         </section>
       </Layout>
+      <JobChatBot />
+      <SocialIcons />
     </>
   );
 }

@@ -93,7 +93,6 @@ export function ModernTemplate({
             height: isCompact ? 72 : 160,
             borderRadius: "12px",
             overflow: "hidden",
-            // border: "3px solid #fff",
             background: "#fff",
             flexShrink: 0,
             marginRight: isCompact ? 16 : 24,
@@ -208,8 +207,8 @@ export function ModernTemplate({
                 gap: isCompact ? "0.125rem" : "0.75rem",
               }}
             >
-              {data.experience.map((exp) => (
-                <div key={exp.id}>
+              {data.experience.map((exp, idx) => (
+                <div key={exp.id ?? idx}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
@@ -273,8 +272,8 @@ export function ModernTemplate({
                 gap: isCompact ? "0.125rem" : "0.75rem",
               }}
             >
-              {data.education.map((edu) => (
-                <div key={edu.id}>
+              {data.education.map((edu, idx) => (
+                <div key={edu.id ?? idx}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
@@ -378,8 +377,8 @@ export function ModernTemplate({
                 gap: isCompact ? "0.125rem" : "0.5rem",
               }}
             >
-              {data.activities.map((activity) => (
-                <div key={activity.id}>
+              {data.activities.map((activity, idx) => (
+                <div key={activity.id ?? idx}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
@@ -443,8 +442,8 @@ export function ModernTemplate({
                 gap: isCompact ? "0.125rem" : "0.5rem",
               }}
             >
-              {data.awards.map((award) => (
-                <div key={award.id}>
+              {data.awards.map((award, idx) => (
+                <div key={award.id ?? idx}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3

@@ -10,7 +10,7 @@
     "sass": "sass --watch public/assets/scss/style.scss:public/assets/css/style.css"
   },
   "dependencies": {
-    "@ant-design/icons": "^6.0.0",
+    "@ant-design/icons": "^5.6.1",
     "@dnd-kit/core": "latest",
     "@dnd-kit/sortable": "latest",
     "@dnd-kit/utilities": "latest",
@@ -50,6 +50,7 @@
     "cmdk": "1.0.4",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
+    "framer-motion": "^12.23.12",
     "geist": "latest",
     "input-otp": "1.4.1",
     "lucide-react": "^0.539.0",
@@ -60,6 +61,7 @@
     "react-day-picker": "9.8.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "latest",
+    "react-markdown": "^10.1.0",
     "react-perfect-scrollbar": "^1.5.8",
     "react-resizable-panels": "^2.1.7",
     "react-toastify": "^11.0.5",
