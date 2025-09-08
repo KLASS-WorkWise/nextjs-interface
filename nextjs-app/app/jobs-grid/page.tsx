@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+import Link from "next/link";
 
 "use client";
 import React, { useEffect, useState } from "react";
@@ -5,6 +8,17 @@ import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
 import BlogSlider from "@/components/sliders/Blog";
 import { useSession } from "next-auth/react";
+import { Bookmark } from "lucide-react";
+
+import "@/styles/globals.css";
+import { applyService } from "@/services/applyService";
+import { toast } from "react-toastify";
+import ApplyJob from "@/features/applicants/components/ApplyJob";
+import { useRouter } from "next/navigation";
+import { savedJobService } from "@/features/applicants/services/savedJobService";
+
+// Tách Modal ra component riêng
+
 
 import { useSearchParams } from "next/navigation";
 
@@ -24,6 +38,61 @@ export default function JobGrid() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [jobsLoading, setJobsLoading] = useState(false);
   const [jobsError, setJobsError] = useState("");
+
+  const [modalJob, setModalJob] = useState<any | null>(null);
+
+  const [resumes, setResumes] = useState<any[]>([]);
+  const router = useRouter();
+  const [savingJobId, setSavingJobId] = useState<number | null>(null);
+  // savedJobs: lưu cả jobId và savedJobId
+  const [savedJobs, setSavedJobs] = useState<
+    { jobId: number; savedJobId: number }[]
+  >([]);
+
+  const toggleSaveJob = async (jobId: number) => {
+    if (!session) {
+      toast.error("You need to login to saved job!");
+      router.push("/page-signin"); // 👈 redirect sang trang login của bạn
+      return;
+    }
+    const existing = savedJobs.find((j) => j.jobId === jobId);
+    setSavingJobId(jobId);
+    try {
+      if (existing) {
+        // Unsave dùng savedJobId
+        await savedJobService.removeSavedJob(existing.savedJobId);
+        setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
+        toast.success("Removed successfully");
+      } else {
+        const res = await savedJobService.saveJob(jobId);
+        setSavedJobs((prev) => [
+          ...prev,
+          { jobId, savedJobId: res.data.savedJobId },
+        ]);
+        toast.success("Saved successfully");
+      }
+    } catch (err: any) {
+      console.error("Error saving job", err);
+      // Nếu 404, vẫn remove khỏi state để UI không treo
+      if (err.response?.status === 404 && existing) {
+        setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
+        toast.error("This job was not saved or already removed");
+      } else {
+        toast.error("Something went wrong");
+      }
+    } finally {
+      setSavingJobId(null);
+    }
+  };
+
+  const handleOpenApply = (job: any) => {
+    if (!session) {
+      toast.error("You need to login to apply!");
+      router.push("/page-signin"); // 👈 redirect sang trang login của bạn
+      return;
+    }
+    setModalJob(job);
+  };
   // Filter state
   const [jobTypeChecked, setJobTypeChecked] = useState<string[]>(["All"]);
   const [location, setLocation] = useState("");
@@ -55,6 +124,42 @@ export default function JobGrid() {
     fetchJobs();
   }, []);
 
+  useEffect(() => {
+    const fetchResumes = async () => {
+      try {
+        const res = await applyService.getAllResumes();
+        setResumes(Array.isArray(res) ? res : res.data || []);
+      } catch (err) {
+        console.error("Error fetching resumes:", err);
+      }
+    };
+    fetchResumes();
+  }, []);
+  // Lấy danh sách saved jobs của user
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      if (!session) return;
+      try {
+        const res = await savedJobService.getMySavedJobs();
+        const savedJobsMap =
+          res.data?.map((job: any) => ({
+            jobId: job.jobPostingResponseDTO?.id, // 👈 lấy id từ DTO
+            savedJobId: job.savedJobId,
+          })) || [];
+        setSavedJobs(savedJobsMap);
+      } catch (err) {
+        console.error("Error fetching saved jobs", err);
+      }
+    };
+    fetchSavedJobs();
+  }, [session]);
+  useEffect(() => {
+    console.log(
+      "Jobs:",
+      jobs.map((j) => j.id)
+    );
+    console.log("SavedJobs:", savedJobs);
+  }, [jobs, savedJobs]);
   // Helper: loại bỏ dấu tiếng Việt
   function removeVietnameseTones(str: string) {
     return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
@@ -179,10 +284,20 @@ export default function JobGrid() {
                   <h3 className="wow animate__animated animate__fadeInUp">
                     <span className="color-brand-2">22 Jobs</span> Available Now
                   </h3>
-                  <div className="font-sm color-text-paragraph-2 mt-10 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero repellendus magni, <br className="d-none d-xl-block" />
+                  <div
+                    className="font-sm color-text-paragraph-2 mt-10 wow animate__animated animate__fadeInUp"
+                    data-wow-delay=".1s"
+                  >
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Vero repellendus magni, <br className="d-none d-xl-block" />
                     atque delectus molestias quis?
                   </div>
+                  <div
+                    className="form-find text-start mt-40 wow animate__animated animate__fadeInUp"
+                    data-wow-delay=".2s"
+                  >
+                    <form>
+                      <div className="box-industry">
                   <div className="form-find text-start mt-40 wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
                     <form onSubmit={handleSearch}>
                       {/* <div className="box-industry">
@@ -240,6 +355,14 @@ export default function JobGrid() {
                         className="form-input input-keysearch mr-10"
                         type="text"
                         placeholder="Your keyword... "
+                      />
+                      <button className="btn btn-default btn-find font-sm">
+                        Search
+                      </button>
+                      <input
+                        className="form-input input-keysearch mr-10"
+                        type="text"
+                        placeholder="Your keyword... "
                         value={keyword}
                         onChange={e => setKeyword(e.target.value)}
                       />
@@ -259,6 +382,8 @@ export default function JobGrid() {
                       <div className="row">
                         <div className="col-xl-6 col-lg-5">
                           <span className="text-small text-showing">
+                            Showing <strong>41-60 </strong>of{" "}
+                            <strong>944 </strong>jobs
                             Showing <strong>10-15 </strong>of <strong>30 </strong>jobs
                           </span>
                         </div>
@@ -267,7 +392,10 @@ export default function JobGrid() {
                           <div className="display-flex2">
                             {role?.includes("Employers") && (
                               <Link href="/job-create">
-                                <button className="btn btn-primary" style={{ marginRight: "16px" }}>
+                                <button
+                                  className="btn btn-primary"
+                                  style={{ marginRight: "16px" }}
+                                >
                                   Create Job
                                 </button>
                               </Link>
@@ -276,14 +404,28 @@ export default function JobGrid() {
                             <div className="box-border mr-10">
                               <span className="text-sortby">Show:</span>
                               <div className="dropdown dropdown-sort">
+                                <button
+                                  className="btn dropdown-toggle"
+                                  id="dropdownSort"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  data-bs-display="static"
+                                >
+                                  <span>12</span>
                                 <button className="btn dropdown-toggle" id="dropdownSort" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
                                   <span>15</span>
                                   <i className="fi-rr-angle-small-down" />
                                 </button>
-                                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownSort">
+                                <ul
+                                  className="dropdown-menu dropdown-menu-light"
+                                  aria-labelledby="dropdownSort"
+                                >
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item active">10</span>
+                                      <span className="dropdown-item active">
+                                        10
+                                      </span>
                                     </Link>
                                   </li>
                                   <li>
@@ -302,24 +444,40 @@ export default function JobGrid() {
                             <div className="box-border">
                               <span className="text-sortby">Sort by:</span>
                               <div className="dropdown dropdown-sort">
-                                <button className="btn dropdown-toggle" id="dropdownSort2" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+                                <button
+                                  className="btn dropdown-toggle"
+                                  id="dropdownSort2"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  data-bs-display="static"
+                                >
                                   <span>Newest Post</span>
                                   <i className="fi-rr-angle-small-down" />
                                 </button>
-                                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownSort2">
+                                <ul
+                                  className="dropdown-menu dropdown-menu-light"
+                                  aria-labelledby="dropdownSort2"
+                                >
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item active">Newest Post</span>
+                                      <span className="dropdown-item active">
+                                        Newest Post
+                                      </span>
                                     </Link>
                                   </li>
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item">Oldest Post</span>
+                                      <span className="dropdown-item">
+                                        Oldest Post
+                                      </span>
                                     </Link>
                                   </li>
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item">Rating Post</span>
+                                      <span className="dropdown-item">
+                                        Rating Post
+                                      </span>
                                     </Link>
                                   </li>
                                 </ul>
@@ -328,13 +486,19 @@ export default function JobGrid() {
                             <div className="box-view-type">
                               <Link href="/jobs-list">
                                 <span className="view-type">
-                                  <img src="assets/imgs/template/icons/icon-list.svg" alt="jobBox" />
+                                  <img
+                                    src="assets/imgs/template/icons/icon-list.svg"
+                                    alt="jobBox"
+                                  />
                                 </span>
                               </Link>
 
                               <Link href="/jobs-grid">
                                 <span className="view-type">
-                                  <img src="assets/imgs/template/icons/icon-grid-hover.svg" alt="jobBox" />
+                                  <img
+                                    src="assets/imgs/template/icons/icon-grid-hover.svg"
+                                    alt="jobBox"
+                                  />
                                 </span>
                               </Link>
                             </div>
@@ -344,6 +508,148 @@ export default function JobGrid() {
                     </div>
                     <div className="row">
                       {/* Render động danh sách job từ API cho candidate */}
+                      {jobsLoading && (
+                        <div className="col-12 text-center">
+                          Đang tải dữ liệu...
+                        </div>
+                      )}
+                      {jobsError && (
+                        <div className="col-12 text-center text-danger">
+                          {jobsError}
+                        </div>
+                      )}
+                      {!jobsLoading && !jobsError && jobs.length === 0 && (
+                        <div className="col-12 text-center">
+                          Không có công việc nào
+                        </div>
+                      )}
+                      {!jobsLoading &&
+                        !jobsError &&
+                        jobs.length > 0 &&
+                        jobs.map((job: any) => {
+                          const isSaved = savedJobs.some(
+                            (j) => j.jobId === job.id
+                          );
+                          return (
+                            <div
+                              key={job.id}
+                              className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12"
+                            >
+                              <div className="card-grid-2 hover-up">
+                                <div className="card-grid-2-image-left">
+                                  <span
+                                    className="flash"
+                                    style={{ marginRight: "20px" }}
+                                  >
+                                    <button
+                                      onClick={() => toggleSaveJob(job.id)}
+                                      disabled={savingJobId === job.id}
+                                      className="saved-job-button"
+                                      style={{
+                                        background: "transparent",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        padding: 0,
+                                      }}
+                                    >
+                                      {savingJobId === job.id ? (
+                                        <span className="loading-dots">
+                                          ...
+                                        </span>
+                                      ) : (
+                                        <Bookmark
+                                          size={22}
+                                          color={isSaved ? "red" : "gray"} // 👈 khi save thì đỏ, chưa save thì xám
+                                          fill={isSaved ? "red" : "none"} // 👈 tô màu khi saved
+                                        />
+                                      )}
+                                    </button>
+                                  </span>
+
+                                  <div className="image-box">
+                                    <img
+                                      src={
+                                        job.companyLogo ||
+                                        "assets/imgs/brands/brand-1.png"
+                                      }
+                                      alt="jobBox"
+                                    />
+                                  </div>
+                                  <div className="right-info">
+                                    <Link
+                                      href={`/company-details/${
+                                        job.companyId || ""
+                                      }`}
+                                    >
+                                      <span className="name-job">
+                                        {job.companyName || "Company"}
+                                      </span>
+                                    </Link>
+                                    <span className="location-small">
+                                      {job.location || "Unknown"}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="card-block-info">
+                                  <h6>
+                                    <Link href={`/job-details-2/${job.id}`}>
+                                      <span>{job.title || "No title"}</span>
+                                    </Link>
+                                  </h6>
+                                  <div className="mt-5">
+                                    <span className="card-briefcase">
+                                      {job.type || "Fulltime"}
+                                    </span>
+                                    <span className="card-time">
+                                      {job.createdAt
+                                        ? new Date(
+                                            job.createdAt
+                                          ).toLocaleDateString()
+                                        : ""}
+                                    </span>
+                                  </div>
+                                  <p className="font-sm color-text-paragraph mt-15">
+                                    {job.description || "Không có mô tả"}
+                                  </p>
+                                  <div className="mt-30">
+                                    {Array.isArray(job.skills) &&
+                                      job.skills.map(
+                                        (skill: string, idx: number) => (
+                                          <span
+                                            key={idx}
+                                            className="btn btn-grey-small mr-5"
+                                          >
+                                            {skill}
+                                          </span>
+                                        )
+                                      )}
+                                  </div>
+                                  <div className="card-2-bottom mt-30">
+                                    <div className="row">
+                                      <div className="col-lg-7 col-7">
+                                        <span className="card-text-price">
+                                          {job.salary || "N/A"}
+                                        </span>
+                                        <span className="text-muted">
+                                          /Tháng
+                                        </span>
+                                      </div>
+                                      <div className="col-lg-5 col-5 text-end">
+                                        <button
+                                          onClick={() => handleOpenApply(job)}
+                                          className="btn-apply"
+                                        >
+                                          Apply Now
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
                       {jobsLoading && <div className="col-12 text-center">Đang tải dữ liệu...</div>}
                       {jobsError && <div className="col-12 text-center text-danger">{jobsError}</div>}
                       {!jobsLoading && !jobsError && jobs.length === 0 && <div className="col-12 text-center">Không có công việc nào</div>}
@@ -503,8 +809,109 @@ export default function JobGrid() {
                       </div>
                       <div className="filter-block mb-20">
                         <h5 className="medium-heading mb-25">Salary Range</h5>
+                        <div className="list-checkbox pb-20">
+                          <div className="row position-relative mt-10 mb-20">
+                            <div className="col-sm-12 box-slider-range">
+                              <div id="slider-range" />
+                            </div>
+                            <div className="box-input-money">
+                              <input
+                                className="input-disabled form-control min-value-money"
+                                type="text"
+                                name="min-value-money"
+                                disabled={true}
+                                defaultValue=""
+                              />
+                              <input
+                                className="form-control min-value"
+                                type="hidden"
+                                name="min-value"
+                                defaultValue=""
+                              />
+                            </div>
+                          </div>
+                          <div className="box-number-money">
+                            <div className="row mt-30">
+                              <div className="col-sm-6 col-6">
+                                <span className="font-sm color-brand-1">
+                                  $0
+                                </span>
+                              </div>
+                              <div className="col-sm-6 col-6 text-end">
+                                <span className="font-sm color-brand-1">
+                                  $500
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                         <div className="form-group mb-20">
                           <ul className="list-checkbox">
+                            <li>
+                              <label className="cb-container">
+                                <input type="checkbox" defaultChecked={true} />
+                                <span className="text-small">All</span>
+                                <span className="checkmark" />
+                              </label>
+                              <span className="number-item">145</span>
+                            </li>
+                            <li>
+                              <label className="cb-container">
+                                <input type="checkbox" />
+                                <span className="text-small">$0k - $20k</span>
+                                <span className="checkmark" />
+                              </label>
+                              <span className="number-item">56</span>
+                            </li>
+                            <li>
+                              <label className="cb-container">
+                                <input type="checkbox" />
+                                <span className="text-small">$20k - $40k</span>
+                                <span className="checkmark" />
+                              </label>
+                              <span className="number-item">37</span>
+                            </li>
+                            <li>
+                              <label className="cb-container">
+                                <input type="checkbox" />
+                                <span className="text-small">$40k - $60k</span>
+                                <span className="checkmark" />
+                              </label>
+                              <span className="number-item">75</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div className="filter-block mb-30">
+                        <h5 className="medium-heading mb-10">
+                          Popular Keyword
+                        </h5>
+                        <div className="form-group">
+                          <ul className="list-checkbox">
+                            <li>
+                              <label className="cb-container">
+                                <input type="checkbox" defaultChecked={true} />
+                                <span className="text-small">Software</span>
+                                <span className="checkmark" />
+                              </label>
+                              <span className="number-item">24</span>
+                            </li>
+                            <li>
+                              <label className="cb-container">
+                                <input type="checkbox" />
+                                <span className="text-small">Developer</span>
+                                <span className="checkmark" />
+                              </label>
+                              <span className="number-item">45</span>
+                            </li>
+                            <li>
+                              <label className="cb-container">
+                                <input type="checkbox" />
+                                <span className="text-small">Web</span>
+                                <span className="checkmark" />
+                              </label>
+                              <span className="number-item">57</span>
+                            </li>
                             {[
                               "All",
                               "Duới 20 triệu",
@@ -576,6 +983,9 @@ export default function JobGrid() {
                         </div>
                       </div>
                       <div className="filter-block mb-30">
+                        <h5 className="medium-heading mb-10">
+                          Experience Level
+                        </h5>
                         <h5 className="medium-heading mb-10">Required Degree</h5>
                         <div className="form-group">
                           <ul className="list-checkbox">
@@ -655,11 +1065,23 @@ export default function JobGrid() {
               </div>
             </div>
           </section>
+          {modalJob && (
+            <ApplyJob
+              job={modalJob}
+              resumes={resumes} // 👈 truyền resumes vào
+              onClose={() => setModalJob(null)}
+              onSuccess={() => toast.success("Applied successfully!")}
+            />
+          )}
           <section className="section-box mt-50 mb-50">
             <div className="container">
               <div className="text-start">
-                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">News and Blog</h2>
-                <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">Get the latest news, updates and tips</p>
+                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
+                  News and Blog
+                </h2>
+                <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
+                  Get the latest news, updates and tips
+                </p>
               </div>
             </div>
             <div className="container">
@@ -669,7 +1091,9 @@ export default function JobGrid() {
                 </div>
                 <div className="text-center">
                   <Link href="blog-grid">
-                    <span className="btn btn-brand-1 btn-icon-load mt--30 hover-up">Load More Posts</span>
+                    <span className="btn btn-brand-1 btn-icon-load mt--30 hover-up">
+                      Load More Posts
+                    </span>
                   </Link>
                 </div>
               </div>
@@ -680,7 +1104,10 @@ export default function JobGrid() {
               <div className="box-newsletter">
                 <div className="row">
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img src="assets/imgs/template/newsletter-left.png" alt="joxBox" />
+                    <img
+                      src="assets/imgs/template/newsletter-left.png"
+                      alt="joxBox"
+                    />
                   </div>
                   <div className="col-lg-12 col-xl-6 col-12">
                     <h2 className="text-md-newsletter text-center">
@@ -689,13 +1116,22 @@ export default function JobGrid() {
                     </h2>
                     <div className="box-form-newsletter mt-40">
                       <form className="form-newsletter">
-                        <input className="input-newsletter" type="text" placeholder="Enter your email here" />
-                        <button className="btn btn-default font-heading icon-send-letter">Subscribe</button>
+                        <input
+                          className="input-newsletter"
+                          type="text"
+                          placeholder="Enter your email here"
+                        />
+                        <button className="btn btn-default font-heading icon-send-letter">
+                          Subscribe
+                        </button>
                       </form>
                     </div>
                   </div>
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img src="assets/imgs/template/newsletter-right.png" alt="joxBox" />
+                    <img
+                      src="assets/imgs/template/newsletter-right.png"
+                      alt="joxBox"
+                    />
                   </div>
                 </div>
               </div>
