@@ -1,0 +1,179 @@
+.classicResumeRoot {
+  display: flex;
+  flex-direction: row;
+  background: #f7f7fa;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  color: #0f172a;
+}
+
+/* Compact adjustments for preview sidebar */
+.classicCompact {
+  /* Thu nhỏ tổng thể để hiển thị đủ trong khung preview */
+  transform: scale(0.86);
+  transform-origin: top center;
+  display: inline-block;
+  margin: 0 auto;
+  width: 100%;
+}
+.classicCompact .classicResumeSidebar {
+  padding: 20px 16px;
+}
+.classicCompact .classicResumeAvatar {
+  width: 96px;
+  height: 96px;
+  border-width: 3px;
+  margin: 0 auto 16px auto;
+}
+.classicCompact .classicResumeSectionTitle {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+.classicCompact .classicResumeMain {
+  padding: 24px 24px 24px 20px;
+}
+.classicCompact .classicResumeName {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+.classicCompact .classicResumeSummary {
+  font-size: 0.9rem;
+}
+.classicCompact .classicResumeInfoList li,
+.classicCompact .classicResumeSkillList li,
+.classicCompact .classicResumeCertList li {
+  font-size: 0.9rem;
+}
+.classicCompact .classicResumeSubSectionTitle {
+  font-size: 0.95rem;
+}
+.classicCompact .classicResumeMeta {
+  font-size: 0.8rem;
+}
+
+.classicResumeSidebar {
+  background: linear-gradient(135deg, #7b9acc 0%, #b6c6e6 100%);
+  color: #0f172a;
+  width: 270px;
+  min-width: 270px;
+  max-width: 270px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 32px;
+}
+
+.classicResumeAvatar {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #fff;
+  margin: 0 auto 24px auto;
+  background: #fff;
+}
+
+.classicResumeSectionTitle {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Tăng tương phản tiêu đề trong sidebar khi dùng nền sáng */
+.classicResumeSidebar .classicResumeSectionTitle {
+  color: #0f172a;
+}
+
+.classicResumeSection {
+  margin-bottom: 24px;
+}
+
+.classicResumeMain {
+  flex: 1;
+  padding: 40px 40px 40px 32px;
+  background: #fff;
+}
+
+.classicResumeName {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.25em;
+}
+
+.classicResumeJobTitle {
+  color: #b85c3b;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
+
+.classicResumeSummary {
+  margin-bottom: 1.5em;
+  color: #0f172a;
+}
+
+.classicResumeInfoList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+  color: #0f172a;
+}
+
+.classicResumeInfoList li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.98rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: inherit;
+}
+
+.classicResumeSubSection {
+  margin-bottom: 18px;
+}
+
+.classicResumeSubSectionTitle {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #0f172a;
+}
+
+.classicResumeMeta {
+  font-size: 0.85rem;
+  color: #0f172a;
+}
+
+.classicResumeSkillList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.classicResumeSkillList li {
+  font-size: 0.98rem;
+  color: #0f172a;
+}
+
+.classicResumeCertList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.classicResumeCertList li {
+  font-size: 0.98rem;
+  color: #0f172a;
+}

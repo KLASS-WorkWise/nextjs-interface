@@ -6,7 +6,13 @@ import { Plus, Trash2, Briefcase } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
 
 export function ExperienceStep() {
-  const { register, control, watch, setValue } = useFormContext<ResumeData>();
+  const {
+    register,
+    control,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useFormContext<ResumeData>();
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: "experience",
@@ -134,8 +140,24 @@ export function ExperienceStep() {
                 className="form-control"
                 {...register(`experience.${index}.startDate`, {
                   required: true,
+                  validate: (startDate) => {
+                    const endDate = watch(`experience.${index}.endDate`);
+                    const today = new Date().toISOString().slice(0, 10);
+                    if (endDate && startDate && startDate > endDate) {
+                      return "Ngày bắt đầu không được lớn hơn ngày kết thúc";
+                    }
+                    if (startDate && startDate > today) {
+                      return "Ngày bắt đầu không được lớn hơn ngày hiện tại";
+                    }
+                    return true;
+                  },
                 })}
               />
+              {errors?.experience?.[index]?.startDate && (
+                <div className="text-danger small mt-1">
+                  {errors.experience[index].startDate.message}
+                </div>
+              )}
             </div>
 
             <div className="col-md-6">
@@ -146,8 +168,26 @@ export function ExperienceStep() {
                 type="date"
                 id={`endDate-${index}`}
                 className="form-control"
-                {...register(`experience.${index}.endDate`)}
+                {...register(`experience.${index}.endDate`, {
+                  validate: (endDate) => {
+                    if (!endDate) return true;
+                    const startDate = watch(`experience.${index}.startDate`);
+                    const today = new Date().toISOString().slice(0, 10);
+                    if (startDate && endDate < startDate) {
+                      return "Ngày kết thúc không được nhỏ hơn ngày bắt đầu";
+                    }
+                    if (endDate > today) {
+                      return "Ngày kết thúc không được lớn hơn hiện tại";
+                    }
+                    return true;
+                  },
+                })}
               />
+              {errors?.experience?.[index]?.endDate && (
+                <div className="text-danger small mt-1">
+                  {errors.experience[index].endDate.message}
+                </div>
+              )}
             </div>
 
             <div className="col-12">
@@ -157,7 +197,8 @@ export function ExperienceStep() {
               <textarea
                 id={`description-${index}`}
                 className="form-control"
-                rows={3}
+                style={{ minHeight: 240 }}
+                rows={8}
                 {...register(`experience.${index}.description`)}
                 placeholder="Mô tả chi tiết về công việc, thành tích đạt được..."
               />

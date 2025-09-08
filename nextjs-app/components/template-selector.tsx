@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Check } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Check } from "lucide-react";
 
 export interface ResumeTemplate {
-  id: string
-  name: string
-  description: string
-  preview: string
-  category: "modern" | "classic" | "creative" | "minimal"
+  id: string;
+  name: string;
+  description: string;
+  preview: string;
+  category: "modern" | "classic";
 }
 
 export const resumeTemplates: ResumeTemplate[] = [
@@ -27,40 +27,50 @@ export const resumeTemplates: ResumeTemplate[] = [
     preview: "/classic-resume-template.png",
     category: "classic",
   },
-  {
-    id: "creative",
-    name: "Creative",
-    description: "Thiết kế sáng tạo với layout độc đáo",
-    preview: "/creative-resume-template.png",
-    category: "creative",
-  },
-  {
-    id: "minimal",
-    name: "Minimal",
-    description: "Thiết kế tối giản, sạch sẽ",
-    preview: "/minimal-resume-template.png",
-    category: "minimal",
-  },
-]
+];
 
 interface TemplateSelectorProps {
-  selectedTemplate: string
-  onTemplateChange: (templateId: string) => void
+  selectedTemplate: string;
+  onTemplateChange: (templateId: string) => void;
 }
 
-export function TemplateSelector({ selectedTemplate, onTemplateChange }: TemplateSelectorProps) {
+export function TemplateSelector({
+  selectedTemplate,
+  onTemplateChange,
+}: TemplateSelectorProps) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       <div>
-        <h3 style={{ fontSize: "1.125rem", fontWeight: "600", marginBottom: "0.5rem" }}>Chọn mẫu thiết kế</h3>
-        <p style={{ fontSize: "0.875rem", color: "var(--muted-foreground)" }}>
+        <h3
+          style={{
+            fontSize: "1.125rem",
+            fontWeight: "600",
+            marginBottom: "0.5rem",
+            marginLeft: 10,
+          }}
+        >
+          Chọn mẫu thiết kế
+        </h3>
+        <p
+          style={{
+            fontSize: "0.875rem",
+            color: "var(--muted-foreground)",
+            marginLeft: 10,
+          }}
+        >
           Chọn một mẫu thiết kế phù hợp với phong cách của bạn
         </p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "1rem" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+          gap: "1rem",
+        }}
+      >
         {resumeTemplates.map((template) => {
-          const isSelected = selectedTemplate === template.id
+          const isSelected = selectedTemplate === template.id;
           return (
             <Card
               key={template.id}
@@ -73,10 +83,21 @@ export function TemplateSelector({ selectedTemplate, onTemplateChange }: Templat
               onClick={() => onTemplateChange(template.id)}
             >
               <CardHeader style={{ paddingBottom: "0.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <div>
-                    <CardTitle style={{ fontSize: "0.875rem" }}>{template.name}</CardTitle>
-                    <Badge variant="secondary" style={{ fontSize: "0.75rem", marginTop: "0.25rem" }}>
+                    <CardTitle style={{ fontSize: "0.875rem" }}>
+                      {template.name}
+                    </CardTitle>
+                    <Badge
+                      variant="secondary"
+                      style={{ fontSize: "0.75rem", marginTop: "0.25rem" }}
+                    >
                       {template.category}
                     </Badge>
                   </div>
@@ -92,7 +113,10 @@ export function TemplateSelector({ selectedTemplate, onTemplateChange }: Templat
                         justifyContent: "center",
                       }}
                     >
-                      <Check className="h-3 w-3" style={{ color: "var(--primary-foreground)" }} />
+                      <Check
+                        className="h-3 w-3"
+                        style={{ color: "var(--primary-foreground)" }}
+                      />
                     </div>
                   )}
                 </div>
@@ -110,15 +134,26 @@ export function TemplateSelector({ selectedTemplate, onTemplateChange }: Templat
                   <img
                     src={template.preview || "/placeholder.svg"}
                     alt={`${template.name} template preview`}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
                   />
                 </div>
-                <p style={{ fontSize: "0.75rem", color: "var(--muted-foreground)" }}>{template.description}</p>
+                <p
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "var(--muted-foreground)",
+                  }}
+                >
+                  {template.description}
+                </p>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

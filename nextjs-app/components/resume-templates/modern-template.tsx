@@ -21,49 +21,63 @@ export function ModernTemplate({
     colorSchemes[0];
   const fontFamily =
     fontOptions.find((f) => f.value === customization.font)?.family ||
-    "font-sans";
+    '"Inter", Arial, sans-serif';
 
   const getSizeStyles = (type: "text" | "heading" | "title" | "name") => {
     const sizeMap = {
       small: {
-        text: isCompact ? "4px" : "0.75rem",
-        heading: isCompact ? "6px" : "0.875rem",
-        title: isCompact ? "8px" : "1.125rem",
-        name: isCompact ? "10px" : "1.5rem",
+        text: isCompact ? "0.65rem" : "0.75rem",
+        heading: isCompact ? "0.8rem" : "0.875rem",
+        title: isCompact ? "1rem" : "1.125rem",
+        name: isCompact ? "1.2rem" : "1.5rem",
       },
       medium: {
-        text: isCompact ? "5px" : "0.875rem",
-        heading: isCompact ? "7px" : "1rem",
-        title: isCompact ? "9px" : "1.25rem",
-        name: isCompact ? "11px" : "1.875rem",
+        text: isCompact ? "0.75rem" : "0.875rem",
+        heading: isCompact ? "0.9rem" : "1rem",
+        title: isCompact ? "1.1rem" : "1.25rem",
+        name: isCompact ? "1.4rem" : "1.875rem",
       },
       large: {
-        text: isCompact ? "6px" : "1rem",
-        heading: isCompact ? "8px" : "1.125rem",
-        title: isCompact ? "10px" : "1.5rem",
-        name: isCompact ? "12px" : "2.25rem",
+        text: isCompact ? "0.85rem" : "1rem",
+        heading: isCompact ? "1rem" : "1.125rem",
+        title: isCompact ? "1.2rem" : "1.5rem",
+        name: isCompact ? "1.7rem" : "2.25rem",
       },
     };
     return { fontSize: sizeMap[customization.fontSize][type] };
   };
 
   const getSpacingStyles = () => {
+    console.log(
+      "ModernTemplate - spacing:",
+      customization.spacing,
+      "isCompact:",
+      isCompact
+    );
     const spacingMap = {
       compact: isCompact ? "0.125rem" : "0.5rem",
       normal: isCompact ? "0.25rem" : "1rem",
       relaxed: isCompact ? "0.375rem" : "1.5rem",
     };
-    return { gap: spacingMap[customization.spacing] };
+    const gapValue = spacingMap[customization.spacing];
+    console.log("ModernTemplate - gap value:", gapValue);
+    return { gap: gapValue };
   };
 
   const spacingStyle = getSpacingStyles();
 
+  // Helper: wrap section without marginBottom (using gap instead)
+  const Section = ({ children }: { children: React.ReactNode }) => (
+    <section>{children}</section>
+  );
+
   return (
     <div
-      className={`${fontFamily} bg-white print-safe`}
+      className={`bg-white print-safe`}
       style={{
         color: "rgb(17 24 39)",
         padding: isCompact ? "0.5rem" : "2rem",
+        fontFamily: fontFamily,
       }}
     >
       <style
@@ -85,6 +99,7 @@ export function ModernTemplate({
           backgroundColor: colorScheme.primary,
           padding: isCompact ? "0.5rem" : "1.5rem",
           marginBottom: isCompact ? "0.25rem" : "1.5rem",
+          fontFamily: fontFamily,
         }}
       >
         <div
@@ -138,56 +153,108 @@ export function ModernTemplate({
             </AvatarFallback>
           </Avatar>
         </div>
-        <div style={{ color: "white" }}>
-          <h1 className="font-bold" style={getSizeStyles("name")}>
+        <div style={{ color: "white", minWidth: 0 }}>
+          <h1
+            className="font-bold"
+            style={{
+              fontSize: getSizeStyles("name").fontSize,
+              fontFamily: fontFamily,
+              wordBreak: "break-word",
+              overflowWrap: "anywhere",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
             {data.personalInfo.fullName || "Họ và tên"}
           </h1>
           <div
             style={{
-              ...getSizeStyles("text"),
+              fontSize: getSizeStyles("text").fontSize,
               opacity: 0.9,
               display: "flex",
               flexDirection: "column",
               gap: isCompact ? "0" : "0.25rem",
+              fontFamily: fontFamily,
+              minWidth: 0,
             }}
           >
             {data.personalInfo.email && (
-              <p style={{ color: "#fff" }}>{data.personalInfo.email}</p>
+              <p
+                style={{
+                  color: "#fff",
+                  wordBreak: "break-word",
+                  overflowWrap: "anywhere",
+                }}
+              >
+                {data.personalInfo.email}
+              </p>
             )}
             {data.personalInfo.phone && (
-              <p style={{ color: "#fff" }}>{data.personalInfo.phone}</p>
+              <p
+                style={{
+                  color: "#fff",
+                  wordBreak: "break-word",
+                  overflowWrap: "anywhere",
+                }}
+              >
+                {data.personalInfo.phone}
+              </p>
             )}
             {data.personalInfo.jobTitle && (
-              <p style={{ color: "#fff" }}>{data.personalInfo.jobTitle}</p>
+              <p
+                style={{
+                  color: "#fff",
+                  wordBreak: "break-word",
+                  overflowWrap: "anywhere",
+                }}
+              >
+                {data.personalInfo.jobTitle}
+              </p>
             )}
           </div>
         </div>
       </div>
 
       <div
-        style={{ display: "flex", flexDirection: "column", ...spacingStyle }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: spacingStyle.gap,
+          fontFamily: fontFamily,
+        }}
       >
         {data.personalInfo.summary && (
-          <section>
+          <Section>
             <h2
               className="font-semibold print-safe"
               style={{
-                ...getSizeStyles("heading"),
+                fontSize: getSizeStyles("heading").fontSize,
                 marginBottom: isCompact ? "0.125rem" : "0.5rem",
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
                 borderRadius: "4px",
+                fontFamily: fontFamily,
               }}
             >
               MÔ TẢ BẢN THÂN
             </h2>
-            <p style={getSizeStyles("text")}>{data.personalInfo.summary}</p>
-          </section>
+            <p
+              style={{
+                fontSize: getSizeStyles("text").fontSize,
+                fontFamily: fontFamily,
+              }}
+            >
+              {data.personalInfo.summary}
+            </p>
+          </Section>
         )}
 
         {Array.isArray(data.experience) && data.experience.length > 0 && (
-          <section>
+          <Section>
             <h2
               className="font-semibold print-safe"
               style={{
@@ -196,6 +263,7 @@ export function ModernTemplate({
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
+                fontFamily: fontFamily,
               }}
             >
               KINH NGHIỆM LÀM VIỆC
@@ -204,7 +272,7 @@ export function ModernTemplate({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: isCompact ? "0.125rem" : "0.75rem",
+                gap: spacingStyle.gap,
               }}
             >
               {data.experience.map((exp, idx) => (
@@ -216,6 +284,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: colorScheme.secondary,
+                          fontFamily: fontFamily,
                         }}
                       >
                         {exp.position}
@@ -224,6 +293,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: "rgb(75 85 99)",
+                          fontFamily: fontFamily,
                         }}
                       >
                         {exp.company}
@@ -233,6 +303,7 @@ export function ModernTemplate({
                       style={{
                         ...getSizeStyles("text"),
                         color: "rgb(107 114 128)",
+                        fontFamily: fontFamily,
                       }}
                     >
                       {exp.startDate} - {exp.endDate ? "Hiện tại" : exp.endDate}
@@ -248,11 +319,11 @@ export function ModernTemplate({
                 </div>
               ))}
             </div>
-          </section>
+          </Section>
         )}
 
         {data.education.length > 0 && (
-          <section>
+          <Section>
             <h2
               className="font-semibold print-safe"
               style={{
@@ -261,6 +332,7 @@ export function ModernTemplate({
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
+                fontFamily: fontFamily,
               }}
             >
               HỌC VẤN
@@ -269,7 +341,7 @@ export function ModernTemplate({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: isCompact ? "0.125rem" : "0.75rem",
+                gap: spacingStyle.gap,
               }}
             >
               {data.education.map((edu, idx) => (
@@ -281,6 +353,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: colorScheme.secondary,
+                          fontFamily: fontFamily,
                         }}
                       >
                         {edu.degree} - {edu.field}
@@ -289,6 +362,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: "rgb(75 85 99)",
+                          fontFamily: fontFamily,
                         }}
                       >
                         {edu.institution}
@@ -298,22 +372,30 @@ export function ModernTemplate({
                       style={{
                         ...getSizeStyles("text"),
                         color: "rgb(107 114 128)",
+                        fontFamily: fontFamily,
                       }}
                     >
                       {edu.startDate} - {edu.endDate}
                     </p>
                   </div>
                   {edu.gpa && (
-                    <p style={getSizeStyles("text")}>GPA: {edu.gpa}</p>
+                    <p
+                      style={{
+                        ...getSizeStyles("text"),
+                        fontFamily: fontFamily,
+                      }}
+                    >
+                      GPA: {edu.gpa}
+                    </p>
                   )}
                 </div>
               ))}
             </div>
-          </section>
+          </Section>
         )}
 
         {data.skills.length > 0 && (
-          <section>
+          <Section>
             <h2
               className="font-semibold print-safe"
               style={{
@@ -322,42 +404,54 @@ export function ModernTemplate({
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
+                fontFamily: fontFamily,
               }}
             >
               KỸ NĂNG
             </h2>
             <div
-              className="grid"
               style={{
-                gridTemplateColumns: isCompact
-                  ? "repeat(1, minmax(0, 1fr))"
-                  : "repeat(2, minmax(0, 1fr))",
-                gap: isCompact ? "0" : "0.5rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: isCompact ? "0.25rem" : "0.5rem",
               }}
             >
               {data.skills.map((skill, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-2"
-                  style={getSizeStyles("text")}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    ...getSizeStyles("text"),
+                    fontFamily: fontFamily,
+                  }}
                 >
-                  <div
-                    className="rounded-full print-safe"
+                  <span
+                    className="print-safe"
                     style={{
-                      width: isCompact ? "0.25rem" : "0.5rem",
-                      height: isCompact ? "0.25rem" : "0.5rem",
+                      display: "inline-block",
+                      width: isCompact ? "0.5rem" : "0.75rem",
+                      height: isCompact ? "0.5rem" : "0.75rem",
                       backgroundColor: colorScheme.primary,
+                      borderRadius: "2px",
+                      marginRight: "8px",
+                      verticalAlign: "middle",
                     }}
-                  />
-                  <span className="font-medium">{skill}</span>
+                  ></span>
+                  <span
+                    className="font-medium"
+                    style={{ verticalAlign: "middle" }}
+                  >
+                    {skill}
+                  </span>
                 </div>
               ))}
             </div>
-          </section>
+          </Section>
         )}
 
         {data.activities.length > 0 && (
-          <section>
+          <Section>
             <h2
               className="font-semibold print-safe"
               style={{
@@ -366,6 +460,7 @@ export function ModernTemplate({
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
+                fontFamily: fontFamily,
               }}
             >
               HOẠT ĐỘNG
@@ -374,7 +469,7 @@ export function ModernTemplate({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: isCompact ? "0.125rem" : "0.5rem",
+                gap: spacingStyle.gap,
               }}
             >
               {data.activities.map((activity, idx) => (
@@ -386,6 +481,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: colorScheme.secondary,
+                          fontFamily: fontFamily,
                         }}
                       >
                         {activity.title}
@@ -394,6 +490,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: "rgb(75 85 99)",
+                          fontFamily: fontFamily,
                         }}
                       >
                         {activity.organization}
@@ -403,6 +500,7 @@ export function ModernTemplate({
                       style={{
                         ...getSizeStyles("text"),
                         color: "rgb(107 114 128)",
+                        fontFamily: fontFamily,
                       }}
                     >
                       {activity.startDate} - {activity.endDate || "Hiện tại"}
@@ -410,7 +508,11 @@ export function ModernTemplate({
                   </div>
                   {activity.description && (
                     <p
-                      style={{ ...getSizeStyles("text"), marginTop: "0.25rem" }}
+                      style={{
+                        ...getSizeStyles("text"),
+                        marginTop: "0.25rem",
+                        fontFamily: fontFamily,
+                      }}
                     >
                       {activity.description}
                     </p>
@@ -418,11 +520,11 @@ export function ModernTemplate({
                 </div>
               ))}
             </div>
-          </section>
+          </Section>
         )}
 
         {data.awards.length > 0 && (
-          <section>
+          <Section>
             <h2
               className="font-semibold print-safe"
               style={{
@@ -431,6 +533,7 @@ export function ModernTemplate({
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
+                fontFamily: fontFamily,
               }}
             >
               GIẢI THƯỞNG & CHỨNG CHỈ
@@ -439,7 +542,7 @@ export function ModernTemplate({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: isCompact ? "0.125rem" : "0.5rem",
+                gap: spacingStyle.gap,
               }}
             >
               {data.awards.map((award, idx) => (
@@ -451,6 +554,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: colorScheme.secondary,
+                          fontFamily: fontFamily,
                         }}
                       >
                         {award.title}
@@ -459,6 +563,7 @@ export function ModernTemplate({
                         style={{
                           ...getSizeStyles("text"),
                           color: "rgb(75 85 99)",
+                          fontFamily: fontFamily,
                         }}
                       >
                         {award.issuer}
@@ -468,6 +573,7 @@ export function ModernTemplate({
                       style={{
                         ...getSizeStyles("text"),
                         color: "rgb(107 114 128)",
+                        fontFamily: fontFamily,
                       }}
                     >
                       {award.date}
@@ -475,7 +581,11 @@ export function ModernTemplate({
                   </div>
                   {award.description && (
                     <p
-                      style={{ ...getSizeStyles("text"), marginTop: "0.25rem" }}
+                      style={{
+                        ...getSizeStyles("text"),
+                        marginTop: "0.25rem",
+                        fontFamily: fontFamily,
+                      }}
                     >
                       {award.description}
                     </p>
@@ -483,7 +593,7 @@ export function ModernTemplate({
                 </div>
               ))}
             </div>
-          </section>
+          </Section>
         )}
       </div>
     </div>

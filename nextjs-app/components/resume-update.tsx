@@ -1,6 +1,7 @@
 /* eslint-disable */
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useForm, FormProvider } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -133,6 +134,7 @@ export function ResumeUpdate({
   initialData,
 }: ResumeUpdateProps) {
   const [currentStep, setCurrentStep] = useState(0);
+  const router = useRouter();
   const [showPreview, setShowPreview] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
@@ -369,6 +371,7 @@ export function ResumeUpdate({
           </div>
           <div className={styles.previewMainXl}>
             <ResumePreview
+              key={JSON.stringify(customization)}
               data={methods.getValues()}
               template={selectedTemplate}
               customization={customization}
@@ -384,7 +387,20 @@ export function ResumeUpdate({
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.headerContent}>
-          <h1 className={styles.title}>Tạo Resume</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Quay lại danh sách CV"
+              onClick={onBack}
+              style={{ marginRight: 8 }}
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <h1 className={styles.title} style={{ marginBottom: 0 }}>
+              Tạo Resume
+            </h1>
+          </div>
           <div className={styles.subtitle}>
             <p className={`${styles.subtitleText} ${styles.hiddenOnMobile}`}>
               Tạo resume chuyên nghiệp trong vài phút
@@ -479,8 +495,7 @@ export function ResumeUpdate({
                     <Button
                       type="button"
                       variant="outline"
-                      // onClick={prevStep}
-                      onClick={onBack ? onBack : () => setShowPreview(false)}
+                      onClick={prevStep}
                       disabled={currentStep === 0}
                       className={`${styles.actionButton} ${styles.secondaryButton}`}
                     >

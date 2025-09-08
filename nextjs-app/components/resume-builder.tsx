@@ -44,6 +44,7 @@ import styles from "./resume-builder.module.css";
 
 export interface ResumeData {
   id: number;
+  template?: string;
   personalInfo: {
     fullName: string;
     email: string;
@@ -172,7 +173,11 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
 
     setIsAutoSaving(true);
     setTimeout(() => {
-      localStorage.setItem("resume-draft", JSON.stringify(watch()));
+      const current = watch();
+      localStorage.setItem(
+        "resume-draft",
+        JSON.stringify({ ...current, template: selectedTemplate })
+      );
       setIsAutoSaving(false);
     }, 1000);
   };
@@ -304,6 +309,7 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
           </div>
           <div className={styles.previewMainXl}>
             <ResumePreview
+              key={JSON.stringify(customization)}
               data={methods.getValues()}
               template={selectedTemplate}
               customization={customization}
@@ -468,6 +474,7 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
               <div className={styles.previewContainer}>
                 <div className={styles.previewContent}>
                   <ResumePreview
+                    key={JSON.stringify(customization)}
                     data={watch()}
                     template={selectedTemplate}
                     customization={customization}

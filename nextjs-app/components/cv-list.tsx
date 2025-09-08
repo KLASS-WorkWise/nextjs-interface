@@ -1,6 +1,8 @@
 "use client";
 
 import { CVCard } from "@/components/cv-card";
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import type { ResumeData } from "@/components/resume-builder";
 
 interface CVListProps {
@@ -8,6 +10,7 @@ interface CVListProps {
   onCreateNew: () => void;
   onEditCV: (resume: ResumeData) => void;
   onDeleteCV: (index: number) => void;
+  onPreviewCV: (resume: ResumeData) => void;
 }
 
 export function CVList({
@@ -15,13 +18,25 @@ export function CVList({
   onCreateNew,
   onEditCV,
   onDeleteCV,
+  onPreviewCV,
 }: CVListProps) {
+  const router = useRouter();
   return (
     <div className="py-4">
       <div className="container">
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="h4 fw-bold m-0">CV đã tạo trên JobPost</h1>
+          <div className="d-flex align-items-center gap-2">
+            <button
+              className="btn btn-link p-0 me-2"
+              style={{ boxShadow: "none" }}
+              onClick={() => router.push("/")}
+              title="Quay lại trang chủ"
+            >
+              <ArrowLeft size={22} />
+            </button>
+            <h1 className="h4 fw-bold m-0">CV đã tạo trên JobPost</h1>
+          </div>
           <button
             className="btn btn-primary fw-semibold px-3"
             onClick={onCreateNew}
@@ -42,6 +57,7 @@ export function CVList({
                       resume={resume}
                       onEdit={() => onEditCV(resume)}
                       onDelete={() => onDeleteCV(id)}
+                      onPreview={() => onPreviewCV(resume)}
                     />
                   </div>
                 );
@@ -49,9 +65,7 @@ export function CVList({
               return null;
             })
           ) : (
-            <div className="text-center text-muted py-5">
-              Chưa có CV nào
-            </div>
+            <div className="text-center text-muted py-5">Chưa có CV nào</div>
           )}
         </div>
       </div>
