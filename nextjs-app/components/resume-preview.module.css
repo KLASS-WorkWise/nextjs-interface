@@ -11,17 +11,19 @@
   min-width: 0;
   min-height: 0;
   font-size: 13px;
-  overflow-x: auto;
+  height: 100%;
+  overflow-x: hidden;
   overflow-y: auto;
   word-break: break-word;
+  max-height: 520px;
+  transition: box-shadow 0.2s;
+}
+
 /* Đảm bảo mọi thành phần con đều co giãn tốt và không tràn */
 .compactPreview * {
   box-sizing: border-box;
   line-height: 1.5 !important;
   word-break: break-word;
-}
-  max-height: 420px;
-  transition: box-shadow 0.2s;
 }
 
 .compactPreview:hover {

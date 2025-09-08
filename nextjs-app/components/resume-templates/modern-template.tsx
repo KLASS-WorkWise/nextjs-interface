@@ -153,12 +153,19 @@ export function ModernTemplate({
             </AvatarFallback>
           </Avatar>
         </div>
-        <div style={{ color: "white" }}>
+        <div style={{ color: "white", minWidth: 0 }}>
           <h1
             className="font-bold"
             style={{
               fontSize: getSizeStyles("name").fontSize,
               fontFamily: fontFamily,
+              wordBreak: "break-word",
+              overflowWrap: "anywhere",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
             {data.personalInfo.fullName || "Họ và tên"}
@@ -171,16 +178,41 @@ export function ModernTemplate({
               flexDirection: "column",
               gap: isCompact ? "0" : "0.25rem",
               fontFamily: fontFamily,
+              minWidth: 0,
             }}
           >
             {data.personalInfo.email && (
-              <p style={{ color: "#fff" }}>{data.personalInfo.email}</p>
+              <p
+                style={{
+                  color: "#fff",
+                  wordBreak: "break-word",
+                  overflowWrap: "anywhere",
+                }}
+              >
+                {data.personalInfo.email}
+              </p>
             )}
             {data.personalInfo.phone && (
-              <p style={{ color: "#fff" }}>{data.personalInfo.phone}</p>
+              <p
+                style={{
+                  color: "#fff",
+                  wordBreak: "break-word",
+                  overflowWrap: "anywhere",
+                }}
+              >
+                {data.personalInfo.phone}
+              </p>
             )}
             {data.personalInfo.jobTitle && (
-              <p style={{ color: "#fff" }}>{data.personalInfo.jobTitle}</p>
+              <p
+                style={{
+                  color: "#fff",
+                  wordBreak: "break-word",
+                  overflowWrap: "anywhere",
+                }}
+              >
+                {data.personalInfo.jobTitle}
+              </p>
             )}
           </div>
         </div>

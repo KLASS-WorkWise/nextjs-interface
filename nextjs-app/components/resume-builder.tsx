@@ -44,6 +44,7 @@ import styles from "./resume-builder.module.css";
 
 export interface ResumeData {
   id: number;
+  template?: string;
   personalInfo: {
     fullName: string;
     email: string;
@@ -172,7 +173,11 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
 
     setIsAutoSaving(true);
     setTimeout(() => {
-      localStorage.setItem("resume-draft", JSON.stringify(watch()));
+      const current = watch();
+      localStorage.setItem(
+        "resume-draft",
+        JSON.stringify({ ...current, template: selectedTemplate })
+      );
       setIsAutoSaving(false);
     }, 1000);
   };

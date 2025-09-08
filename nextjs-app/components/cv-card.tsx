@@ -42,7 +42,10 @@ export function CVCard({ resume, onEdit, onDelete, onPreview }: CVCardProps) {
     <div className={styles.card}>
       <div className={styles.previewContainer}>
         <div className={styles.previewWrapper}>
-          <ResumeCardItem data={resume} />
+          <ResumeCardItem
+            data={resume}
+            template={(resume as any)?.template || "modern"}
+          />
         </div>
         <div className={styles.overlay}>
           <div className={styles.actions}>

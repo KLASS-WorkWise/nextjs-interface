@@ -136,32 +136,33 @@ export function PDFExport({ data, template, customization }: PDFExportProps) {
               </p>
             </div>
             <div className="d-flex align-items-center gap-2">
-              {exportSuccess && (
+              {exportSuccess ? (
                 <span className="badge bg-success d-flex align-items-center">
                   <i className="bi bi-check-circle me-1"></i>
                   Đã xuất
                 </span>
+              ) : (
+                <button
+                  onClick={handlePrint}
+                  disabled={isExporting}
+                  className="btn btn-primary d-flex align-items-center"
+                >
+                  {isExporting ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                      ></span>
+                      Đang xuất...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-download me-2"></i>
+                      Tải PDF
+                    </>
+                  )}
+                </button>
               )}
-              <button
-                onClick={handlePrint}
-                disabled={isExporting}
-                className="btn btn-primary d-flex align-items-center"
-              >
-                {isExporting ? (
-                  <>
-                    <span
-                      className="spinner-border spinner-border-sm me-2"
-                      role="status"
-                    ></span>
-                    Đang xuất...
-                  </>
-                ) : (
-                  <>
-                    <i className="bi bi-download me-2"></i>
-                    Tải PDF
-                  </>
-                )}
-              </button>
             </div>
           </div>
 

@@ -15,7 +15,13 @@ interface PrintableResumeProps {
 export const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
   ({ data, template, customization }, ref) => {
     const renderTemplate = () => {
-      switch (template) {
+      const tpl = (template || "modern").toLowerCase();
+      const normalized = tpl.includes("classic")
+        ? "classic"
+        : tpl.includes("modern")
+        ? "modern"
+        : "modern";
+      switch (normalized) {
         case "classic":
           return (
             <ClassicTemplate
