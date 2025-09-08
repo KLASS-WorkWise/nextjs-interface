@@ -6,7 +6,13 @@ import { DragDropList } from "../drag-drop-list";
 import type { ResumeData } from "../resume-builder";
 
 export function EducationStep() {
-  const { register, control, watch, setValue } = useFormContext<ResumeData>();
+  const {
+    register,
+    control,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useFormContext<ResumeData>();
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: "education",
@@ -153,9 +159,22 @@ export function EducationStep() {
             <input
               id={`gpa-${index}`}
               className="form-control"
-              {...register(`education.${index}.gpa`)}
+              {...register(`education.${index}.gpa`, {
+                validate: (value) => {
+                  if (value === "" || value === undefined) return true;
+                  const num = parseFloat(value);
+                  if (isNaN(num)) return "GPA không hợp lệ";
+                  if (num < 0 || num > 4) return "GPA 0-4";
+                  return true;
+                },
+              })}
               placeholder="3.5/4.0"
             />
+            {errors?.education?.[index]?.gpa && (
+              <div className="text-danger small mt-1">
+                {errors.education[index].gpa.message}
+              </div>
+            )}
           </div>
 
           <div className="col-md-6">
@@ -166,8 +185,23 @@ export function EducationStep() {
               type="date"
               id={`startDate-${index}`}
               className="form-control"
-              {...register(`education.${index}.startDate`, { required: true })}
+              {...register(`education.${index}.startDate`, {
+                required: true,
+                validate: (startDate) => {
+                  const endDate = watch(`education.${index}.endDate`);
+                  const today = new Date().toISOString().slice(0, 10);
+                  if (startDate > today) return "Không quá hiện tại";
+                  if (endDate && startDate > endDate)
+                    return "Bắt đầu <= kết thúc";
+                  return true;
+                },
+              })}
             />
+            {errors?.education?.[index]?.startDate && (
+              <div className="text-danger small mt-1">
+                {errors.education[index].startDate.message}
+              </div>
+            )}
           </div>
 
           <div className="col-md-6">
@@ -178,8 +212,21 @@ export function EducationStep() {
               type="date"
               id={`endDate-${index}`}
               className="form-control"
-              {...register(`education.${index}.endDate`, { required: true })}
+              {...register(`education.${index}.endDate`, {
+                required: true,
+                validate: (endDate) => {
+                  if (!endDate) return true;
+                  const today = new Date().toISOString().slice(0, 10);
+                  if (endDate > today) return "Không quá hiện tại";
+                  return true;
+                },
+              })}
             />
+            {errors?.education?.[index]?.endDate && (
+              <div className="text-danger small mt-1">
+                {errors.education[index].endDate.message}
+              </div>
+            )}
           </div>
         </div>
       </div>

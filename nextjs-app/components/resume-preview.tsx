@@ -74,7 +74,13 @@ export function ResumePreview({
   };
 
   const renderTemplate = () => {
-    switch (template) {
+    const tpl = (template || "modern").toLowerCase();
+    const normalized = tpl.includes("classic")
+      ? "classic"
+      : tpl.includes("modern")
+      ? "modern"
+      : "modern";
+    switch (normalized) {
       case "classic":
         return (
           <ClassicTemplate
@@ -100,7 +106,13 @@ export function ResumePreview({
       className={isCompact ? styles.compactPreview : `card mx-auto shadow`}
       style={
         isCompact
-          ? { minWidth: 0, minHeight: 0, padding: 0, background: "#fff" }
+          ? {
+              minWidth: 0,
+              minHeight: 0,
+              padding: 0,
+              background: "#fff",
+              overflow: "visible",
+            }
           : { maxWidth: "56rem", maxHeight: "90vh", overflowY: "auto" }
       }
     >
@@ -124,8 +136,12 @@ export function ResumePreview({
           </div>
         )}
         <div
-          className={!isCompact ? "shadow-lg" : ""}
-          style={isCompact ? {} : { aspectRatio: "8.5 / 11" }}
+          className={!isCompact ? "shadow-lg" : "d-flex justify-content-center"}
+          style={
+            isCompact
+              ? { width: "100%", height: "100%", overflow: "hidden" }
+              : { aspectRatio: "8.5 / 11" }
+          }
         >
           {renderTemplate()}
         </div>

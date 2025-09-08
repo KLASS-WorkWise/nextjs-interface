@@ -87,6 +87,7 @@ export function AwardsStep() {
             </label>
             <textarea
               id={`awardDescription-${index}`}
+              style={{ minHeight: 200 }}
               rows={2}
               className="form-control"
               placeholder="Mô tả chi tiết về giải thưởng..."

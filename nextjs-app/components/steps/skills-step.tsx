@@ -1,25 +1,51 @@
-"use client"
+"use client";
 /* eslint-disable */
-import { useFormContext, useFieldArray } from "react-hook-form"
-import type { ResumeData } from "../resume-builder"
-import { Plus, Trash2, Zap } from "lucide-react"
-import { DragDropList } from "../drag-drop-list"
+import { useFormContext, useFieldArray } from "react-hook-form";
+import type { ResumeData } from "../resume-builder";
+import { Plus, Trash2, Zap } from "lucide-react";
+import { DragDropList } from "../drag-drop-list";
 
 export function SkillsStep() {
-  const { register, control } = useFormContext<ResumeData>()
+  const { register, control } = useFormContext<ResumeData>();
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: "skills",
-  })
+  });
 
   const addSkill = () => {
-    append("") // thêm kỹ năng rỗng
-  }
+    append(""); // thêm kỹ năng rỗng
+  };
 
   const handleReorder = (oldIndex: number, newIndex: number) => {
-    move(oldIndex, newIndex)
-  }
+    move(oldIndex, newIndex);
+  };
 
+  const skillOptions = [
+    "JavaScript",
+    "TypeScript",
+    "React",
+    "Node.js",
+    "Python",
+    "Java",
+    "C#",
+    "SQL",
+    "HTML",
+    "CSS",
+    "Photoshop",
+    "Illustrator",
+    "Figma",
+    "Excel",
+    "Word",
+    "PowerPoint",
+    "Marketing",
+    "SEO",
+    "Quản lý dự án",
+    "Giao tiếp",
+    "Làm việc nhóm",
+    "Lãnh đạo",
+    "Giải quyết vấn đề",
+    "Khác",
+  ];
   const renderSkillItem = (field: any, index: number, isDragging?: boolean) => (
     <div
       key={field.id}
@@ -40,16 +66,23 @@ export function SkillsStep() {
           <label htmlFor={`skill-${index}`} className="form-label">
             Tên kỹ năng *
           </label>
-          <input
+          <select
             id={`skill-${index}`}
             {...register(`skills.${index}`, { required: true })}
-            placeholder="JavaScript, Photoshop, Marketing..."
-            className="form-control"
-          />
+            className="form-select"
+            defaultValue={field.value || ""}
+          >
+            <option value="">Chọn kỹ năng</option>
+            {skillOptions.map((skill) => (
+              <option key={skill} value={skill}>
+                {skill}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
     </div>
-  )
+  );
 
   return (
     <div className="mb-4">
@@ -59,7 +92,11 @@ export function SkillsStep() {
           <Zap size={20} />
           <h5 className="mb-0">Kỹ năng</h5>
         </div>
-        <button type="button" onClick={addSkill} className="btn btn-primary d-flex align-items-center gap-2">
+        <button
+          type="button"
+          onClick={addSkill}
+          className="btn btn-primary d-flex align-items-center gap-2"
+        >
           <Plus size={16} />
           Thêm kỹ năng
         </button>
@@ -69,7 +106,10 @@ export function SkillsStep() {
       {fields.length === 0 && (
         <div className="card text-center">
           <div className="card-body py-5 d-flex flex-column align-items-center justify-content-center">
-            <div className="d-flex align-items-center justify-content-center mb-3" style={{ width: 56, height: 56 }}>
+            <div
+              className="d-flex align-items-center justify-content-center mb-3"
+              style={{ width: 56, height: 56 }}
+            >
               <Zap size={40} className="text-muted" />
             </div>
             <p className="text-muted">
@@ -98,5 +138,5 @@ export function SkillsStep() {
         </div>
       )}
     </div>
-  )
+  );
 }

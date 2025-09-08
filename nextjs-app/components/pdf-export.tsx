@@ -21,23 +21,30 @@ export function PDFExport({ data, template, customization }: PDFExportProps) {
 
   const handlePrint = () => {
     if (!contentRef.current) return;
-
     setIsExporting(true);
-
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
       setIsExporting(false);
       return;
     }
-
     const printContent = contentRef.current.innerHTML;
-
+    // Copy all <link rel="stylesheet"> and <style> from main document
+    let styles = "";
+    // Copy <link rel="stylesheet">
+    document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+      styles += link.outerHTML;
+    });
+    // Copy <style>
+    document.querySelectorAll("style").forEach((style) => {
+      styles += style.outerHTML;
+    });
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
         <head>
           <title>${data.personalInfo.fullName || "Resume"}_CV</title>
           <meta charset="utf-8">
+          ${styles}
           <style>
             @page { size: A4; margin: 0.5in; }
             body {
@@ -50,6 +57,48 @@ export function PDFExport({ data, template, customization }: PDFExportProps) {
             .print-container { width: 100%; height: 100%; margin: 0; padding: 0; box-shadow: none; }
             .print-safe * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
+            
+            /* Reset Bootstrap print styles that might conflict */
+            @media print {
+              .d-print-inline,
+              .d-print-inline-block,
+              .d-print-block,
+              .d-print-none {
+                display: inherit !important;
+              }
+            }
+            
+            /* Ensure proper layout for print */
+            .bg-white {
+              background-color: white !important;
+            }
+            
+            /* Fix flexbox issues in print */
+            .d-flex {
+              display: flex !important;
+            }
+            
+            .align-items-center {
+              align-items: center !important;
+            }
+            
+            .justify-content-between {
+              justify-content: space-between !important;
+            }
+            
+            /* Ensure proper spacing */
+            .rounded-lg {
+              border-radius: 0.5rem !important;
+            }
+            
+            /* Fix text colors */
+            .text-white {
+              color: white !important;
+            }
+            
+            .text-muted {
+              color: #6b7280 !important;
+            }
           </style>
         </head>
         <body>
@@ -57,9 +106,7 @@ export function PDFExport({ data, template, customization }: PDFExportProps) {
         </body>
       </html>
     `);
-
     printWindow.document.close();
-
     printWindow.onload = () => {
       setTimeout(() => {
         printWindow.print();
@@ -89,32 +136,33 @@ export function PDFExport({ data, template, customization }: PDFExportProps) {
               </p>
             </div>
             <div className="d-flex align-items-center gap-2">
-              {exportSuccess && (
+              {exportSuccess ? (
                 <span className="badge bg-success d-flex align-items-center">
                   <i className="bi bi-check-circle me-1"></i>
                   Đã xuất
                 </span>
+              ) : (
+                <button
+                  onClick={handlePrint}
+                  disabled={isExporting}
+                  className="btn btn-primary d-flex align-items-center"
+                >
+                  {isExporting ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                      ></span>
+                      Đang xuất...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-download me-2"></i>
+                      Tải PDF
+                    </>
+                  )}
+                </button>
               )}
-              <button
-                onClick={handlePrint}
-                disabled={isExporting}
-                className="btn btn-primary d-flex align-items-center"
-              >
-                {isExporting ? (
-                  <>
-                    <span
-                      className="spinner-border spinner-border-sm me-2"
-                      role="status"
-                    ></span>
-                    Đang xuất...
-                  </>
-                ) : (
-                  <>
-                    <i className="bi bi-download me-2"></i>
-                    Tải PDF
-                  </>
-                )}
-              </button>
             </div>
           </div>
 
@@ -155,65 +203,127 @@ export async function exportResumeToPDF(
     fontSize: "medium",
   }
 ) {
-  // Tạo div tạm
-  const container = document.createElement("div");
-  container.style.display = "none";
-  document.body.appendChild(container);
+  return new Promise<void>((resolve, reject) => {
+    try {
+      // Tạo một div ẩn để render component
+      const hiddenDiv = document.createElement("div");
+      hiddenDiv.style.display = "none";
+      document.body.appendChild(hiddenDiv);
 
-  // Render PrintableResume vào div tạm
-  const root = createRoot(container);
-  root.render(
-    <PrintableResume
-      data={data}
-      template={template}
-      customization={customization}
-    />
-  );
+      // Tạo root và render component
+      const root = createRoot(hiddenDiv);
+      root.render(
+        <PrintableResume
+          data={data}
+          template={template}
+          customization={customization}
+        />
+      );
 
-  // Đợi 1 chút cho render xong
-  await new Promise((resolve) => setTimeout(resolve, 100));
+      // Đợi component render xong
+      setTimeout(() => {
+        const content = hiddenDiv.innerHTML;
 
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) {
-    document.body.removeChild(container);
-    throw new Error("Không thể mở cửa sổ in");
-  }
+        // Tạo cửa sổ in
+        const printWindow = window.open("", "_blank");
+        if (!printWindow) {
+          reject(new Error("Không thể mở cửa sổ in"));
+          return;
+        }
 
-  const printContent = container.innerHTML;
+        // Copy styles
+        let styles = "";
+        document.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+          styles += link.outerHTML;
+        });
+        document.querySelectorAll("style").forEach((style) => {
+          styles += style.outerHTML;
+        });
 
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>${data.personalInfo.fullName || "Resume"}_CV</title>
-        <meta charset="utf-8">
-        <style>
-          @page { size: A4; margin: 0.5in; }
-          body {
-            margin: 0;
-            padding: 0;
-            font-family: system-ui, -apple-system, sans-serif;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          .print-container { width: 100%; height: 100%; margin: 0; padding: 0; box-shadow: none; }
-          .print-safe * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          .no-print { display: none !important; }
-        </style>
-      </head>
-      <body>
-        ${printContent}
-      </body>
-    </html>
-  `);
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>${data.personalInfo.fullName || "Resume"}_CV</title>
+              <meta charset="utf-8">
+              ${styles}
+              <style>
+                @page { size: A4; margin: 0.5in; }
+                body {
+                  margin: 0;
+                  padding: 0;
+                  font-family: system-ui, -apple-system, sans-serif;
+                  -webkit-print-color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                }
+                .print-container { width: 100%; height: 100%; margin: 0; padding: 0; box-shadow: none; }
+                .print-safe * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                .no-print { display: none !important; }
+                
+                /* Reset Bootstrap print styles that might conflict */
+                @media print {
+                  .d-print-inline,
+                  .d-print-inline-block,
+                  .d-print-block,
+                  .d-print-none {
+                    display: inherit !important;
+                  }
+                }
+                
+                /* Ensure proper layout for print */
+                .bg-white {
+                  background-color: white !important;
+                }
+                
+                /* Fix flexbox issues in print */
+                .d-flex {
+                  display: flex !important;
+                }
+                
+                .align-items-center {
+                  align-items: center !important;
+                }
+                
+                .justify-content-between {
+                  justify-content: space-between !important;
+                }
+                
+                /* Ensure proper spacing */
+                .rounded-lg {
+                  border-radius: 0.5rem !important;
+                }
+                
+                /* Fix text colors */
+                .text-white {
+                  color: white !important;
+                }
+                
+                .text-muted {
+                  color: #6b7280 !important;
+                }
+              </style>
+            </head>
+            <body>
+              ${content}
+            </body>
+          </html>
+        `);
 
-  printWindow.document.close();
+        printWindow.document.close();
+        printWindow.onload = () => {
+          setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+            resolve();
+          }, 500);
+        };
 
-  printWindow.onload = () => {
-    setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-      document.body.removeChild(container);
-    }, 500);
-  };
+        // Cleanup
+        root.unmount();
+        document.body.removeChild(hiddenDiv);
+      }, 100);
+    } catch (error) {
+      reject(error);
+    }
+  });
 }

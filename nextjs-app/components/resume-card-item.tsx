@@ -30,7 +30,7 @@ const defaultCustomization: CustomizationOptions = {
 
 export function ResumeCardItem({
   data,
-  template = "modern",
+  template = (data as any)?.template || "modern",
   customization = defaultCustomization,
   isCompact = false,
   onSave, // Nhận callback onSave từ props
@@ -70,7 +70,13 @@ export function ResumeCardItem({
   };
 
   const renderTemplate = () => {
-    switch (template) {
+    const tpl = (template || "modern").toLowerCase();
+    const normalized = tpl.includes("classic")
+      ? "classic"
+      : tpl.includes("modern")
+      ? "modern"
+      : "modern";
+    switch (normalized) {
       case "classic":
         return (
           <ClassicTemplate
