@@ -278,7 +278,7 @@ export default function JobGrid() {
               <div className="banner-hero banner-single banner-single-bg">
                 <div className="block-banner text-center">
                   <h3 className="wow animate__animated animate__fadeInUp">
-                    <span className="color-brand-2">22 Jobs</span> Available Now
+                    <span className="color-brand-2">{filteredJobs.length} Jobs</span> Available Now
                   </h3>
                   <div
                     className="font-sm color-text-paragraph-2 mt-10 wow animate__animated animate__fadeInUp"
@@ -511,68 +511,34 @@ export default function JobGrid() {
                       {!jobsLoading &&
                         !jobsError &&
                         jobs.length > 0 &&
-                        jobs.map((job: any) => {
-                          const isSaved = savedJobs.some(
-                            (j) => j.jobId === job.id
-                          );
+                        pagedJobs.map((job: any) => {
+                          const isSaved = savedJobs.some((j) => j.jobId === job.id);
                           return (
-                            <div
-                              key={job.id}
-                              className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12"
-                            >
+                            <div key={job.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
                               <div className="card-grid-2 hover-up">
                                 <div className="card-grid-2-image-left">
-                                  <span
-                                    className="flash"
-                                    style={{ marginRight: "20px" }}
-                                  >
+                                  <span className="flash" style={{ marginRight: "20px" }}>
                                     <button
                                       onClick={() => toggleSaveJob(job.id)}
                                       disabled={savingJobId === job.id}
                                       className="saved-job-button"
-                                      style={{
-                                        background: "transparent",
-                                        border: "none",
-                                        cursor: "pointer",
-                                        padding: 0,
-                                      }}
+                                      style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0 }}
                                     >
                                       {savingJobId === job.id ? (
-                                        <span className="loading-dots">
-                                          ...
-                                        </span>
+                                        <span className="loading-dots">...</span>
                                       ) : (
-                                        <Bookmark
-                                          size={22}
-                                          color={isSaved ? "red" : "gray"} // 👈 khi save thì đỏ, chưa save thì xám
-                                          fill={isSaved ? "red" : "none"} // 👈 tô màu khi saved
-                                        />
+                                        <Bookmark size={22} color={isSaved ? "red" : "gray"} fill={isSaved ? "red" : "none"} />
                                       )}
                                     </button>
                                   </span>
-
                                   <div className="image-box">
-                                    <img
-                                      src={
-                                        job.companyLogo ||
-                                        "assets/imgs/brands/brand-1.png"
-                                      }
-                                      alt="jobBox"
-                                    />
+                                    <img src={job.companyLogo || "assets/imgs/brands/brand-1.png"} alt="jobBox" />
                                   </div>
                                   <div className="right-info">
-                                    <Link
-                                      href={`/company-details/${
-                                        job.companyId || ""
-                                      }`}
-                                    >
-                                      <span className="name-job">
-                                        {job.companyName || "Company"}
-                                      </span>
+                                    <Link href={`/company-details/${job.companyId || ""}`}>
+                                      <span className="name-job">{job.companyName || "Company"}</span>
                                     </Link>
-                                    <span className="location-small">
-                                      {job.location || "Unknown"}
-                                    </span>
+                                    <span className="location-small">{job.location || "Unknown"}</span>
                                   </div>
                                 </div>
                                 <div className="card-block-info">
@@ -582,50 +548,23 @@ export default function JobGrid() {
                                     </Link>
                                   </h6>
                                   <div className="mt-5">
-                                    <span className="card-briefcase">
-                                      {job.type || "Fulltime"}
-                                    </span>
-                                    <span className="card-time">
-                                      {job.createdAt
-                                        ? new Date(
-                                            job.createdAt
-                                          ).toLocaleDateString()
-                                        : ""}
-                                    </span>
+                                    <span className="card-briefcase">{job.type || "Fulltime"}</span>
+                                    <span className="card-time">{job.createdAt ? new Date(job.createdAt).toLocaleDateString() : ""}</span>
                                   </div>
-                                  <p className="font-sm color-text-paragraph mt-15">
-                                    {job.description || "Không có mô tả"}
-                                  </p>
+                                  <p className="font-sm color-text-paragraph mt-15">{job.description || "Không có mô tả"}</p>
                                   <div className="mt-30">
-                                    {Array.isArray(job.skills) &&
-                                      job.skills.map(
-                                        (skill: string, idx: number) => (
-                                          <span
-                                            key={idx}
-                                            className="btn btn-grey-small mr-5"
-                                          >
-                                            {skill}
-                                          </span>
-                                        )
-                                      )}
+                                    {Array.isArray(job.skills) && job.skills.map((skill: string, idx: number) => (
+                                      <span key={idx} className="btn btn-grey-small mr-5">{skill}</span>
+                                    ))}
                                   </div>
                                   <div className="card-2-bottom mt-30">
                                     <div className="row">
                                       <div className="col-lg-7 col-7">
-                                        <span className="card-text-price">
-                                          {job.salary || "N/A"}
-                                        </span>
-                                        <span className="text-muted">
-                                          /Tháng
-                                        </span>
+                                        <span className="card-text-price">{job.salary || "N/A"}</span>
+                                        <span className="text-muted">/Tháng</span>
                                       </div>
                                       <div className="col-lg-5 col-5 text-end">
-                                        <button
-                                          onClick={() => handleOpenApply(job)}
-                                          className="btn-apply"
-                                        >
-                                          Apply Now
-                                        </button>
+                                        <button onClick={() => handleOpenApply(job)} className="btn-apply">Apply Now</button>
                                       </div>
                                     </div>
                                   </div>
@@ -634,6 +573,15 @@ export default function JobGrid() {
                             </div>
                           );
                         })}
+          {/* Modal ApplyJob */}
+          {modalJob && (
+            <ApplyJob
+              job={modalJob}
+              resumes={resumes}
+              onClose={() => setModalJob(null)}
+              onSuccess={() => toast.success("Applied successfully!")}
+            />
+          )}
                     </div>
                   </div>
                   <div className="paginations">
