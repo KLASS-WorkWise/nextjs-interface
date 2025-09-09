@@ -6,6 +6,12 @@ import BlogSlider from "@/components/sliders/Blog";
 import { useSession } from "next-auth/react";
 
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { applyService } from "@/services/applyService";
+import { savedJobService } from "@/features/applicants/services/savedJobService";
+import ApplyJob from "@/features/applicants/components/ApplyJob";
+import { toast } from "react-toastify";
+import Router from "next/router";
 
 
 export default function JobGrid() {
@@ -23,6 +29,9 @@ export default function JobGrid() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [jobsLoading, setJobsLoading] = useState(false);
   const [jobsError, setJobsError] = useState("");
+  const [resumes, setResumes] = useState<any[]>([]);
+  const [savedJobs, setSavedJobs] = useState<{ jobId: number; savedJobId: number }[]>([]);
+  const [modalJob, setModalJob] = useState<any | null>(null);
   // Filter state
   const [jobTypeChecked, setJobTypeChecked] = useState<string[]>(["All"]);
   const [location, setLocation] = useState("");
@@ -35,6 +44,15 @@ export default function JobGrid() {
   const jobsPerPage = 15;
   // Keyword search
   const [keyword, setKeyword] = useState("");
+
+  const handleOpenApply = (job: any) => {
+    if (!session) {
+      toast.error("You need to login to apply!");
+      Router.push("/page-signin"); // 👈 redirect sang trang login của bạn
+      return;
+    }
+    setModalJob(job);
+  };
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -274,13 +292,13 @@ export default function JobGrid() {
                         </select>
                       </div>
                       <input
-                       
+
                         className="form-input input-keysearch mr-10"
-                       
+
                         type="text"
-                       
+
                         placeholder="Your keyword... "
-                     
+
                         value={keyword}
                         onChange={e => setKeyword(e.target.value)}
                       />
@@ -453,7 +471,7 @@ export default function JobGrid() {
                                     <span className="text-muted" style={{ fontSize: '0.85rem', marginLeft: 2 }}>/Tháng</span>
                                   </div>
                                   <div className="col-lg-5 col-5 text-end">
-                                    <button className="btn btn-apply-now">Apply</button>
+                                    <button onClick={() => handleOpenApply(job)} className="btn btn-apply-now">Apply</button>
                                   </div>
                                 </div>
                               </div>

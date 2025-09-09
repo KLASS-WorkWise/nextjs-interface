@@ -1,3 +1,4 @@
+
 import "@/public/assets/css/style.css";
 import "@/styles/globals.css";
 import { NextAuthProvider } from "@/components/providers/authProviders";
@@ -5,6 +6,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import type { Metadata } from "next";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ClientChatBubbles from "@/components/ClientChatBubbles";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -18,11 +20,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -37,7 +36,11 @@ export default function RootLayout({
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet' />
       </head>
       <body className={`${plusJakartaSans.className}`}>
-        <NextAuthProvider>{children}</NextAuthProvider>
+        <NextAuthProvider>
+          {children}
+          {/* Bong bóng chatbot và social luôn hiện trên mọi trang */}
+          <ClientChatBubbles />
+        </NextAuthProvider>
         <ToastContainer position="top-right" autoClose={4000} />
       </body>
     </html>
