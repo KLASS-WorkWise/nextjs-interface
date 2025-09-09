@@ -1,7 +1,12 @@
 import React from "react";
 import "./styleicon.css";
 
-const SocialIcons: React.FC = () => {
+interface SocialIconsProps {
+    isChatOpen: boolean;
+}
+
+const SocialIcons: React.FC<SocialIconsProps> = ({ isChatOpen }) => {
+    if (isChatOpen) return null;
     return (
         <div className="icon">
             {/* Zalo */}

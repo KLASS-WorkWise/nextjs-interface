@@ -37,61 +37,6 @@ export default function JobGrid() {
   // Keyword search
   const [keyword, setKeyword] = useState("");
 
-  const [modalJob, setModalJob] = useState<any | null>(null);
-
-  const [resumes, setResumes] = useState<any[]>([]);
-  const router = useRouter();
-  const [savingJobId, setSavingJobId] = useState<number | null>(null);
-  // savedJobs: lưu cả jobId và savedJobId
-  const [savedJobs, setSavedJobs] = useState<
-    { jobId: number; savedJobId: number }[]
-  >([]);
-
-  const toggleSaveJob = async (jobId: number) => {
-    if (!session) {
-      toast.error("You need to login to saved job!");
-      router.push("/page-signin"); // 👈 redirect sang trang login của bạn
-      return;
-    }
-    const existing = savedJobs.find((j) => j.jobId === jobId);
-    setSavingJobId(jobId);
-    try {
-      if (existing) {
-        // Unsave dùng savedJobId
-        await savedJobService.removeSavedJob(existing.savedJobId);
-        setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
-        toast.success("Removed successfully");
-      } else {
-        const res = await savedJobService.saveJob(jobId);
-        setSavedJobs((prev) => [
-          ...prev,
-          { jobId, savedJobId: res.data.savedJobId },
-        ]);
-        toast.success("Saved successfully");
-      }
-    } catch (err: any) {
-      console.error("Error saving job", err);
-      // Nếu 404, vẫn remove khỏi state để UI không treo
-      if (err.response?.status === 404 && existing) {
-        setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
-        toast.error("This job was not saved or already removed");
-      } else {
-        toast.error("Something went wrong");
-      }
-    } finally {
-      setSavingJobId(null);
-    }
-  };
-
-  const handleOpenApply = (job: any) => {
-    if (!session) {
-      toast.error("You need to login to apply!");
-      router.push("/page-signin"); // 👈 redirect sang trang login của bạn
-      return;
-    }
-    setModalJob(job);
-  };
-
   useEffect(() => {
     const fetchJobs = async () => {
       setJobsLoading(true);
@@ -234,12 +179,8 @@ export default function JobGrid() {
                   <h3 className="wow animate__animated animate__fadeInUp">
                     <span className="color-brand-2">22 Jobs</span> Available Now
                   </h3>
-                  <div
-                    className="font-sm color-text-paragraph-2 mt-10 wow animate__animated animate__fadeInUp"
-                    data-wow-delay=".1s"
-                  >
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Vero repellendus magni, <br className="d-none d-xl-block" />
+                  <div className="font-sm color-text-paragraph-2 mt-10 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero repellendus magni, <br className="d-none d-xl-block" />
                     atque delectus molestias quis?
                   </div>
                   <div className="form-find text-start mt-40 wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
@@ -325,22 +266,11 @@ export default function JobGrid() {
                         <div className="col-xl-6 col-lg-7 text-lg-end mt-sm-15 ">
                           <div className="display-flex2">
                             {role?.includes("Employers") && (
-                              <>
-
-                                <Link href="/job-create">
-                                  <button className="btn btn-primary" style={{ marginRight: "16px" }}>
-                                    Create Job
-                                  </button>
-                                </Link>
-
-                                <Link href="/dashboard-employers/my-jobs">
-                                  <button className="btn btn-primary" style={{ marginRight: "16px" }}>
-                                    Manager Job
-                                  </button>
-                                </Link>
-
-
-                              </>
+                              <Link href="/job-create">
+                                <button className="btn btn-primary" style={{ marginRight: "16px" }}>
+                                  Create Job
+                                </button>
+                              </Link>
                             )}
 
                             <div className="box-border mr-10">
@@ -350,15 +280,10 @@ export default function JobGrid() {
                                   <span>15</span>
                                   <i className="fi-rr-angle-small-down" />
                                 </button>
-                                <ul
-                                  className="dropdown-menu dropdown-menu-light"
-                                  aria-labelledby="dropdownSort"
-                                >
+                                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownSort">
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item active">
-                                        10
-                                      </span>
+                                      <span className="dropdown-item active">10</span>
                                     </Link>
                                   </li>
                                   <li>
@@ -377,40 +302,24 @@ export default function JobGrid() {
                             <div className="box-border">
                               <span className="text-sortby">Sort by:</span>
                               <div className="dropdown dropdown-sort">
-                                <button
-                                  className="btn dropdown-toggle"
-                                  id="dropdownSort2"
-                                  type="button"
-                                  data-bs-toggle="dropdown"
-                                  aria-expanded="false"
-                                  data-bs-display="static"
-                                >
+                                <button className="btn dropdown-toggle" id="dropdownSort2" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
                                   <span>Newest Post</span>
                                   <i className="fi-rr-angle-small-down" />
                                 </button>
-                                <ul
-                                  className="dropdown-menu dropdown-menu-light"
-                                  aria-labelledby="dropdownSort2"
-                                >
+                                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownSort2">
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item active">
-                                        Newest Post
-                                      </span>
+                                      <span className="dropdown-item active">Newest Post</span>
                                     </Link>
                                   </li>
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item">
-                                        Oldest Post
-                                      </span>
+                                      <span className="dropdown-item">Oldest Post</span>
                                     </Link>
                                   </li>
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item">
-                                        Rating Post
-                                      </span>
+                                      <span className="dropdown-item">Rating Post</span>
                                     </Link>
                                   </li>
                                 </ul>
@@ -419,19 +328,13 @@ export default function JobGrid() {
                             <div className="box-view-type">
                               <Link href="/jobs-list">
                                 <span className="view-type">
-                                  <img
-                                    src="assets/imgs/template/icons/icon-list.svg"
-                                    alt="jobBox"
-                                  />
+                                  <img src="assets/imgs/template/icons/icon-list.svg" alt="jobBox" />
                                 </span>
                               </Link>
 
                               <Link href="/jobs-grid">
                                 <span className="view-type">
-                                  <img
-                                    src="assets/imgs/template/icons/icon-grid-hover.svg"
-                                    alt="jobBox"
-                                  />
+                                  <img src="assets/imgs/template/icons/icon-grid-hover.svg" alt="jobBox" />
                                 </span>
                               </Link>
                             </div>
@@ -500,9 +403,7 @@ export default function JobGrid() {
                                     <span className="text-muted" style={{ fontSize: '0.85rem', marginLeft: 2 }}>/Tháng</span>
                                   </div>
                                   <div className="col-lg-5 col-5 text-end">
-                                    <button onClick={() => setModalJob(job)} className="btn-apply">
-                                      Apply Now
-                                    </button>
+                                    <button className="btn btn-apply-now">Apply</button>
                                   </div>
                                 </div>
                               </div>
@@ -556,7 +457,7 @@ export default function JobGrid() {
                       </div>
                       <div className="filter-block mb-30">
                         <div className="form-group select-style select-style-icon">
-                          <input className="form-control form-icons select-active" value={location || "Location"} disabled style={{background:'#f7f7f7', color:'#222'}} />
+                          <input className="form-control form-icons select-active" value={location || "Location"} disabled style={{ background: '#f7f7f7', color: '#222' }} />
                           <i className="fi-rr-marker" />
                         </div>
                       </div>
@@ -753,36 +654,12 @@ export default function JobGrid() {
                 </div>
               </div>
             </div>
-
           </section>
-          {/* Popup Modal */}
-          {modalJob && (
-            <ApplyModal
-              job={modalJob}
-              resumes={resumes}
-              selectedResumeId={selectedResumeId}
-              setSelectedResumeId={setSelectedResumeId}
-              resumeLink={resumeLink}
-              setResumeLink={setResumeLink}
-              file={file}
-              setFile={setFile}
-              message={message}
-              setMessage={setMessage}
-              progress={progress}
-              submitting={submitting}
-              onClose={() => setModalJob(null)}
-              onSubmit={() => handleApply(modalJob.id)}
-            />
-          )}
           <section className="section-box mt-50 mb-50">
             <div className="container">
               <div className="text-start">
-                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
-                  News and Blog
-                </h2>
-                <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
-                  Get the latest news, updates and tips
-                </p>
+                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">News and Blog</h2>
+                <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">Get the latest news, updates and tips</p>
               </div>
             </div>
             <div className="container">
@@ -792,9 +669,7 @@ export default function JobGrid() {
                 </div>
                 <div className="text-center">
                   <Link href="blog-grid">
-                    <span className="btn btn-brand-1 btn-icon-load mt--30 hover-up">
-                      Load More Posts
-                    </span>
+                    <span className="btn btn-brand-1 btn-icon-load mt--30 hover-up">Load More Posts</span>
                   </Link>
                 </div>
               </div>
@@ -805,10 +680,7 @@ export default function JobGrid() {
               <div className="box-newsletter">
                 <div className="row">
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img
-                      src="assets/imgs/template/newsletter-left.png"
-                      alt="joxBox"
-                    />
+                    <img src="assets/imgs/template/newsletter-left.png" alt="joxBox" />
                   </div>
                   <div className="col-lg-12 col-xl-6 col-12">
                     <h2 className="text-md-newsletter text-center">
@@ -817,22 +689,13 @@ export default function JobGrid() {
                     </h2>
                     <div className="box-form-newsletter mt-40">
                       <form className="form-newsletter">
-                        <input
-                          className="input-newsletter"
-                          type="text"
-                          placeholder="Enter your email here"
-                        />
-                        <button className="btn btn-default font-heading icon-send-letter">
-                          Subscribe
-                        </button>
+                        <input className="input-newsletter" type="text" placeholder="Enter your email here" />
+                        <button className="btn btn-default font-heading icon-send-letter">Subscribe</button>
                       </form>
                     </div>
                   </div>
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img
-                      src="assets/imgs/template/newsletter-right.png"
-                      alt="joxBox"
-                    />
+                    <img src="assets/imgs/template/newsletter-right.png" alt="joxBox" />
                   </div>
                 </div>
               </div>
@@ -842,5 +705,4 @@ export default function JobGrid() {
       </Layout>
     </>
   );
-}
 }

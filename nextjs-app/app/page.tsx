@@ -9,11 +9,13 @@ import Link from "next/link";
 import SocialIcons from "./SocialIcon/SocialIcons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import JobChatBot from "./ChatBotJob/page";
 
 export default function Home() {
   const router = useRouter();
   const [location, setLocation] = useState("");
   const [keyword, setKeyword] = useState("");
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
@@ -60,41 +62,41 @@ export default function Home() {
                             value={location}
                             onChange={e => setLocation(e.target.value)}
                           >
-                          <option value="">Location</option>
-                          <option value="Hà Nội">Hà Nội</option>
-                          <option value="Hải Phòng">Hải Phòng</option>
-                          <option value="Đà Nẵng">Đà Nẵng</option>
-                          <option value="Huế">Huế</option>
-                          <option value="Cần Thơ">Cần Thơ</option>
-                          <option value="HCM">Thành phố Hồ Chí Minh</option>
-                          <option value="An Giang">An Giang</option>
-                          <option value="Bắc Ninh">Bắc Ninh</option>
-                          <option value="Cà Mau">Cà Mau</option>
-                          <option value="Cao Bằng">Cao Bằng</option>
-                          <option value="Đắk Lắk">Đắk Lắk</option>
-                          <option value="Điện Biên">Điện Biên</option>
-                          <option value="Đồng Nai">Đồng Nai</option>
-                          <option value="Đồng Tháp">Đồng Tháp</option>
-                          <option value="Gia Lai">Gia Lai</option>
-                          <option value="Hà Tĩnh">Hà Tĩnh</option>
-                          <option value="Hưng Yên">Hưng Yên</option>
-                          <option value="Khánh Hòa">Khánh Hòa</option>
-                          <option value="Lai Châu">Lai Châu</option>
-                          <option value="Lạng Sơn">Lạng Sơn</option>
-                          <option value="Lào Cai">Lào Cai</option>
-                          <option value="Lâm Đồng">Lâm Đồng</option>
-                          <option value="Nghệ An">Nghệ An</option>
-                          <option value="Ninh Bình">Ninh Bình</option>
-                          <option value="Phú Thọ">Phú Thọ</option>
-                          <option value="Quảng Ngãi">Quảng Ngãi</option>
-                          <option value="Quảng Ninh">Quảng Ninh</option>
-                          <option value="Quảng Trị">Quảng Trị</option>
-                          <option value="Sơn La">Sơn La</option>
-                          <option value="Tây Ninh">Tây Ninh</option>
-                          <option value="Thái Nguyên">Thái Nguyên</option>
-                          <option value="Thanh Hóa">Thanh Hóa</option>
-                          <option value="Tuyên Quang">Tuyên Quang</option>
-                          <option value="Vĩnh Long">Vĩnh Long</option>
+                            <option value="">Location</option>
+                            <option value="Hà Nội">Hà Nội</option>
+                            <option value="Hải Phòng">Hải Phòng</option>
+                            <option value="Đà Nẵng">Đà Nẵng</option>
+                            <option value="Huế">Huế</option>
+                            <option value="Cần Thơ">Cần Thơ</option>
+                            <option value="HCM">Thành phố Hồ Chí Minh</option>
+                            <option value="An Giang">An Giang</option>
+                            <option value="Bắc Ninh">Bắc Ninh</option>
+                            <option value="Cà Mau">Cà Mau</option>
+                            <option value="Cao Bằng">Cao Bằng</option>
+                            <option value="Đắk Lắk">Đắk Lắk</option>
+                            <option value="Điện Biên">Điện Biên</option>
+                            <option value="Đồng Nai">Đồng Nai</option>
+                            <option value="Đồng Tháp">Đồng Tháp</option>
+                            <option value="Gia Lai">Gia Lai</option>
+                            <option value="Hà Tĩnh">Hà Tĩnh</option>
+                            <option value="Hưng Yên">Hưng Yên</option>
+                            <option value="Khánh Hòa">Khánh Hòa</option>
+                            <option value="Lai Châu">Lai Châu</option>
+                            <option value="Lạng Sơn">Lạng Sơn</option>
+                            <option value="Lào Cai">Lào Cai</option>
+                            <option value="Lâm Đồng">Lâm Đồng</option>
+                            <option value="Nghệ An">Nghệ An</option>
+                            <option value="Ninh Bình">Ninh Bình</option>
+                            <option value="Phú Thọ">Phú Thọ</option>
+                            <option value="Quảng Ngãi">Quảng Ngãi</option>
+                            <option value="Quảng Ninh">Quảng Ninh</option>
+                            <option value="Quảng Trị">Quảng Trị</option>
+                            <option value="Sơn La">Sơn La</option>
+                            <option value="Tây Ninh">Tây Ninh</option>
+                            <option value="Thái Nguyên">Thái Nguyên</option>
+                            <option value="Thanh Hóa">Thanh Hóa</option>
+                            <option value="Tuyên Quang">Tuyên Quang</option>
+                            <option value="Vĩnh Long">Vĩnh Long</option>
                           </select>
                         </div>
                         <input
@@ -491,7 +493,8 @@ export default function Home() {
           </div>
         </section>
       </Layout>
-      <SocialIcons />
+      <JobChatBot isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
+      <SocialIcons isChatOpen={isChatOpen} />
     </>
   );
 }

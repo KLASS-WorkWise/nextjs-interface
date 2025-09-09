@@ -1,14 +1,14 @@
 /* CSS cho icon */
 .icon {
     position: fixed;
-    right: 20px;
-    bottom: 160px;
+    right: 14px;
+    bottom: 140px;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 10px;
-    z-index: 9999;
-    font-size: 30px;
+    /* align-items: flex-end; */
+    /* gap: 10px; */
+    /* z-index: 9999;
+    font-size: 30px; */
 }
 
 /* ---------------- ZALO ---------------- */
@@ -23,8 +23,8 @@
     height: 40px;
     width: 40px;
     position: absolute;
-    top: 15px;
-    left: 15px;
+    top: 10px;
+    left: 10px;
     z-index: 2;
     border-radius: 50%;
     animation: rung 1s infinite;
@@ -32,11 +32,11 @@
 
 .nen1 {
     position: absolute;
-    width: 70px;
-    height: 70px;
-        background-color: #87CEEB;
+    width: 58px;
+    height: 58px;
+    background-color: #87CEEB;
     border-radius: 50%;
-    z-index: 1;
+    /* z-index: 1; */
 }
 
 /* .vien2 {
@@ -60,8 +60,8 @@
 
 .nen2 {
     position: absolute;
-    width: 70px;
-    height: 70px;
+    width: 58px;
+    height: 58px;
         background-color: #87CEEB;
     border-radius: 50%;
     z-index: 1;
@@ -70,8 +70,8 @@
 .dienthoai i {
     position: absolute;
     z-index: 2;
-    top: 15px;
-    left: 15px;
+    top:11px;
+    left: 8px;
     color: #fff;
     font-size: 40px;
     animation: rung 1s infinite;
@@ -99,8 +99,8 @@
 .icon .message i {
     color: #fff;
     position: absolute;
-    top: 15px;
-    left: 15px;
+    top: 10px;
+    left: 10px;
         font-size: 40px;
         z-index: 2;
         animation: rung 1s infinite;
@@ -108,8 +108,8 @@
 
 .vien3 {
     position: absolute;
-    width: 70px;
-    height: 70px;
+    width: 58px;
+    height: 58px;
     background-color: #87CEEB;
     border-radius: 50%;
     top: 0;
