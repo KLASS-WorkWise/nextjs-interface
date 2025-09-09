@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { applyService } from "@/services/applyService";
 import { toast } from "react-toastify";
-import "../../../styles/ApplyJob.css"; // modal css chung
 import styles from "../../../styles/ApplyJob.module.css"; // css riêng cho component
 
 import { FileText, Upload, Pencil, X } from "lucide-react";

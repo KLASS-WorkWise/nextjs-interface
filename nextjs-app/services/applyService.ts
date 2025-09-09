@@ -39,7 +39,7 @@ export const applyService = {
   },
 
   deleteApplicant(id: number) {
-    return apiClient.delete(`/api/applicant/delete/${id}`);
+    return apiClient.delete(`/applicant/delete/${id}`);
   },
    getResumeLink(filename: string) {
     return apiClient.get(`/applicant/resume-link/${filename}`,{ responseType: "blob", }) ;

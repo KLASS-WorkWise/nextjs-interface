@@ -1,5 +1,7 @@
 "use client";
 
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { ResumeData } from "../resume-builder";
 import type { CustomizationOptions } from "../customization-panel";
@@ -112,7 +114,7 @@ export function ModernTemplate({
             flexShrink: 0,
             marginRight: isCompact ? 16 : 24,
             display: "flex",
-            alignItems: "center",
+alignItems: "center",
             justifyContent: "center",
           }}
         >
@@ -257,7 +259,7 @@ export function ModernTemplate({
           <Section>
             <h2
               className="font-semibold print-safe"
-              style={{
+style={{
                 ...getSizeStyles("heading"),
                 marginBottom: isCompact ? "0.125rem" : "0.75rem",
                 paddingBottom: "0.25rem",
@@ -349,7 +351,7 @@ export function ModernTemplate({
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
-                        className="font-semibold print-safe"
+className="font-semibold print-safe"
                         style={{
                           ...getSizeStyles("text"),
                           color: colorScheme.secondary,
@@ -556,7 +558,7 @@ export function ModernTemplate({
                           color: colorScheme.secondary,
                           fontFamily: fontFamily,
                         }}
-                      >
+>
                         {award.title}
                       </h3>
                       <p

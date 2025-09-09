@@ -1,7 +1,6 @@
 
 "use client";
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
 import BlogSlider from "@/components/sliders/Blog";
 import { useSession } from "next-auth/react";
@@ -168,6 +167,44 @@ export default function JobGrid() {
     setCurrentPage(1);
   };
 
+
+  useEffect(() => {
+    const fetchResumes = async () => {
+      try {
+        const res = await applyService.getAllResumes();
+        setResumes(Array.isArray(res) ? res : res.data || []);
+      } catch (err) {
+        console.error("Error fetching resumes:", err);
+      }
+    };
+    fetchResumes();
+  }, []);
+  // Lấy danh sách saved jobs của user
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      if (!session) return;
+      try {
+        const res = await savedJobService.getMySavedJobs();
+        const savedJobsMap =
+          res.data?.map((job: any) => ({
+            jobId: job.jobPostingResponseDTO?.id, // 👈 lấy id từ DTO
+            savedJobId: job.savedJobId,
+          })) || [];
+        setSavedJobs(savedJobsMap);
+      } catch (err) {
+        console.error("Error fetching saved jobs", err);
+      }
+    };
+    fetchSavedJobs();
+  }, [session]);
+  useEffect(() => {
+    console.log(
+      "Jobs:",
+      jobs.map((j) => j.id)
+    );
+    console.log("SavedJobs:", savedJobs);
+  }, [jobs, savedJobs]);
+
   return (
     <>
       <Layout>
@@ -177,7 +214,7 @@ export default function JobGrid() {
               <div className="banner-hero banner-single banner-single-bg">
                 <div className="block-banner text-center">
                   <h3 className="wow animate__animated animate__fadeInUp">
-                    <span className="color-brand-2">22 Jobs</span> Available Now
+                    <span className="color-brand-2">{filteredJobs.length} Jobs</span> Available Now
                   </h3>
                   <div className="font-sm color-text-paragraph-2 mt-10 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero repellendus magni, <br className="d-none d-xl-block" />
@@ -237,13 +274,19 @@ export default function JobGrid() {
                         </select>
                       </div>
                       <input
+                       
                         className="form-input input-keysearch mr-10"
+                       
                         type="text"
+                       
                         placeholder="Your keyword... "
+                     
                         value={keyword}
                         onChange={e => setKeyword(e.target.value)}
                       />
-                      <button className="btn btn-default btn-find font-sm">Search</button>
+                      <button className="btn btn-default btn-find font-sm">
+                        Search
+                      </button>
                     </form>
                   </div>
                 </div>
@@ -276,7 +319,14 @@ export default function JobGrid() {
                             <div className="box-border mr-10">
                               <span className="text-sortby">Show:</span>
                               <div className="dropdown dropdown-sort">
-                                <button className="btn dropdown-toggle" id="dropdownSort" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+                                <button
+                                  className="btn dropdown-toggle"
+                                  id="dropdownSort"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  data-bs-display="static"
+                                >
                                   <span>15</span>
                                   <i className="fi-rr-angle-small-down" />
                                 </button>
@@ -413,6 +463,16 @@ export default function JobGrid() {
                       ))}
                     </div>
 
+                    {/* Modal ApplyJob */}
+                    {modalJob && (
+                      <ApplyJob
+                        job={modalJob}
+                        resumes={resumes}
+                        onClose={() => setModalJob(null)}
+                        onSuccess={() => toast.success("Applied successfully!")}
+                      />
+                    )}
+
                   </div>
                   <div className="paginations">
                     <ul className="pager">
@@ -503,6 +563,42 @@ export default function JobGrid() {
                       </div>
                       <div className="filter-block mb-20">
                         <h5 className="medium-heading mb-25">Salary Range</h5>
+                        <div className="list-checkbox pb-20">
+                          <div className="row position-relative mt-10 mb-20">
+                            <div className="col-sm-12 box-slider-range">
+                              <div id="slider-range" />
+                            </div>
+                            <div className="box-input-money">
+                              <input
+                                className="input-disabled form-control min-value-money"
+                                type="text"
+                                name="min-value-money"
+                                disabled={true}
+                                defaultValue=""
+                              />
+                              <input
+                                className="form-control min-value"
+                                type="hidden"
+                                name="min-value"
+                                defaultValue=""
+                              />
+                            </div>
+                          </div>
+                          <div className="box-number-money">
+                            <div className="row mt-30">
+                              <div className="col-sm-6 col-6">
+                                <span className="font-sm color-brand-1">
+                                  $0
+                                </span>
+                              </div>
+                              <div className="col-sm-6 col-6 text-end">
+                                <span className="font-sm color-brand-1">
+                                  $500
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                         <div className="form-group mb-20">
                           <ul className="list-checkbox">
                             {[
@@ -576,7 +672,9 @@ export default function JobGrid() {
                         </div>
                       </div>
                       <div className="filter-block mb-30">
-                        <h5 className="medium-heading mb-10">Required Degree</h5>
+                        <h5 className="medium-heading mb-10">
+                          Required Degree
+                        </h5>
                         <div className="form-group">
                           <ul className="list-checkbox">
                             {[
@@ -655,6 +753,14 @@ export default function JobGrid() {
               </div>
             </div>
           </section>
+          {modalJob && (
+            <ApplyJob
+              job={modalJob}
+              resumes={resumes} // 👈 truyền resumes vào
+              onClose={() => setModalJob(null)}
+              onSuccess={() => toast.success("Applied successfully!")}
+            />
+          )}
           <section className="section-box mt-50 mb-50">
             <div className="container">
               <div className="text-start">

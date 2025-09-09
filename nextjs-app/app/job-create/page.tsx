@@ -50,6 +50,8 @@ export default function JobCreate() {
   const dd = String(today.getDate()).padStart(2, '0');
   const minDate = `${yyyy}-${mm}-${dd}`;
 
+  console.log(employerId)
+  console.log(session)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -64,6 +66,11 @@ export default function JobCreate() {
       setLoading(false);
       return;
     }
+    if (!employerId) {
+    setMessage("Bạn cần đăng nhập bằng tài khoản nhà tuyển dụng!");
+    setLoading(false);
+    return;
+  }
     const payload = {
       ...form,
       requiredSkills: form.requiredSkills.split(",").map((s) => s.trim()).filter(Boolean),
