@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { apiClient } from "@/lib/api-client";
 interface PaginatedAppResponse {
   data: any[];
@@ -34,13 +35,15 @@ export const applyService = {
   },
 
   getApplicantDetail(id: number) {
-    return apiClient.get(`/api/applicant/detail/${id}`);
+    return apiClient.get(`/applicant/detail/${id}`) as Promise<{ data: Applicant }>;
   },
 
   deleteApplicant(id: number) {
     return apiClient.delete(`/api/applicant/delete/${id}`);
   },
-
+   getResumeLink(filename: string) {
+    return apiClient.get(`/applicant/resume-link/${filename}`,{ responseType: "blob", }) ;
+  },
   getAllResumes() {
     return apiClient.get(`/api/resumes`);
   },
