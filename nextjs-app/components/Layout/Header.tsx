@@ -68,7 +68,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
               <div className="header-logo">
                 <Link href="/">
                   <span className="d-flex">
-                    <img alt="jobBox" src="assets/imgs/template/jobhub-logo.svg" />
+                    <img alt="jobBox" src="/assets/imgs/template/jobhub-logo.svg" />
                   </span>
                 </Link>
               </div>

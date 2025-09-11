@@ -1,162 +1,104 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import Layout from "@/components/Layout/Layout";
 import BlogSlider from "@/components/sliders/Blog";
 import { useSession } from "next-auth/react";
-
-import { toast } from "react-toastify";
-
+import { Bookmark } from "lucide-react";
 
 import "@/styles/globals.css";
 import { applyService } from "@/services/applyService";
+import { toast } from "react-toastify";
+import ApplyJob from "@/features/applicants/components/ApplyJob";
+import { useRouter } from "next/navigation";
+import { savedJobService } from "@/features/applicants/services/savedJobService";
 
 // Tách Modal ra component riêng
-// Tách Modal ra component riêng
-function ApplyModal({
-  job,
-  resumes,
-  selectedResumeId,
-  setSelectedResumeId,
-  resumeLink,
-  setResumeLink,
-  setFile,
-  message,
-  setMessage,
-  progress,
-  submitting,
-  onClose,
-  onSubmit,
-}: any) {
-  const [resumeType, setResumeType] = useState<"saved" | "upload" | "link">("saved");
+import { useSearchParams } from "next/navigation";
 
-  return (
-    <div className="modal-overlay" style={{ zIndex: 9999, background: "rgba(30,41,59,0.25)", position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div className="modal-box card-grid-2" style={{ maxWidth: 520, width: "100%", borderRadius: 20, boxShadow: "0 8px 32px rgba(0,0,0,0.18)", background: "#fff", padding: 40, position: "relative", border: "1px solid #e5e7eb" }}>
-        <button className="modal-close btn btn-grey-small" onClick={onClose} style={{ position: "absolute", top: 18, right: 18, fontSize: 22, border: "none", background: "none", cursor: "pointer", color: "#334155" }}>
-          <span aria-label="Đóng">&times;</span>
-        </button>
-        <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <h2 className="modal-title mb-0" style={{ fontWeight: 800, fontSize: 26, color: "#1e293b", letterSpacing: "-1px" }}>
-            Apply for <span className="highlight" style={{ color: "#2563eb" }}>{job.jobTitle}</span>
-          </h2>
-        </div>
-        {/* Chọn loại resume */}
-        <div className="mb-20" style={{ display: "flex", gap: 16, justifyContent: "center" }}>
-          <label>
-            <input type="radio" name="resumeType" value="saved" checked={resumeType === "saved"} onChange={() => setResumeType("saved")} />
-            <span style={{ marginLeft: 6 }}>Resume có sẵn</span>
-          </label>
-          <label>
-            <input type="radio" name="resumeType" value="upload" checked={resumeType === "upload"} onChange={() => setResumeType("upload")} />
-            <span style={{ marginLeft: 6 }}>Upload File</span>
-          </label>
-          <label>
-            <input type="radio" name="resumeType" value="link" checked={resumeType === "link"} onChange={() => setResumeType("link")} />
-            <span style={{ marginLeft: 6 }}>Resume Link</span>
-          </label>
-        </div>
-        {/* Hiển thị trường theo lựa chọn */}
-        {resumeType === "saved" && (
-          <div className="mb-18">
-            <label className="font-sm color-brand-1 mb-5" style={{ fontWeight: 600 }}>Resume có sẵn</label>
-            <select
-              value={selectedResumeId}
-              onChange={(e) => setSelectedResumeId(e.target.value)}
-              className="form-input"
-              style={{ width: "100%", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 15 }}
-            >
-              <option value="">-- Chọn Resume --</option>
-              {resumes.map((resume: any) => (
-                <option key={resume.id} value={resume.id}>
-                  {resume.title || `Resume #${resume.id}`}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-        {resumeType === "upload" && (
-          <div className="mb-18">
-            <label className="font-sm color-brand-1 mb-5" style={{ fontWeight: 600 }}>Upload Resume File</label>
-            <input
-              type="file"
-              onChange={(e) => {
-                const selectedFile = e.target.files?.[0];
-                if (selectedFile) setFile(selectedFile);
-              }}
-              className="form-input"
-              style={{ width: "100%", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 15 }}
-            />
-          </div>
-        )}
-        {resumeType === "link" && (
-          <div className="mb-18">
-            <label className="font-sm color-brand-1 mb-5" style={{ fontWeight: 600 }}>Resume Link</label>
-            <input
-              type="text"
-              placeholder="Nhập link resume"
-              value={resumeLink}
-              onChange={(e) => setResumeLink(e.target.value)}
-              className="form-input"
-              style={{ width: "100%", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 15 }}
-            />
-          </div>
-        )}
-        <div className="mb-18">
-          <label className="font-sm color-brand-1 mb-5" style={{ fontWeight: 600 }}>Cover Letter</label>
-          <textarea
-            placeholder="Viết cover letter..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="form-input"
-            rows={4}
-            style={{ width: "100%", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 15 }}
-          />
-        </div>
-        {progress > 0 && (
-          <div className="progress-bar mb-15" style={{ height: 8, background: "#e0e7ef", borderRadius: 4 }}>
-            <div
-              className="progress-fill"
-              style={{
-                width: `${progress}%`,
-                background: "#2563eb",
-                height: "100%",
-                borderRadius: 4,
-                transition: "width 0.3s",
-              }}
-            ></div>
-          </div>
-        )}
-        <div className="modal-actions mt-20" style={{ display: "flex", justifyContent: "flex-end", gap: 14 }}>
-          <button className="btn btn-grey-small" onClick={onClose} style={{ minWidth: 90, borderRadius: 8, fontWeight: 600, fontSize: 15, background: "#f3f4f6", color: "#334155", border: "1px solid #e5e7eb", transition: "background 0.2s" }}>
-            Cancel
-          </button>
-          <button className="btn btn-primary" onClick={onSubmit} disabled={submitting} style={{ minWidth: 90, borderRadius: 8, fontWeight: 600, fontSize: 15, background: submitting ? "#93c5fd" : "#2563eb", color: "#fff", border: "none", boxShadow: submitting ? "none" : "0 2px 8px rgba(37,99,235,0.08)", transition: "background 0.2s" }}>
-            {submitting ? "Applying..." : "Submit"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+
 export default function JobGrid() {
+  const searchParams = useSearchParams();
+  // Khi vào trang, nếu có query string thì set filter tương ứng
+  useEffect(() => {
+    const qLocation = searchParams.get("location") || "";
+    const qKeyword = searchParams.get("keyword") || "";
+    if (qLocation) setLocation(qLocation);
+    if (qKeyword) setKeyword(qKeyword);
+  }, [searchParams]);
   const { data: session } = useSession();
   const role = session?.user?.roles;
   // Hook lấy dữ liệu job từ API
   const [jobs, setJobs] = useState<any[]>([]);
   const [jobsLoading, setJobsLoading] = useState(false);
   const [jobsError, setJobsError] = useState("");
+  // Filter state
+  const [jobTypeChecked, setJobTypeChecked] = useState<string[]>(["All"]);
+  const [location, setLocation] = useState("");
+  const [categoryChecked, setCategoryChecked] = useState<string[]>(["All"]);
+  const [salaryChecked, setSalaryChecked] = useState<string[]>(["All"]);
+  const [positionChecked, setPositionChecked] = useState<string[]>(["All"]);
+  const [degreeChecked, setDegreeChecked] = useState<string[]>(["All"]);
+  // Phân trang: mỗi trang 15 job (5 hàng, 3 cột)
+  const [currentPage, setCurrentPage] = useState(1);
+  const jobsPerPage = 15;
+  // Keyword search
+  const [keyword, setKeyword] = useState("");
 
   const [modalJob, setModalJob] = useState<any | null>(null);
 
   const [resumes, setResumes] = useState<any[]>([]);
-  const [selectedResumeId, setSelectedResumeId] = useState<string>("");
-  const [resumeLink, setResumeLink] = useState("");
-  const [message, setMessage] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const router = useRouter();
+  const [savingJobId, setSavingJobId] = useState<number | null>(null);
+  // savedJobs: lưu cả jobId và savedJobId
+  const [savedJobs, setSavedJobs] = useState<
+    { jobId: number; savedJobId: number }[]
+  >([]);
+
+  const toggleSaveJob = async (jobId: number) => {
+    if (!session) {
+      toast.error("You need to login to saved job!");
+      router.push("/page-signin"); // 👈 redirect sang trang login của bạn
+      return;
+    }
+    const existing = savedJobs.find((j) => j.jobId === jobId);
+    setSavingJobId(jobId);
+    try {
+      if (existing) {
+        // Unsave dùng savedJobId
+        await savedJobService.removeSavedJob(existing.savedJobId);
+        setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
+        toast.success("Removed successfully");
+      } else {
+        const res = await savedJobService.saveJob(jobId);
+        setSavedJobs((prev) => [
+          ...prev,
+          { jobId, savedJobId: res.data.savedJobId },
+        ]);
+        toast.success("Saved successfully");
+      }
+    } catch (err: any) {
+      console.error("Error saving job", err);
+      // Nếu 404, vẫn remove khỏi state để UI không treo
+      if (err.response?.status === 404 && existing) {
+        setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
+        toast.error("This job was not saved or already removed");
+      } else {
+        toast.error("Something went wrong");
+      }
+    } finally {
+      setSavingJobId(null);
+    }
+  };
+
+  const handleOpenApply = (job: any) => {
+    if (!session) {
+      toast.error("You need to login to apply!");
+      router.push("/page-signin"); // 👈 redirect sang trang login của bạn
+      return;
+    }
+    setModalJob(job);
+  };
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -176,6 +118,120 @@ export default function JobGrid() {
     fetchJobs();
   }, []);
 
+  // Helper: loại bỏ dấu tiếng Việt
+  function removeVietnameseTones(str: string) {
+    return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+  }
+  // Helper: parse lương từ chuỗi
+  function parseSalaryRange(s: string): [number, number] | null {
+    if (!s) return null;
+    const match = s.match(/(\d+)[^\d]+(\d+)/);
+    if (match) return [parseInt(match[1]), parseInt(match[2])];
+    const single = s.match(/(\d+)/);
+    if (single) return [parseInt(single[1]), parseInt(single[1])];
+    return null;
+  }
+  // Filter jobs theo location, category, salary
+  const filteredJobs = jobs.filter((job) => {
+    // Filter location
+    if (location && (job.location || "") !== location) return false;
+    // Filter category (so sánh gần đúng, không phân biệt dấu/chữ hoa)
+    if (!categoryChecked.includes("All")) {
+      const jobCat = removeVietnameseTones((job.category || "").toLowerCase());
+      const checked = categoryChecked.some(cat => jobCat.includes(removeVietnameseTones(cat.toLowerCase())));
+      if (!checked) return false;
+    }
+    // Filter salary
+    if (!salaryChecked.includes("All")) {
+      const jobSalaryStr = (job.salaryRange || job.salary || "").replace(/[^\d\- ]/g, "");
+      const jobSalary = parseSalaryRange(jobSalaryStr);
+      if (!jobSalary) return false;
+      const salaryRanges = [
+        { label: "Duới 20 triệu", min: 0, max: 20 },
+        { label: "20 - 50 triệu", min: 20, max: 50 },
+        { label: "50 - 70 triệu", min: 50, max: 70 },
+        { label: "70 - 100 triệu", min: 70, max: 100 },
+        { label: "Trên 100 triệu", min: 100, max: 9999 }
+      ];
+      // Nếu job lương giao với bất kỳ khoảng nào được chọn thì hiện
+      const match = salaryChecked.some(label => {
+        const range = salaryRanges.find(r => r.label === label);
+        if (!range) return false;
+        if (label === "Duới 20 triệu") {
+          // Chỉ lấy job có max < 20
+          return jobSalary[1] < 20;
+        }
+        return jobSalary[1] >= range.min && jobSalary[0] <= range.max;
+      });
+      if (!match) return false;
+    }
+    // Filter position (tiêu đề chứa từ khóa vị trí được chọn)
+    if (!positionChecked.includes("All")) {
+      const title = removeVietnameseTones((job.title || "").toLowerCase());
+      const checked = positionChecked.some(pos => title.includes(removeVietnameseTones(pos.toLowerCase())));
+      if (!checked) return false;
+    }
+    // Filter job type
+    if (!jobTypeChecked.includes("All")) {
+      // Ưu tiên job.jobType, fallback sang job.type nếu không có
+      const jobTypeRaw = job.jobType || job.type || "";
+      const jobType = removeVietnameseTones(jobTypeRaw.toLowerCase());
+      const checked = jobTypeChecked.some(type => jobType.includes(removeVietnameseTones(type.toLowerCase())));
+      if (!checked) return false;
+    }
+    // Filter degree
+    if (!degreeChecked.includes("All")) {
+      const jobDegree = removeVietnameseTones((job.requiredDegree || "").toLowerCase());
+      const checked = degreeChecked.some(deg => jobDegree.includes(removeVietnameseTones(deg.toLowerCase())));
+      if (!checked) return false;
+    }
+    // Filter keyword (tìm gần đúng trên nhiều trường)
+    if (keyword.trim() !== "") {
+      const kwArr = removeVietnameseTones(keyword.toLowerCase()).split(/\s|,|\./).filter(Boolean);
+      // Phân loại từ khóa số (lương) và từ khóa text
+      const kwNumbers = kwArr.filter(k => /^\d+$/.test(k)).map(Number);
+      const kwTexts = kwArr.filter(k => !/^\d+$/.test(k));
+      // Ghép các trường text lại để so sánh
+      const jobText = [
+        job.title,
+        job.description,
+        job.salaryRange,
+        job.salary,
+        job.location,
+        job.category,
+        job.requiredDegree,
+        job.type,
+        job.jobType,
+        Array.isArray(job.skills) ? job.skills.join(" ") : ""
+      ].map(x => removeVietnameseTones((x || "").toLowerCase())).join(" ");
+      // Nếu có từ khóa text, phải match ít nhất 1 từ
+      if (kwTexts.length > 0) {
+        const matchText = kwTexts.some(kw => jobText.includes(kw));
+        if (!matchText) return false;
+      }
+      // Nếu có từ khóa số (lương), chỉ hiện job có lương giao với khoảng nhập
+      if (kwNumbers.length > 0) {
+        const min = Math.min(...kwNumbers);
+        const max = Math.max(...kwNumbers);
+        const jobSalaryStr = (job.salaryRange || job.salary || "").replace(/[^\d\- ]/g, "");
+        const jobSalary = parseSalaryRange(jobSalaryStr);
+        if (!jobSalary) return false;
+        // Lấy job có lương giao với khoảng nhập
+        if (jobSalary[1] < min || jobSalary[0] > max) return false;
+      }
+    }
+    return true;
+  });
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+  const pagedJobs = filteredJobs.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
+
+  // Xử lý submit filter
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCurrentPage(1);
+  };
+
+
   useEffect(() => {
     const fetchResumes = async () => {
       try {
@@ -187,64 +243,31 @@ export default function JobGrid() {
     };
     fetchResumes();
   }, []);
-
-  const handleApply = async (jobId: number) => {
-    if (!selectedResumeId && !resumeLink && !file) {
-      toast.error("Vui lòng chọn Resume có sẵn hoặc nhập link hoặc upload file!");
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-      setProgress(0);
-
-      const formData = new FormData();
-      if (selectedResumeId) formData.append("resumesId", selectedResumeId);
-      if (resumeLink) formData.append("resumeLink", resumeLink);
-      if (file) formData.append("resumeFile", file);
-      if (message) formData.append("coverLetter", message);
-
-      const res =  await applyService.applyJobWithFile(jobId, formData, {
-        onUploadProgress: (event: ProgressEvent) => {
-          if (event.total) {
-            setProgress(Math.round((event.loaded * 100) / event.total));
-          }
-        },
-      });
-
-       toast.success("✅ Applied successfully!");
-         // ⚠️ cảnh báo nếu thiếu skill / kinh nghiệm
-  
-    if (res.data.missingSkills?.length) {
-      toast.warning("Thiếu kỹ năng: " + res.data.missingSkills.join(", "));
-    }
-
-    // ⚠️ Hiển thị cảnh báo kinh nghiệm
-    if (res.data.minExperience) {
-      toast.info(res.data.minExperience);
-    }
-
-    console.log("Apply job skills:", res.data.missingSkills);
-      console.log("Apply job response:", res.data.minExperience);
- 
-
-      setResumeLink("");
-      setMessage("");
-      setFile(null);
-      setSelectedResumeId("");
-      setModalJob(null);
-      setProgress(0);
-    } catch (err: any) {
-      console.error("Apply job failed:", err);
-
-      const msg = err.response?.data?.message || "❌ Apply thất bại!";
-      toast.error(msg);
-      setProgress(0);
-
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  // Lấy danh sách saved jobs của user
+  useEffect(() => {
+    const fetchSavedJobs = async () => {
+      if (!session) return;
+      try {
+        const res = await savedJobService.getMySavedJobs();
+        const savedJobsMap =
+          res.data?.map((job: any) => ({
+            jobId: job.jobPostingResponseDTO?.id, // 👈 lấy id từ DTO
+            savedJobId: job.savedJobId,
+          })) || [];
+        setSavedJobs(savedJobsMap);
+      } catch (err) {
+        console.error("Error fetching saved jobs", err);
+      }
+    };
+    fetchSavedJobs();
+  }, [session]);
+  useEffect(() => {
+    console.log(
+      "Jobs:",
+      jobs.map((j) => j.id)
+    );
+    console.log("SavedJobs:", savedJobs);
+  }, [jobs, savedJobs]);
 
   return (
     <>
@@ -255,46 +278,83 @@ export default function JobGrid() {
               <div className="banner-hero banner-single banner-single-bg">
                 <div className="block-banner text-center">
                   <h3 className="wow animate__animated animate__fadeInUp">
-                    <span className="color-brand-2">22 Jobs</span> Available Now
+                    <span className="color-brand-2">{filteredJobs.length} Jobs</span> Available Now
                   </h3>
-                  <div className="font-sm color-text-paragraph-2 mt-10 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero repellendus magni, <br className="d-none d-xl-block" />
+                  <div
+                    className="font-sm color-text-paragraph-2 mt-10 wow animate__animated animate__fadeInUp"
+                    data-wow-delay=".1s"
+                  >
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Vero repellendus magni, <br className="d-none d-xl-block" />
                     atque delectus molestias quis?
                   </div>
                   <div className="form-find text-start mt-40 wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
-                    <form>
-                      <div className="box-industry">
+                    <form onSubmit={handleSearch}>
+                      {/* <div className="box-industry">
                         <select className="form-input mr-10 select-active input-industry">
                           <option value={0}>Industry</option>
                           <option value={1}>Software</option>
+                          Cái này có filter ở dưới nên không cần nữa
                           <option value={2}>Finance</option>
                           <option value={3}>Recruting</option>
                           <option value={4}>Management</option>
                           <option value={5}>Advertising</option>
                           <option value={6}>Development</option>
                         </select>
-                      </div>
+                      </div> */}
                       <div className="box-industry">
-                        <select className="form-input mr-10 select-active input-location">
+                        <select className="form-input mr-10 select-active input-location" value={location} onChange={e => setLocation(e.target.value)}>
                           <option value="">Location</option>
-                          <option value="AX">Aland Islands</option>
-                          <option value="AF">Afghanistan</option>
-                          <option value="AL">Albania</option>
-                          <option value="DZ">Algeria</option>
-                          <option value="AD">Andorra</option>
-                          <option value="AO">Angola</option>
-                          <option value="AI">Anguilla</option>
-                          <option value="AQ">Antarctica</option>
-                          <option value="AG">Antigua and Barbuda</option>
-                          <option value="AR">Argentina</option>
-                          <option value="AM">Armenia</option>
-                          <option value="AW">Aruba</option>
-                          <option value="AU">Australia</option>
-                          <option value="VN">Vietnam</option>
+                          <option value="Hà Nội">Hà Nội</option>
+                          <option value="Hải Phòng">Hải Phòng</option>
+                          <option value="Đà Nẵng">Đà Nẵng</option>
+                          <option value="Huế">Huế</option>
+                          <option value="Cần Thơ">Cần Thơ</option>
+                          <option value="HCM">Thành phố Hồ Chí Minh</option>
+                          <option value="An Giang">An Giang</option>
+                          <option value="Bắc Ninh">Bắc Ninh</option>
+                          <option value="Cà Mau">Cà Mau</option>
+                          <option value="Cao Bằng">Cao Bằng</option>
+                          <option value="Đắk Lắk">Đắk Lắk</option>
+                          <option value="Điện Biên">Điện Biên</option>
+                          <option value="Đồng Nai">Đồng Nai</option>
+                          <option value="Đồng Tháp">Đồng Tháp</option>
+                          <option value="Gia Lai">Gia Lai</option>
+                          <option value="Hà Tĩnh">Hà Tĩnh</option>
+                          <option value="Hưng Yên">Hưng Yên</option>
+                          <option value="Khánh Hòa">Khánh Hòa</option>
+                          <option value="Lai Châu">Lai Châu</option>
+                          <option value="Lạng Sơn">Lạng Sơn</option>
+                          <option value="Lào Cai">Lào Cai</option>
+                          <option value="Lâm Đồng">Lâm Đồng</option>
+                          <option value="Nghệ An">Nghệ An</option>
+                          <option value="Ninh Bình">Ninh Bình</option>
+                          <option value="Phú Thọ">Phú Thọ</option>
+                          <option value="Quảng Ngãi">Quảng Ngãi</option>
+                          <option value="Quảng Ninh">Quảng Ninh</option>
+                          <option value="Quảng Trị">Quảng Trị</option>
+                          <option value="Sơn La">Sơn La</option>
+                          <option value="Tây Ninh">Tây Ninh</option>
+                          <option value="Thái Nguyên">Thái Nguyên</option>
+                          <option value="Thanh Hóa">Thanh Hóa</option>
+                          <option value="Tuyên Quang">Tuyên Quang</option>
+                          <option value="Vĩnh Long">Vĩnh Long</option>
                         </select>
                       </div>
-                      <input className="form-input input-keysearch mr-10" type="text" placeholder="Your keyword... " />
-                      <button className="btn btn-default btn-find font-sm">Search</button>
+                      <input
+                       
+                        className="form-input input-keysearch mr-10"
+                       
+                        type="text"
+                       
+                        placeholder="Your keyword... "
+                     
+                        value={keyword}
+                        onChange={e => setKeyword(e.target.value)}
+                      />
+                      <button className="btn btn-default btn-find font-sm">
+                        Search
+                      </button>
                     </form>
                   </div>
                 </div>
@@ -310,7 +370,8 @@ export default function JobGrid() {
                       <div className="row">
                         <div className="col-xl-6 col-lg-5">
                           <span className="text-small text-showing">
-                            Showing <strong>41-60 </strong>of <strong>944 </strong>jobs
+                            Showing <strong>10-15 </strong>of{" "}
+                            <strong>30 </strong>jobs
                           </span>
                         </div>
 
@@ -318,7 +379,10 @@ export default function JobGrid() {
                           <div className="display-flex2">
                             {role?.includes("Employers") && (
                               <Link href="/job-create">
-                                <button className="btn btn-primary" style={{ marginRight: "16px" }}>
+                                <button
+                                  className="btn btn-primary"
+                                  style={{ marginRight: "16px" }}
+                                >
                                   Create Job
                                 </button>
                               </Link>
@@ -327,14 +391,26 @@ export default function JobGrid() {
                             <div className="box-border mr-10">
                               <span className="text-sortby">Show:</span>
                               <div className="dropdown dropdown-sort">
-                                <button className="btn dropdown-toggle" id="dropdownSort" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
-                                  <span>12</span>
+                                <button
+                                  className="btn dropdown-toggle"
+                                  id="dropdownSort"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  data-bs-display="static"
+                                >
+                                  <span>15</span>
                                   <i className="fi-rr-angle-small-down" />
                                 </button>
-                                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownSort">
+                                <ul
+                                  className="dropdown-menu dropdown-menu-light"
+                                  aria-labelledby="dropdownSort"
+                                >
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item active">10</span>
+                                      <span className="dropdown-item active">
+                                        10
+                                      </span>
                                     </Link>
                                   </li>
                                   <li>
@@ -353,24 +429,40 @@ export default function JobGrid() {
                             <div className="box-border">
                               <span className="text-sortby">Sort by:</span>
                               <div className="dropdown dropdown-sort">
-                                <button className="btn dropdown-toggle" id="dropdownSort2" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+                                <button
+                                  className="btn dropdown-toggle"
+                                  id="dropdownSort2"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  data-bs-display="static"
+                                >
                                   <span>Newest Post</span>
                                   <i className="fi-rr-angle-small-down" />
                                 </button>
-                                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownSort2">
+                                <ul
+                                  className="dropdown-menu dropdown-menu-light"
+                                  aria-labelledby="dropdownSort2"
+                                >
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item active">Newest Post</span>
+                                      <span className="dropdown-item active">
+                                        Newest Post
+                                      </span>
                                     </Link>
                                   </li>
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item">Oldest Post</span>
+                                      <span className="dropdown-item">
+                                        Oldest Post
+                                      </span>
                                     </Link>
                                   </li>
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item">Rating Post</span>
+                                      <span className="dropdown-item">
+                                        Rating Post
+                                      </span>
                                     </Link>
                                   </li>
                                 </ul>
@@ -379,13 +471,19 @@ export default function JobGrid() {
                             <div className="box-view-type">
                               <Link href="/jobs-list">
                                 <span className="view-type">
-                                  <img src="assets/imgs/template/icons/icon-list.svg" alt="jobBox" />
+                                  <img
+                                    src="assets/imgs/template/icons/icon-list.svg"
+                                    alt="jobBox"
+                                  />
                                 </span>
                               </Link>
 
                               <Link href="/jobs-grid">
                                 <span className="view-type">
-                                  <img src="assets/imgs/template/icons/icon-grid-hover.svg" alt="jobBox" />
+                                  <img
+                                    src="assets/imgs/template/icons/icon-grid-hover.svg"
+                                    alt="jobBox"
+                                  />
                                 </span>
                               </Link>
                             </div>
@@ -395,102 +493,123 @@ export default function JobGrid() {
                     </div>
                     <div className="row">
                       {/* Render động danh sách job từ API cho candidate */}
-                      {jobsLoading && <div className="col-12 text-center">Đang tải dữ liệu...</div>}
-                      {jobsError && <div className="col-12 text-center text-danger">{jobsError}</div>}
-                      {!jobsLoading && !jobsError && jobs.length === 0 && <div className="col-12 text-center">Không có công việc nào</div>}
-                      {!jobsLoading && !jobsError && jobs.length > 0 && jobs.map((job: any) => (
-                        <div key={job.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                          <div className="card-grid-2 hover-up">
-                            <div className="card-grid-2-image-left">
-                              <span className="flash" />
-                              <div className="image-box">
-                                <img src={job.companyLogo || "assets/imgs/brands/brand-1.png"} alt="jobBox" />
-                              </div>
-                              <div className="right-info">
-                                <Link href={`/company-details/${job.companyId || ""}`}>
-                                  <span className="name-job">{job.companyName || "Company"}</span>
-                                </Link>
-                                <span className="location-small">{job.location || "Unknown"}</span>
-                              </div>
-                            </div>
-                            <div className="card-block-info">
-                              <h6>
-                                <Link href={`/job-details-2/${job.id}`}>
-                                  <span>{job.title || "No title"}</span>
-                                </Link>
-                              </h6>
-                              <div className="mt-5">
-                                <span className="card-briefcase">{job.type || "Fulltime"}</span>
-                                <span className="card-time">{job.createdAt ? new Date(job.createdAt).toLocaleDateString() : ""}</span>
-                              </div>
-                              <p className="font-sm color-text-paragraph mt-15">{job.description || "Không có mô tả"}</p>
-                              <div className="mt-30">
-                                {Array.isArray(job.skills) && job.skills.map((skill: string, idx: number) => (
-                                  <span key={idx} className="btn btn-grey-small mr-5">{skill}</span>
-                                ))}
-                              </div>
-                              <div className="card-2-bottom mt-30">
-                                <div className="row">
-                                  <div className="col-lg-7 col-7">
-                                    <span className="card-text-price">{job.salary || "N/A"}</span>
-                                    <span className="text-muted">/Tháng</span>
+                      {jobsLoading && (
+                        <div className="col-12 text-center">
+                          Đang tải dữ liệu...
+                        </div>
+                      )}
+                      {jobsError && (
+                        <div className="col-12 text-center text-danger">
+                          {jobsError}
+                        </div>
+                      )}
+                      {!jobsLoading && !jobsError && jobs.length === 0 && (
+                        <div className="col-12 text-center">
+                          Không có công việc nào
+                        </div>
+                      )}
+                      {!jobsLoading &&
+                        !jobsError &&
+                        jobs.length > 0 &&
+                        pagedJobs.map((job: any) => {
+                          const isSaved = savedJobs.some((j) => j.jobId === job.id);
+                          return (
+                            <div key={job.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+                              <div className="card-grid-2 hover-up">
+                                <div className="card-grid-2-image-left">
+                                  <span className="flash" style={{ marginRight: "20px" }}>
+                                    <button
+                                      onClick={() => toggleSaveJob(job.id)}
+                                      disabled={savingJobId === job.id}
+                                      className="saved-job-button"
+                                      style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0 }}
+                                    >
+                                      {savingJobId === job.id ? (
+                                        <span className="loading-dots">...</span>
+                                      ) : (
+                                        <Bookmark size={22} color={isSaved ? "red" : "gray"} fill={isSaved ? "red" : "none"} />
+                                      )}
+                                    </button>
+                                  </span>
+                                  <div className="image-box">
+                                    <img src={job.companyLogo || "assets/imgs/brands/brand-1.png"} alt="jobBox" />
                                   </div>
-                                  <div className="col-lg-5 col-5 text-end">
-                                       <button onClick={() => setModalJob(job)} className="btn-apply">
-                                  Apply Now
-                                </button>
+                                  <div className="right-info">
+                                    <Link href={`/company-details/${job.companyId || ""}`}>
+                                      <span className="name-job">{job.companyName || "Company"}</span>
+                                    </Link>
+                                    <span className="location-small">{job.location || "Unknown"}</span>
+                                  </div>
+                                </div>
+                                <div className="card-block-info">
+                                  <h6>
+                                    <Link href={`/job-details-2/${job.id}`}>
+                                      <span>{job.title || "No title"}</span>
+                                    </Link>
+                                  </h6>
+                                  <div className="mt-5">
+                                    <span className="card-briefcase">{job.type || "Fulltime"}</span>
+                                    <span className="card-time">{job.createdAt ? new Date(job.createdAt).toLocaleDateString() : ""}</span>
+                                  </div>
+                                  <p className="font-sm color-text-paragraph mt-15">{job.description || "Không có mô tả"}</p>
+                                  <div className="mt-30">
+                                    {Array.isArray(job.skills) && job.skills.map((skill: string, idx: number) => (
+                                      <span key={idx} className="btn btn-grey-small mr-5">{skill}</span>
+                                    ))}
+                                  </div>
+                                  <div className="card-2-bottom mt-30">
+                                    <div className="row">
+                                      <div className="col-lg-7 col-7">
+                                        <span className="card-text-price">{job.salary || "N/A"}</span>
+                                        <span className="text-muted">/Tháng</span>
+                                      </div>
+                                      <div className="col-lg-5 col-5 text-end">
+                                        <button onClick={() => handleOpenApply(job)} className="btn-apply">Apply Now</button>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div> 
-
+                          );
+                        })}
+          {/* Modal ApplyJob */}
+          {modalJob && (
+            <ApplyJob
+              job={modalJob}
+              resumes={resumes}
+              onClose={() => setModalJob(null)}
+              onSuccess={() => toast.success("Applied successfully!")}
+            />
+          )}
+                    </div>
                   </div>
                   <div className="paginations">
                     <ul className="pager">
                       <li>
-                        <a className="pager-prev" href="#" />
+                        <a
+                          className={`pager-prev${currentPage === 1 ? ' disabled' : ''}`}
+                          href="#"
+                          onClick={e => { e.preventDefault(); if (currentPage > 1) setCurrentPage(currentPage - 1); }}
+                        />
                       </li>
+                      {Array.from({ length: totalPages }, (_, i) => (
+                        <li key={i + 1}>
+                          <a
+                            href="#"
+                            className={`pager-number${currentPage === i + 1 ? ' active' : ''}`}
+                            onClick={e => { e.preventDefault(); setCurrentPage(i + 1); }}
+                          >
+                            {i + 1}
+                          </a>
+                        </li>
+                      ))}
                       <li>
-                        <Link href="#">
-                          <span className="pager-number">1</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number">2</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number">3</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number">4</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number">5</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number active">6</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="#">
-                          <span className="pager-number">7</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <a className="pager-next" href="#" />
+                        <a
+                          className={`pager-next${currentPage === totalPages ? ' disabled' : ''}`}
+                          href="#"
+                          onClick={e => { e.preventDefault(); if (currentPage < totalPages) setCurrentPage(currentPage + 1); }}
+                        />
                       </li>
                     </ul>
                   </div>
@@ -508,67 +627,47 @@ export default function JobGrid() {
                       </div>
                       <div className="filter-block mb-30">
                         <div className="form-group select-style select-style-icon">
-                          <select className="form-control form-icons select-active">
-                            <option>New York, US</option>
-                            <option>London</option>
-                            <option>Paris</option>
-                            <option>Berlin</option>
-                          </select>
+                          <input className="form-control form-icons select-active" value={location || "Location"} disabled style={{background:'#f7f7f7', color:'#222'}} />
                           <i className="fi-rr-marker" />
                         </div>
                       </div>
                       <div className="filter-block mb-20">
-                        <h5 className="medium-heading mb-15">Industry</h5>
+                        <h5 className="medium-heading mb-15">Category</h5>
                         <div className="form-group">
                           <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">All</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">180</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Software</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">12</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Finance</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">23</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Recruting</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">43</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Management</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">65</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Advertising</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">76</span>
-                            </li>
+                            {[
+                              "All",
+                              "Công Nghệ Thông Tin",
+                              "Tài chính và Kế toán",
+                              "Nhân sự và Hành chính",
+                              "Kiến trúc",
+                              "Marketing",
+                              "Thiết kế đồ họa",
+                              "Truyền thông đa phương tiện",
+                              "Nhân viên kinh doanh"
+                            ].map((cat) => (
+                              <li key={cat}>
+                                <label className="cb-container">
+                                  <input
+                                    type="checkbox"
+                                    checked={categoryChecked.includes(cat)}
+                                    onChange={() => {
+                                      if (cat === "All") {
+                                        setCategoryChecked(["All"]);
+                                      } else {
+                                        let newChecked = categoryChecked.includes(cat)
+                                          ? categoryChecked.filter((c) => c !== cat)
+                                          : [...categoryChecked.filter((c) => c !== "All"), cat];
+                                        if (newChecked.length === 0) newChecked = ["All"];
+                                        setCategoryChecked(newChecked);
+                                      }
+                                    }}
+                                  />
+                                  <span className="text-small">{cat}</span>
+                                  <span className="checkmark" />
+                                </label>
+                              </li>
+                            ))}
                           </ul>
                         </div>
                       </div>
@@ -580,86 +679,68 @@ export default function JobGrid() {
                               <div id="slider-range" />
                             </div>
                             <div className="box-input-money">
-                              <input className="input-disabled form-control min-value-money" type="text" name="min-value-money" disabled={true} defaultValue="" />
-                              <input className="form-control min-value" type="hidden" name="min-value" defaultValue="" />
+                              <input
+                                className="input-disabled form-control min-value-money"
+                                type="text"
+                                name="min-value-money"
+                                disabled={true}
+                                defaultValue=""
+                              />
+                              <input
+                                className="form-control min-value"
+                                type="hidden"
+                                name="min-value"
+                                defaultValue=""
+                              />
                             </div>
                           </div>
                           <div className="box-number-money">
                             <div className="row mt-30">
                               <div className="col-sm-6 col-6">
-                                <span className="font-sm color-brand-1">$0</span>
+                                <span className="font-sm color-brand-1">
+                                  $0
+                                </span>
                               </div>
                               <div className="col-sm-6 col-6 text-end">
-                                <span className="font-sm color-brand-1">$500</span>
+                                <span className="font-sm color-brand-1">
+                                  $500
+                                </span>
                               </div>
                             </div>
                           </div>
                         </div>
                         <div className="form-group mb-20">
                           <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">All</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">145</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">$0k - $20k</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">56</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">$20k - $40k</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">37</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">$40k - $60k</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">75</span>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="filter-block mb-30">
-                        <h5 className="medium-heading mb-10">Popular Keyword</h5>
-                        <div className="form-group">
-                          <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">Software</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">24</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Developer</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">45</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Web</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">57</span>
-                            </li>
+                            {[
+                              "All",
+                              "Duới 20 triệu",
+                              "20 - 50 triệu",
+                              "50 - 70 triệu",
+                              "70 - 100 triệu",
+                              "Trên 100 triệu"
+                            ].map(label => (
+                              <li key={label}>
+                                <label className="cb-container">
+                                  <input
+                                    type="checkbox"
+                                    checked={salaryChecked.includes(label)}
+                                    onChange={() => {
+                                      if (label === "All") {
+                                        setSalaryChecked(["All"]);
+                                      } else {
+                                        let newChecked = salaryChecked.includes(label)
+                                          ? salaryChecked.filter(l => l !== label)
+                                          : [...salaryChecked.filter(l => l !== "All"), label];
+                                        if (newChecked.length === 0) newChecked = ["All"];
+                                        setSalaryChecked(newChecked);
+                                      }
+                                    }}
+                                  />
+                                  <span className="text-small">{label}</span>
+                                  <span className="checkmark" />
+                                </label>
+                              </li>
+                            ))}
                           </ul>
                         </div>
                       </div>
@@ -667,155 +748,75 @@ export default function JobGrid() {
                         <h5 className="medium-heading mb-10">Position</h5>
                         <div className="form-group">
                           <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Senior</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">12</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">Junior</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">35</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Fresher</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">56</span>
-                            </li>
+                            {[
+                              "All",
+                              "Senior",
+                              "Middle",
+                              "Junior",
+                              "Fresher",
+                              "Intern"
+                            ].map(pos => (
+                              <li key={pos}>
+                                <label className="cb-container">
+                                  <input
+                                    type="checkbox"
+                                    checked={positionChecked.includes(pos)}
+                                    onChange={() => {
+                                      if (pos === "All") {
+                                        setPositionChecked(["All"]);
+                                      } else {
+                                        let newChecked = positionChecked.includes(pos)
+                                          ? positionChecked.filter(p => p !== pos)
+                                          : [...positionChecked.filter(p => p !== "All"), pos];
+                                        if (newChecked.length === 0) newChecked = ["All"];
+                                        setPositionChecked(newChecked);
+                                      }
+                                    }}
+                                  />
+                                  <span className="text-small">{pos}</span>
+                                  <span className="checkmark" />
+                                </label>
+                              </li>
+                            ))}
                           </ul>
                         </div>
                       </div>
                       <div className="filter-block mb-30">
-                        <h5 className="medium-heading mb-10">Experience Level</h5>
+                        <h5 className="medium-heading mb-10">
+                          Required Degree
+                        </h5>
                         <div className="form-group">
                           <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Internship</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">56</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Entry Level</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">87</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">Associate</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">24</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Mid Level</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">45</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Director</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">76</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Executive</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">89</span>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="filter-block mb-30">
-                        <h5 className="medium-heading mb-10">Onsite/Remote</h5>
-                        <div className="form-group">
-                          <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">On-site</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">12</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">Remote</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">65</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Hybrid</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">58</span>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="filter-block mb-30">
-                        <h5 className="medium-heading mb-10">Job Posted</h5>
-                        <div className="form-group">
-                          <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">All</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">78</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">1 day</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">65</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">7 days</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">24</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">30 days</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">56</span>
-                            </li>
+                            {[
+                              "All",
+                              "Đại học",
+                              "Cao đẳng",
+                              "Trung cấp",
+                              "THPT",
+                              "Chứng chỉ nghề"
+                            ].map(deg => (
+                              <li key={deg}>
+                                <label className="cb-container">
+                                  <input
+                                    type="checkbox"
+                                    checked={degreeChecked.includes(deg)}
+                                    onChange={() => {
+                                      if (deg === "All") {
+                                        setDegreeChecked(["All"]);
+                                      } else {
+                                        let newChecked = degreeChecked.includes(deg)
+                                          ? degreeChecked.filter(d => d !== deg)
+                                          : [...degreeChecked.filter(d => d !== "All"), deg];
+                                        if (newChecked.length === 0) newChecked = ["All"];
+                                        setDegreeChecked(newChecked);
+                                      }
+                                    }}
+                                  />
+                                  <span className="text-small">{deg}</span>
+                                  <span className="checkmark" />
+                                </label>
+                              </li>
+                            ))}
                           </ul>
                         </div>
                       </div>
@@ -823,38 +824,36 @@ export default function JobGrid() {
                         <h5 className="medium-heading mb-15">Job type</h5>
                         <div className="form-group">
                           <ul className="list-checkbox">
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Full Time</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">25</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" defaultChecked={true} />
-                                <span className="text-small">Part Time</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">64</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Remote Jobs</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">78</span>
-                            </li>
-                            <li>
-                              <label className="cb-container">
-                                <input type="checkbox" />
-                                <span className="text-small">Freelancer</span>
-                                <span className="checkmark" />
-                              </label>
-                              <span className="number-item">97</span>
-                            </li>
+                            {[
+                              "All",
+                              "Full-Time",
+                              "Part-Time",
+                              "Contract",
+                              "Remote",
+                              "Onsite"
+                            ].map(type => (
+                              <li key={type}>
+                                <label className="cb-container">
+                                  <input
+                                    type="checkbox"
+                                    checked={jobTypeChecked.includes(type)}
+                                    onChange={() => {
+                                      if (type === "All") {
+                                        setJobTypeChecked(["All"]);
+                                      } else {
+                                        let newChecked = jobTypeChecked.includes(type)
+                                          ? jobTypeChecked.filter(t => t !== type)
+                                          : [...jobTypeChecked.filter(t => t !== "All"), type];
+                                        if (newChecked.length === 0) newChecked = ["All"];
+                                        setJobTypeChecked(newChecked);
+                                      }
+                                    }}
+                                  />
+                                  <span className="text-small">{type}</span>
+                                  <span className="checkmark" />
+                                </label>
+                              </li>
+                            ))}
                           </ul>
                         </div>
                       </div>
@@ -863,32 +862,24 @@ export default function JobGrid() {
                 </div>
               </div>
             </div>
-            
           </section>
-             {/* Popup Modal */}
-      {modalJob && (
-        <ApplyModal
-          job={modalJob}
-          resumes={resumes}
-          selectedResumeId={selectedResumeId}
-          setSelectedResumeId={setSelectedResumeId}
-          resumeLink={resumeLink}
-          setResumeLink={setResumeLink}
-          file={file}
-          setFile={setFile}
-          message={message}
-          setMessage={setMessage}
-          progress={progress}
-          submitting={submitting}
-          onClose={() => setModalJob(null)}
-          onSubmit={() => handleApply(modalJob.id)}
-        />
-      )}
+          {modalJob && (
+            <ApplyJob
+              job={modalJob}
+              resumes={resumes} // 👈 truyền resumes vào
+              onClose={() => setModalJob(null)}
+              onSuccess={() => toast.success("Applied successfully!")}
+            />
+          )}
           <section className="section-box mt-50 mb-50">
             <div className="container">
               <div className="text-start">
-                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">News and Blog</h2>
-                <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">Get the latest news, updates and tips</p>
+                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
+                  News and Blog
+                </h2>
+                <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
+                  Get the latest news, updates and tips
+                </p>
               </div>
             </div>
             <div className="container">
@@ -898,7 +889,9 @@ export default function JobGrid() {
                 </div>
                 <div className="text-center">
                   <Link href="blog-grid">
-                    <span className="btn btn-brand-1 btn-icon-load mt--30 hover-up">Load More Posts</span>
+                    <span className="btn btn-brand-1 btn-icon-load mt--30 hover-up">
+                      Load More Posts
+                    </span>
                   </Link>
                 </div>
               </div>
@@ -909,7 +902,10 @@ export default function JobGrid() {
               <div className="box-newsletter">
                 <div className="row">
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img src="assets/imgs/template/newsletter-left.png" alt="joxBox" />
+                    <img
+                      src="assets/imgs/template/newsletter-left.png"
+                      alt="joxBox"
+                    />
                   </div>
                   <div className="col-lg-12 col-xl-6 col-12">
                     <h2 className="text-md-newsletter text-center">
@@ -918,13 +914,22 @@ export default function JobGrid() {
                     </h2>
                     <div className="box-form-newsletter mt-40">
                       <form className="form-newsletter">
-                        <input className="input-newsletter" type="text" placeholder="Enter your email here" />
-                        <button className="btn btn-default font-heading icon-send-letter">Subscribe</button>
+                        <input
+                          className="input-newsletter"
+                          type="text"
+                          placeholder="Enter your email here"
+                        />
+                        <button className="btn btn-default font-heading icon-send-letter">
+                          Subscribe
+                        </button>
                       </form>
                     </div>
                   </div>
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img src="assets/imgs/template/newsletter-right.png" alt="joxBox" />
+                    <img
+                      src="assets/imgs/template/newsletter-right.png"
+                      alt="joxBox"
+                    />
                   </div>
                 </div>
               </div>

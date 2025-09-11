@@ -71,7 +71,7 @@ export function mapFormToApi(formData: any): ApiResumeData {
     profilePicture: formData.personalInfo?.profileImage || "",
     summary: formData.personalInfo?.summary || "",
     jobTitle: formData.personalInfo?.jobTitle || "",
-    template: formData.template || "classic",
+    template: formData.template || "modern",
     educations: (formData.education || []).map((edu: any) => ({
       schoolName: edu.institution || "",
       degree: edu.degree || "",

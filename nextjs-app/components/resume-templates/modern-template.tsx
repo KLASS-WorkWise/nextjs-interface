@@ -1,5 +1,7 @@
 "use client";
 
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { ResumeData } from "../resume-builder";
 import type { CustomizationOptions } from "../customization-panel";
@@ -48,27 +50,78 @@ export function ModernTemplate({
   };
 
   const getSpacingStyles = () => {
-    console.log(
-      "ModernTemplate - spacing:",
-      customization.spacing,
-      "isCompact:",
-      isCompact
-    );
     const spacingMap = {
-      compact: isCompact ? "0.125rem" : "0.5rem",
-      normal: isCompact ? "0.25rem" : "1rem",
-      relaxed: isCompact ? "0.375rem" : "1.5rem",
+      compact: {
+        // Main container spacing
+        containerPadding: isCompact ? "0.5rem" : "1.5rem",
+        sectionMargin: isCompact ? "0.25rem" : "1rem",
+        headerPadding: isCompact ? "0.5rem" : "1rem",
+        headerMargin: isCompact ? "0.25rem" : "1rem",
+
+        // Section content spacing
+        sectionGap: isCompact ? "0.125rem" : "0.5rem",
+        itemGap: isCompact ? "0.125rem" : "0.25rem",
+        itemPadding: isCompact ? "0.25rem" : "0.5rem",
+
+        // Header spacing
+        headerGap: isCompact ? "0.5rem" : "1rem",
+        avatarMargin: isCompact ? "0.5rem" : "1rem",
+
+        // Text spacing
+        textMargin: isCompact ? "0.125rem" : "0.25rem",
+        titleMargin: isCompact ? "0.125rem" : "0.5rem",
+      },
+      normal: {
+        // Main container spacing
+        containerPadding: isCompact ? "0.75rem" : "2rem",
+        sectionMargin: isCompact ? "0.5rem" : "1.5rem",
+        headerPadding: isCompact ? "0.75rem" : "1.5rem",
+        headerMargin: isCompact ? "0.5rem" : "1.5rem",
+
+        // Section content spacing
+        sectionGap: isCompact ? "0.25rem" : "1rem",
+        itemGap: isCompact ? "0.25rem" : "0.5rem",
+        itemPadding: isCompact ? "0.5rem" : "1rem",
+
+        // Header spacing
+        headerGap: isCompact ? "0.75rem" : "1.5rem",
+        avatarMargin: isCompact ? "0.75rem" : "1.5rem",
+
+        // Text spacing
+        textMargin: isCompact ? "0.25rem" : "0.5rem",
+        titleMargin: isCompact ? "0.25rem" : "0.75rem",
+      },
+      relaxed: {
+        // Main container spacing
+        containerPadding: isCompact ? "1rem" : "2.5rem",
+        sectionMargin: isCompact ? "0.75rem" : "2rem",
+        headerPadding: isCompact ? "1rem" : "2rem",
+        headerMargin: isCompact ? "0.75rem" : "2rem",
+
+        // Section content spacing
+        sectionGap: isCompact ? "0.375rem" : "1.5rem",
+        itemGap: isCompact ? "0.375rem" : "0.75rem",
+        itemPadding: isCompact ? "0.75rem" : "1.5rem",
+
+        // Header spacing
+        headerGap: isCompact ? "1rem" : "2rem",
+        avatarMargin: isCompact ? "1rem" : "2rem",
+
+        // Text spacing
+        textMargin: isCompact ? "0.375rem" : "0.75rem",
+        titleMargin: isCompact ? "0.375rem" : "1rem",
+      },
     };
-    const gapValue = spacingMap[customization.spacing];
-    console.log("ModernTemplate - gap value:", gapValue);
-    return { gap: gapValue };
+    return spacingMap[customization.spacing];
   };
 
   const spacingStyle = getSpacingStyles();
 
-  // Helper: wrap section without marginBottom (using gap instead)
+  // Helper: wrap section with proper spacing
   const Section = ({ children }: { children: React.ReactNode }) => (
-    <section>{children}</section>
+    <section style={{ marginBottom: spacingStyle.sectionMargin }}>
+      {children}
+    </section>
   );
 
   return (
@@ -76,7 +129,7 @@ export function ModernTemplate({
       className={`bg-white print-safe`}
       style={{
         color: "rgb(17 24 39)",
-        padding: isCompact ? "0.5rem" : "2rem",
+        padding: spacingStyle.containerPadding,
         fontFamily: fontFamily,
       }}
     >
@@ -97,8 +150,8 @@ export function ModernTemplate({
         className="rounded-lg print-safe d-flex align-items-center"
         style={{
           backgroundColor: colorScheme.primary,
-          padding: isCompact ? "0.5rem" : "1.5rem",
-          marginBottom: isCompact ? "0.25rem" : "1.5rem",
+          padding: spacingStyle.headerPadding,
+          marginBottom: spacingStyle.headerMargin,
           fontFamily: fontFamily,
         }}
       >
@@ -110,7 +163,7 @@ export function ModernTemplate({
             overflow: "hidden",
             background: "#fff",
             flexShrink: 0,
-            marginRight: isCompact ? 16 : 24,
+            marginRight: spacingStyle.avatarMargin,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -222,7 +275,7 @@ export function ModernTemplate({
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: spacingStyle.gap,
+          gap: spacingStyle.headerGap,
           fontFamily: fontFamily,
         }}
       >
@@ -232,7 +285,7 @@ export function ModernTemplate({
               className="font-semibold print-safe"
               style={{
                 fontSize: getSizeStyles("heading").fontSize,
-                marginBottom: isCompact ? "0.125rem" : "0.5rem",
+                marginBottom: spacingStyle.titleMargin,
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
@@ -259,7 +312,7 @@ export function ModernTemplate({
               className="font-semibold print-safe"
               style={{
                 ...getSizeStyles("heading"),
-                marginBottom: isCompact ? "0.125rem" : "0.75rem",
+                marginBottom: spacingStyle.titleMargin,
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
@@ -272,11 +325,11 @@ export function ModernTemplate({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: spacingStyle.gap,
+                gap: spacingStyle.sectionGap,
               }}
             >
-              {data.experience.map((exp) => (
-                <div key={exp.id}>
+              {data.experience.map((exp, idx) => (
+                <div key={exp.id ?? idx}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
@@ -328,7 +381,7 @@ export function ModernTemplate({
               className="font-semibold print-safe"
               style={{
                 ...getSizeStyles("heading"),
-                marginBottom: isCompact ? "0.125rem" : "0.75rem",
+                marginBottom: spacingStyle.titleMargin,
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
@@ -341,11 +394,11 @@ export function ModernTemplate({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: spacingStyle.gap,
+                gap: spacingStyle.sectionGap,
               }}
             >
-              {data.education.map((edu) => (
-                <div key={edu.id}>
+              {data.education.map((edu, idx) => (
+                <div key={edu.id ?? idx}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
@@ -400,7 +453,7 @@ export function ModernTemplate({
               className="font-semibold print-safe"
               style={{
                 ...getSizeStyles("heading"),
-                marginBottom: isCompact ? "0.125rem" : "0.75rem",
+                marginBottom: spacingStyle.titleMargin,
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
@@ -456,7 +509,7 @@ export function ModernTemplate({
               className="font-semibold print-safe"
               style={{
                 ...getSizeStyles("heading"),
-                marginBottom: isCompact ? "0.125rem" : "0.75rem",
+                marginBottom: spacingStyle.titleMargin,
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
@@ -469,11 +522,11 @@ export function ModernTemplate({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: spacingStyle.gap,
+                gap: spacingStyle.sectionGap,
               }}
             >
-              {data.activities.map((activity) => (
-                <div key={activity.id}>
+              {data.activities.map((activity, idx) => (
+                <div key={activity.id ?? idx}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3
@@ -529,7 +582,7 @@ export function ModernTemplate({
               className="font-semibold print-safe"
               style={{
                 ...getSizeStyles("heading"),
-                marginBottom: isCompact ? "0.125rem" : "0.75rem",
+                marginBottom: spacingStyle.titleMargin,
                 paddingBottom: "0.25rem",
                 borderBottom: "2px solid",
                 borderColor: colorScheme.primary,
@@ -542,11 +595,11 @@ export function ModernTemplate({
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: spacingStyle.gap,
+                gap: spacingStyle.sectionGap,
               }}
             >
-              {data.awards.map((award) => (
-                <div key={award.id}>
+              {data.awards.map((award, idx) => (
+                <div key={award.id ?? idx}>
                   <div className="flex justify-between items-start">
                     <div>
                       <h3

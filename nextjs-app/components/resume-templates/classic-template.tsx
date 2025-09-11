@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { ResumeData } from "../resume-builder";
-import type { CustomizationOptions } from "../customization-panel";
+import { type CustomizationOptions, fontOptions } from "../customization-panel";
 import styles from "./classic-template.module.css";
 
 type ClassicTemplateProps = {
@@ -11,17 +11,72 @@ type ClassicTemplateProps = {
   customization?: CustomizationOptions;
 };
 
+function getFontSizeClass(size: CustomizationOptions["fontSize"] | undefined) {
+  switch (size) {
+    case "small":
+      return styles.fontSizeSmall;
+    case "large":
+      return styles.fontSizeLarge;
+    default:
+      return styles.fontSizeMedium;
+  }
+}
+
+function getColorSchemeClass(
+  colorScheme: CustomizationOptions["colorScheme"] | undefined
+) {
+  switch (colorScheme) {
+    case "blue":
+      return styles.colorSchemeBlue;
+    case "green":
+      return styles.colorSchemeGreen;
+    case "purple":
+      return styles.colorSchemePurple;
+    case "red":
+      return styles.colorSchemeRed;
+    case "orange":
+      return styles.colorSchemeOrange;
+    case "gray":
+      return styles.colorSchemeGray;
+    default:
+      return styles.colorSchemeBlue;
+  }
+}
+
+function getSpacingClass(spacing: CustomizationOptions["spacing"] | undefined) {
+  switch (spacing) {
+    case "compact":
+      return styles.spacingCompact;
+    case "relaxed":
+      return styles.spacingRelaxed;
+    default:
+      return styles.spacingNormal;
+  }
+}
+
 export function ClassicTemplate({
   data,
   isCompact = false,
+  customization,
 }: ClassicTemplateProps) {
+  const selectedFont =
+    fontOptions.find((f) => f.value === customization?.font) || fontOptions[0];
+
   return (
     <div
-      className={
-        styles.classicResumeRoot +
-        " print-safe " +
-        (isCompact ? styles.classicCompact : "")
+      style={
+        {
+          "--font-family": selectedFont.family,
+        } as React.CSSProperties
       }
+      className={[
+        styles.classicResumeRoot,
+        "print-safe",
+        isCompact ? styles.classicCompact : "",
+        getFontSizeClass(customization?.fontSize),
+        getColorSchemeClass(customization?.colorScheme),
+        getSpacingClass(customization?.spacing),
+      ].join(" ")}
     >
       {/* Sidebar trái */}
       <aside className={styles.classicResumeSidebar}>
@@ -54,6 +109,12 @@ export function ClassicTemplate({
                 <span>{data.personalInfo.email}</span>
               </li>
             )}
+            {data.personalInfo.jobTitle && (
+              <li>
+                <span>🏠</span>
+                <span>{data.personalInfo.jobTitle}</span>
+              </li>
+            )}
             {/* {data.personalInfo.profileImage &&
               data.personalInfo.profileImage !== "/placeholder.svg" && (
                 <li>Ảnh đại diện</li>
@@ -65,8 +126,11 @@ export function ClassicTemplate({
         {data.education.length > 0 && (
           <div className={styles.classicResumeSection}>
             <div className={styles.classicResumeSectionTitle}>Học vấn</div>
-            {data.education.map((edu) => (
-              <div key={edu.id} className={styles.classicResumeSubSection}>
+            {data.education.map((edu, index) => (
+              <div
+                key={edu.id || index}
+                className={styles.classicResumeSubSection}
+              >
                 <div className={styles.classicResumeSubSectionTitle}>
                   {edu.institution}
                 </div>
@@ -97,8 +161,8 @@ export function ClassicTemplate({
           <div className={styles.classicResumeSection}>
             <div className={styles.classicResumeSectionTitle}>Chứng chỉ</div>
             <ul className={styles.classicResumeCertList}>
-              {data.awards.map((award) => (
-                <li key={award.id}>
+              {data.awards.map((award, index) => (
+                <li key={award.id || index}>
                   <div>
                     <b>{award.title}</b> - {award.issuer}
                   </div>
@@ -131,8 +195,11 @@ export function ClassicTemplate({
             <div className={styles.classicResumeSectionTitle}>
               Kinh nghiệm làm việc
             </div>
-            {data.experience.map((exp) => (
-              <div key={exp.id} className={styles.classicResumeSubSection}>
+            {data.experience.map((exp, index) => (
+              <div
+                key={exp.id || index}
+                className={styles.classicResumeSubSection}
+              >
                 <div className={styles.classicResumeSubSectionTitle}>
                   {exp.company}
                 </div>

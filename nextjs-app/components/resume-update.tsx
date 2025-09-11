@@ -197,6 +197,9 @@ export function ResumeUpdate({
             : [],
           awards: Array.isArray(initialData.awards) ? initialData.awards : [],
         });
+        if ((initialData as any)?.template) {
+          setSelectedTemplate((initialData as any).template);
+        }
       } else {
         // Create new: always reset to empty
         methods.reset({
@@ -249,6 +252,9 @@ export function ResumeUpdate({
       try {
         const parsedData = JSON.parse(savedDraft);
         methods.reset(parsedData);
+        if (parsedData?.template) {
+          setSelectedTemplate(parsedData.template);
+        }
         toast({
           title: "Đã khôi phục bản nháp",
           description: "Dữ liệu đã lưu trước đó đã được khôi phục.",
@@ -354,7 +360,7 @@ export function ResumeUpdate({
           >
             <ChevronLeft className="h-4 w-4" />
             <span className={styles.hiddenOnMobile}>
-              {onBack ? "Quay lại danh sách" : "Quay lại chỉnh sửa"}
+              {onBack ? "Quay lại" : "Quay lại chỉnh sửa"}
             </span>
             <span className={styles.hiddenOnDesktop}>Quay lại</span>
           </Button>
@@ -391,7 +397,7 @@ export function ResumeUpdate({
             <Button
               variant="ghost"
               size="icon"
-              aria-label="Quay lại danh sách CV"
+              aria-label="Quay lại"
               onClick={onBack}
               style={{ marginRight: 8 }}
             >

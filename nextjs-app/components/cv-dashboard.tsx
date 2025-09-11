@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable */
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { CVEmptyState } from "@/components/cv-empty-state";
 import type { ResumeData } from "@/components/resume-builder";
@@ -17,6 +17,7 @@ type ViewState = "empty" | "list" | "builder";
 
 export function CVDashboard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [currentView, setCurrentView] = useState<ViewState>("empty");
   const [resumes, setResumes] = useState<ResumeData[]>([]);
   const [editingResume, setEditingResume] = useState<ResumeData | null>(null);
@@ -34,10 +35,17 @@ export function CVDashboard() {
         : [];
       setResumes(mappedResumes);
 
-      if (mappedResumes.length > 0) {
-        setCurrentView("list");
-      } else {
-        setCurrentView("empty");
+      // Nếu đang ở chế độ tạo mới (builder) do action=create, không override view
+      const action =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search).get("action")
+          : null;
+      if (currentView !== "builder" && action !== "create") {
+        if (mappedResumes.length > 0) {
+          setCurrentView("list");
+        } else {
+          setCurrentView("empty");
+        }
       }
     } catch (error) {
       console.error("Failed to load resumes:", error);
@@ -49,6 +57,15 @@ export function CVDashboard() {
   useEffect(() => {
     loadResumes();
   }, []);
+
+  // Tự động mở builder khi có ?action=create
+  useEffect(() => {
+    const action = searchParams.get("action");
+    if (action === "create") {
+      setEditingResume(null);
+      setCurrentView("builder");
+    }
+  }, [searchParams]);
 
   const handleCreateNewCV = () => {
     setEditingResume(null);
@@ -92,6 +109,19 @@ export function CVDashboard() {
     } else {
       setCurrentView("empty");
     }
+    // Xoá param action nếu có để tránh tự mở builder lần sau
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("action")) {
+        url.searchParams.delete("action");
+        const next =
+          url.pathname +
+          (url.searchParams.toString()
+            ? `?${url.searchParams.toString()}`
+            : "");
+        router.replace(next);
+      }
+    } catch {}
   };
 
   const handleCVSaved = async (newResume: ResumeData) => {
@@ -176,7 +206,11 @@ export function CVDashboard() {
                 Đóng
               </button>
               {/* Hiển thị ViewCv ở chế độ chỉ xem */}
-              <ViewCv data={previewResume} isCompact={false} />
+              <ViewCv
+                data={previewResume}
+                template={(previewResume as any)?.template || "modern"}
+                isCompact={false}
+              />
             </div>
           </div>
         )}
