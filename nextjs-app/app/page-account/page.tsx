@@ -16,6 +16,8 @@ export default function AccountPage() {
   const [message, setMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -29,7 +31,9 @@ export default function AccountPage() {
         setFullName(userData.fullName || userData.name || "");
         setEmail(userData.email || "");
         setUsername(userData.username || "");
-        // Nếu có avatar thì setAvatar(userData.avatar);
+        if (userData.avatarUrl) {
+          setAvatar(userData.avatarUrl);
+        }
       }
     };
     fetchUser();
@@ -39,12 +43,20 @@ export default function AccountPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      setPreview(base64);
+      setSelectedImage(base64);
+    };
+    reader.readAsDataURL(file);
   };
 
-  const handleRemove = () => setPreview(null);
+  const handleRemove = () => {
+    setPreview(null);
+    setSelectedImage(null);
+  };
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,7 +77,8 @@ export default function AccountPage() {
         body: JSON.stringify({
           fullName,
           email,
-          avatar,
+          username,
+          avatarUrl: avatar,
         }),
       });
       if (res.ok) {
@@ -80,12 +93,53 @@ export default function AccountPage() {
         const userData = await userRes.json();
         setFullName(userData.fullName || userData.name || "");
         setEmail(userData.email || "");
-        // Nếu có avatar thì setAvatar(userData.avatar);
+        if (userData.avatarUrl) setAvatar(userData.avatarUrl);
       } else {
         setMessage("Có lỗi xảy ra, vui lòng thử lại.");
       }
     } catch {
       setMessage("Không thể kết nối đến server.");
+    }
+  };
+
+  const handleSaveAvatar = async () => {
+    if (!selectedImage) {
+      setShowModal(false);
+      return;
+    }
+    const accessToken = session?.accessToken;
+    const userId = session?.user?.id;
+    if (!userId) return;
+    try {
+      setIsSaving(true);
+      const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: accessToken
+            ? `Bearer ${accessToken}`
+            : (undefined as any),
+        },
+        body: JSON.stringify({ avatarUrl: selectedImage }),
+      });
+      if (res.ok) {
+        setAvatar(selectedImage);
+        try {
+          localStorage.setItem("user-avatar", selectedImage);
+          window.dispatchEvent(
+            new CustomEvent("avatar-updated", { detail: selectedImage })
+          );
+        } catch {}
+        setShowModal(false);
+        setPreview(null);
+        setSelectedImage(null);
+      } else {
+        setMessage("Cập nhật ảnh thất bại. Vui lòng thử lại.");
+      }
+    } catch {
+      setMessage("Không thể kết nối đến server.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -265,15 +319,21 @@ export default function AccountPage() {
                 <div
                   style={{ display: "flex", flexDirection: "column", gap: 8 }}
                 >
-                  <button className="btn btn-primary">Đổi ảnh</button>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    Đổi ảnh
+                  </button>
                   <button className="btn btn-danger" onClick={handleRemove}>
                     Xóa ảnh
                   </button>
                   <button
                     className="btn btn-success"
-                    onClick={() => setShowModal(false)}
+                    onClick={handleSaveAvatar}
+                    disabled={isSaving}
                   >
-                    Xong
+                    {isSaving ? "Đang lưu..." : "Xong"}
                   </button>
                   <button
                     className="btn btn-link"

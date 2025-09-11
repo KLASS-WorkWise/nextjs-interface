@@ -18,6 +18,8 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
   const router = useRouter();
 
   const { data: session } = useSession();
+  const [avatarSrc, setAvatarSrc] = useState<string>("");
+  const [avatarReady, setAvatarReady] = useState<boolean>(false);
   const role = session?.user?.roles;
 
   const handleLogout = async () => {
@@ -33,6 +35,62 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
       }
     });
   }, [scroll]);
+
+  // Load avatar from backend when session changes
+  useEffect(() => {
+    const loadAvatar = async () => {
+      const userId = (session as any)?.user?.id;
+      const token = (session as any)?.accessToken;
+      if (!userId) return;
+      try {
+        const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        const user = await res.json();
+        const url =
+          user?.avatarUrl ||
+          user?.avatar ||
+          "/assets/imgs/avatar/logoLogin.jpg";
+        setAvatarSrc(url);
+        setAvatarReady(true);
+      } catch {
+        setAvatarSrc("/assets/imgs/avatar/logoLogin.jpg");
+        setAvatarReady(true);
+      }
+    };
+    loadAvatar();
+  }, [session]);
+
+  useEffect(() => {
+    const handleCustom = async (evt: CustomEvent) => {
+      // Update immediately if payload is provided (base64/new url)
+      if (evt?.detail) {
+        const val = String(evt.detail);
+        setAvatarSrc(val.startsWith("http") ? `${val}?t=${Date.now()}` : val);
+        setAvatarReady(true);
+        return;
+      }
+      // Re-fetch from backend when avatar updated elsewhere
+      const userId = (session as any)?.user?.id;
+      const token = (session as any)?.accessToken;
+      if (!userId) return;
+      try {
+        const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        const user = await res.json();
+        const url = user?.avatarUrl || user?.avatar;
+        setAvatarSrc(
+          url ? `${url}?t=${Date.now()}` : "/assets/imgs/avatar/logoLogin.jpg"
+        );
+        setAvatarReady(true);
+      } catch {}
+    };
+    window.addEventListener("avatar-updated", handleCustom as any);
+    return () => {
+      window.removeEventListener("avatar-updated", handleCustom as any);
+    };
+  }, [session]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -323,7 +381,11 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                   >
                     {/* Avatar user */}
                     <img
-                      src="/assets/imgs/avatar/logoLogin.jpg"
+                      src={
+                        avatarReady
+                          ? avatarSrc
+                          : "/assets/imgs/avatar/logoLogin.jpg"
+                      }
                       alt="Avatar"
                       style={{
                         width: 50,
@@ -413,7 +475,11 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                           }}
                         >
                           <img
-                            src="/assets/imgs/avatar/logoLogin.jpg"
+                            src={
+                              avatarReady
+                                ? avatarSrc
+                                : "/assets/imgs/avatar/logoLogin.jpg"
+                            }
                             alt="Avatar"
                             style={{
                               width: 56,

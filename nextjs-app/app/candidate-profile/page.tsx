@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Layout from "@/components/Layout/Layout";
 import ApplicantsTable from "@/features/applicants/components/ApplicantsTable";
@@ -13,6 +13,9 @@ import { CVDashboard } from "@/components/cv-dashboard";
 
 export default function CandidateProfile() {
   const { data: session } = useSession();
+  const [avatarSrc, setAvatarSrc] = useState<string>(
+    "/assets/imgs/avatar/logoLogin.jpg"
+  );
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -38,6 +41,45 @@ export default function CandidateProfile() {
     router.push("/page-resume?action=create&source=candidate-profile");
   };
 
+  // Lấy avatar trực tiếp từ backend khi session thay đổi
+  useEffect(() => {
+    const loadAvatar = async () => {
+      const userId = (session as any)?.user?.id;
+      const token = (session as any)?.accessToken;
+      if (!userId) return;
+      try {
+        const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        const user = await res.json();
+        setAvatarSrc(
+          user?.avatarUrl || user?.avatar || "/assets/imgs/avatar/logoLogin.jpg"
+        );
+      } catch {}
+    };
+    loadAvatar();
+  }, [session]);
+
+  useEffect(() => {
+    const handleCustom = async () => {
+      const userId = (session as any)?.user?.id;
+      const token = (session as any)?.accessToken;
+      if (!userId) return;
+      try {
+        const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        const user = await res.json();
+        setAvatarSrc(
+          user?.avatarUrl || user?.avatar || "/assets/imgs/avatar/logoLogin.jpg"
+        );
+      } catch {}
+    };
+    window.addEventListener("avatar-updated", handleCustom as any);
+    return () =>
+      window.removeEventListener("avatar-updated", handleCustom as any);
+  }, [session]);
+
   return (
     <>
       <Layout>
@@ -51,10 +93,7 @@ export default function CandidateProfile() {
               <div className="box-company-profile">
                 <div className="image-compay">
                   <img
-                    src={
-                      (session as any)?.user?.avatar ||
-                      "/assets/imgs/avatar/logoLogin.jpg"
-                    }
+                    src={avatarSrc}
                     alt="jobbox"
                     style={{
                       width: 90,
