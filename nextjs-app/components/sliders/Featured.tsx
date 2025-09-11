@@ -2,451 +2,238 @@
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import React, {useEffect, useState, useRef } from "react";
 
 const FeaturedSlider = () => {
+  const [active, setActive] = useState(1);
+  
+  
+  
+    const handleOnClick = (index: number) => {
+      setActive(index);
+    };
+    const { data: session } = useSession();
+      const role = session?.user?.roles;
+      // Hook lấy dữ liệu job từ API
+      const [jobs, setJobs] = useState<any[]>([]);
+      const [jobsLoading, setJobsLoading] = useState(false);
+      const [jobsError, setJobsError] = useState("");
+  
+    useEffect(() => {
+      const fetchJobs = async () => {
+        setJobsLoading(true);
+        setJobsError("");
+        try {
+          const res = await fetch("http://localhost:8080/api/job-postings/all");
+          if (!res.ok) throw new Error("Không thể lấy danh sách công việc");
+          const data = await res.json();
+          setJobs(data);
+        } catch (err: any) {
+          setJobsError(err.message || "Lỗi không xác định");
+        } finally {
+          setJobsLoading(false);
+        }
+      };
+      fetchJobs();
+    }, []);
+
+    // Drag-to-scroll refs and handlers
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const isDown = useRef(false);
+    const startX = useRef(0);
+    const scrollLeft = useRef(0);
+
+    const onMouseDown = (e: React.MouseEvent) => {
+      const container = containerRef.current;
+      if (!container) return;
+      isDown.current = true;
+      container.classList.add('dragging');
+      startX.current = e.pageX - container.offsetLeft;
+      scrollLeft.current = container.scrollLeft;
+    };
+
+    const onMouseLeave = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      isDown.current = false;
+      container.classList.remove('dragging');
+    };
+
+    const onMouseUp = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      isDown.current = false;
+      container.classList.remove('dragging');
+    };
+
+    const onMouseMove = (e: React.MouseEvent) => {
+      const container = containerRef.current;
+      if (!container || !isDown.current) return;
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX.current) * 1; // scroll-fast multiplier
+      container.scrollLeft = scrollLeft.current - walk;
+    };
+
+    // Touch support
+    const onTouchStart = (e: React.TouchEvent) => {
+      const container = containerRef.current;
+      if (!container) return;
+      isDown.current = true;
+      startX.current = e.touches[0].pageX - container.offsetLeft;
+      scrollLeft.current = container.scrollLeft;
+    };
+
+    const onTouchMove = (e: React.TouchEvent) => {
+      const container = containerRef.current;
+      if (!container || !isDown.current) return;
+      const x = e.touches[0].pageX - container.offsetLeft;
+      const walk = (x - startX.current) * 1;
+      container.scrollLeft = scrollLeft.current - walk;
+    };
+
+    const onTouchEnd = () => {
+      isDown.current = false;
+      const container = containerRef.current;
+      if (container) container.classList.remove('dragging');
+    };
+
+    // Helper: parse minimum salary in millions (triệu). Returns number in millions or null if cannot parse.
+    const parseSalaryMin = (raw?: string | null) : number | null => {
+      if (!raw || typeof raw !== 'string') return null;
+      const s = raw.toLowerCase().replace(/\s+/g, ' ').trim();
+      // find range like 25–35 or 25-35 or 25 to 35
+      const rangeRe = /([\d.,]+)\s*(?:–|-|to)\s*([\d.,]+)/;
+      const singleRe = /([\d.,]+)/;
+
+      let numStr: string | null = null;
+      const rangeMatch = s.match(rangeRe);
+      if (rangeMatch) {
+        numStr = rangeMatch[1]; // take lower bound
+      } else {
+        const m = s.match(singleRe);
+        if (m) numStr = m[1];
+      }
+      if (!numStr) return null;
+      const normalized = numStr.replace(/,/g, '.');
+      const val = parseFloat(normalized);
+      if (isNaN(val)) return null;
+
+      // Determine unit
+      if (s.includes('tri') || s.includes('tr') || s.includes('triệu')) {
+        return val; // already in millions
+      }
+      if (s.includes('k') && !s.includes('tr')) {
+        // thousands, convert to millions
+        return val / 1000;
+      }
+      // if value is large (>1000) assume it's VND (e.g., 30000000) -> convert to millions
+      if (val > 1000) return val / 1_000_000;
+
+      // default assume millions
+      return val;
+    };
+
   return (
     <>
-      <div className="swiper-container swiper-group-4">
-        <Swiper
-          slidesPerView={4}
-          spaceBetween={30}
-          loop={true}
-          modules={[Navigation]}
-          navigation={{
-            prevEl: ".swiper-button-prev-4",
-            nextEl: ".swiper-button-next-4",
-          }}
-          className="swiper-wrapper pb-10 pt-5"
-        >
-          <SwiperSlide>
-            <div className="card-grid-2 hover-up wow animate__animated animate__fadeIn">
-              <div className="card-grid-2-image-left">
-                <span className="flash" />
-                <div className="image-box">
-                  <img src="/assets/imgs/brands/brand-6.png" alt="jobBox" />
-                </div>
-                <div className="right-info">
-                  <Link href="/company-details">
-                    <span className="name-job">Quora JSC</span>
-                  </Link>
-                  <span className="location-small">New York, US</span>
-                </div>
-              </div>
-              <div className="card-block-info">
-                <h6>
-                  <Link href="/job-details">
-                    <span>Senior System Engineer</span>
-                  </Link>
-                </h6>
-                <div className="mt-5">
-                  <span className="card-briefcase">Part time</span>
-                  <span className="card-time">
-                    5<span> minutes ago</span>
-                  </span>
-                </div>
-                <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
-                <div className="mt-30">
-                  <Link href="/job-details">
-                    <span className="btn btn-grey-small mr-5">PHP</span>
-                  </Link>
-
-                  <Link href="/job-details">
-                    <span className="btn btn-grey-small mr-5">Android </span>
-                  </Link>
-                </div>
-                <div className="card-2-bottom mt-30">
-                  <div className="row">
-                    <div className="col-lg-7 col-7">
-                      <span className="card-text-price">$800</span>
-                      <span className="text-muted">/Hour</span>
+      <div
+        ref={containerRef}
+        style={{ overflowX: 'auto', padding: 0, boxSizing: 'border-box' }}
+        className="featured-scroll w-100"
+        onMouseDown={onMouseDown}
+        onMouseLeave={onMouseLeave}
+        onMouseUp={onMouseUp}
+        onMouseMove={onMouseMove}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
+  <div className="d-flex flex-row flex-nowrap justify-content-start align-items-stretch" style={{ gap: "24px", paddingLeft: '24px' }}>
+        {jobsLoading && <div className="text-center w-100">Đang tải dữ liệu...</div>}
+        {jobsError && <div className="text-center text-danger w-100">{jobsError}</div>}
+        {!jobsLoading && !jobsError && jobs.length === 0 && <div className="text-center w-100">Không có công việc nào</div>}
+        {!jobsLoading && !jobsError && jobs.length > 0 &&
+          jobs
+            .slice()
+            .filter((job: any) => {
+              const salaryStr = (job.salaryRange && job.salaryRange.toString()) || (job.salary && job.salary.toString()) || '';
+              const min = parseSalaryMin(salaryStr);
+              return min !== null && min >= 30;
+            })
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .slice(0, 7)
+            .map((job: any) => (
+              <div key={job.id} style={{ minWidth: 320, maxWidth: 340, flex: "0 0 auto" }}>
+                <div className="card-grid-2 hover-up h-100">
+                  <div className="card-grid-2-image-left">
+                    <span className="flash" />
+                    <div className="image-box">
+                      <img src={job.companyLogo || "/assets/imgs/brands/brand-1.png"} alt={job.companyName || "Company"} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} />
                     </div>
-                    <div className="col-lg-5 col-5 text-end">
-                      <Link href="/job-details">
-                        <span className="btn btn-apply-now">Apply now</span>
+                    <div className="right-info">
+                      <span className="fw-bold" style={{ fontSize: '1.08rem', color: '#222' }}>{job.companyName || 'Company'}</span>
+                      <div className="d-flex align-items-center font-xs color-text-paragraph mt-1">
+                        <i className="fi-rr-marker mr-5" />
+                        {job.location || 'Unknown'}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="card-block-info">
+                    <h6>
+                      <Link href={`/job-details-2/${job.id}`}>
+                        <span>{job.title || "No title"}</span>
                       </Link>
+                    </h6>
+                    <div className="mt-5">
+                      <span className="card-briefcase">{job.type || "Fulltime"}</span>
+                      <span className="card-time">{job.createdAt ? new Date(job.createdAt).toLocaleDateString() : ""}</span>
+                    </div>
+                    <p
+                      className="font-sm color-text-paragraph mt-15"
+                      style={{
+                        maxWidth: '100%',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        marginBottom: 0
+                      }}
+                      title={job.description || "Không có mô tả"}
+                    >
+                      {job.description || "Không có mô tả"}
+                    </p>
+                    <div className="mt-30">
+                      {Array.isArray(job.skills) && job.skills.map((skill: string, idx: number) => (
+                        <span key={idx} className="btn btn-grey-small mr-5">{skill}</span>
+                      ))}
+                    </div>
+                    <div className="card-2-bottom mt-30">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div className="d-flex align-items-baseline" style={{ gap: 6 }}>
+                          <span className="card-text-price" style={{ fontSize: '1rem', color: '#2A6DF5', fontWeight: 700, letterSpacing: '0.5px', lineHeight: 1 }}>
+                            {job.salaryRange && job.salaryRange.trim() !== "" ? job.salaryRange : (job.salary && job.salary.trim() !== "" ? job.salary : "N/A")}
+                          </span>
+                          <span className="text-muted" style={{ fontSize: '0.85rem' }}>/Tháng</span>
+                        </div>
+                        <button className="btn btn-apply-now">Apply</button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="card-grid-2 hover-up wow animate__animated animate__fadeIn">
-              <div className="card-grid-2-image-left">
-                <span className="flash" />
-                <div className="image-box">
-                  <img src="/assets/imgs/brands/brand-4.png" alt="jobBox" />
-                </div>
-                <div className="right-info">
-                  <Link href="/company-details">
-                    <span className="name-job">Dailymotion</span>
-                  </Link>
-                  <span className="location-small">New York, US</span>
-                </div>
-              </div>
-              <div className="card-block-info">
-                <h6>
-                  <Link href="/job-details">
-                    <span>Frontend Developer</span>
-                  </Link>
-                </h6>
-                <div className="mt-5">
-                  <span className="card-briefcase">Full time</span>
-                  <span className="card-time">
-                    6<span> minutes ago</span>
-                  </span>
-                </div>
-                <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
-                <div className="mt-30">
-                  <Link href="/jobs-grid">
-                    <span className="btn btn-grey-small mr-5">Typescript</span>
-                  </Link>
-
-                  <Link href="/jobs-grid">
-                    <span className="btn btn-grey-small mr-5">Java</span>
-                  </Link>
-                </div>
-                <div className="card-2-bottom mt-30">
-                  <div className="row">
-                    <div className="col-lg-7 col-7">
-                      <span className="card-text-price">$250</span>
-                      <span className="text-muted">/Hour</span>
-                    </div>
-                    <div className="col-lg-5 col-5 text-end">
-                      <Link href="/job-details">
-                        <span className="btn btn-apply-now">Apply now</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="card-grid-2 hover-up wow animate__animated animate__fadeIn">
-              <div className="card-grid-2-image-left">
-                <span className="flash" />
-                <div className="image-box">
-                  <img src="/assets/imgs/brands/brand-8.png" alt="jobBox" />
-                </div>
-                <div className="right-info">
-                  <Link href="/company-details">
-                    <span className="name-job">Periscope</span>
-                  </Link>
-                  <span className="location-small">New York, US</span>
-                </div>
-              </div>
-              <div className="card-block-info">
-                <h6>
-                  <Link href="/job-details">
-                    <span>Lead Quality Control QA</span>
-                  </Link>
-                </h6>
-                <div className="mt-5">
-                  <span className="card-briefcase">Full time</span>
-                  <span className="card-time">
-                    6<span> minutes ago</span>
-                  </span>
-                </div>
-                <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
-                <div className="mt-30">
-                  <Link href="/job-details">
-                    <span className="btn btn-grey-small mr-5">iOS</span>
-                  </Link>
-
-                  <Link href="/job-details">
-                    <span className="btn btn-grey-small mr-5">Laravel</span>
-                  </Link>
-
-                  <Link href="/job-details">
-                    <span className="btn btn-grey-small mr-5">Golang</span>
-                  </Link>
-                </div>
-                <div className="card-2-bottom mt-30">
-                  <div className="row">
-                    <div className="col-lg-7 col-7">
-                      <span className="card-text-price">$250</span>
-                      <span className="text-muted">/Hour</span>
-                    </div>
-                    <div className="col-lg-5 col-5 text-end">
-                      <Link href="/job-details">
-                        <span className="btn btn-apply-now">Apply now</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="card-grid-2 hover-up wow animate__animated animate__fadeIn">
-              <div className="card-grid-2-image-left">
-                <span className="flash" />
-                <div className="image-box">
-                  <img src="/assets/imgs/brands/brand-4.png" alt="jobBox" />
-                </div>
-                <div className="right-info">
-                  <Link href="/company-details">
-                    <span className="name-job">Dailymotion</span>
-                  </Link>
-                  <span className="location-small">New York, US</span>
-                </div>
-              </div>
-              <div className="card-block-info">
-                <h6>
-                  <Link href="/job-details">
-                    <span>Frontend Developer</span>
-                  </Link>
-                </h6>
-                <div className="mt-5">
-                  <span className="card-briefcase">Full time</span>
-                  <span className="card-time">
-                    6<span> minutes ago</span>
-                  </span>
-                </div>
-                <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
-                <div className="mt-30">
-                  <Link href="/jobs-grid">
-                    <span className="btn btn-grey-small mr-5">Typescript</span>
-                  </Link>
-
-                  <Link href="/jobs-grid">
-                    <span className="btn btn-grey-small mr-5">Java</span>
-                  </Link>
-                </div>
-                <div className="card-2-bottom mt-30">
-                  <div className="row">
-                    <div className="col-lg-7 col-7">
-                      <span className="card-text-price">$250</span>
-                      <span className="text-muted">/Hour</span>
-                    </div>
-                    <div className="col-lg-5 col-5 text-end">
-                      <Link href="/job-details">
-                        <span className="btn btn-apply-now">Apply now</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="card-grid-2 hover-up wow animate__animated animate__fadeIn">
-              <div className="card-grid-2-image-left">
-                <span className="flash" />
-                <div className="image-box">
-                  <img src="/assets/imgs/brands/brand-6.png" alt="jobBox" />
-                </div>
-                <div className="right-info">
-                  <Link href="/company-details">
-                    <span className="name-job">Quora JSC</span>
-                  </Link>
-                  <span className="location-small">New York, US</span>
-                </div>
-              </div>
-              <div className="card-block-info">
-                <h6>
-                  <Link href="/job-details">
-                    <span>Senior System Engineer</span>
-                  </Link>
-                </h6>
-                <div className="mt-5">
-                  <span className="card-briefcase">Part time</span>
-                  <span className="card-time">
-                    5<span> minutes ago</span>
-                  </span>
-                </div>
-                <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
-                <div className="mt-30">
-                  <Link href="/job-details">
-                    <span className="btn btn-grey-small mr-5">PHP</span>
-                  </Link>
-
-                  <Link href="/job-details">
-                    <span className="btn btn-grey-small mr-5">Android </span>
-                  </Link>
-                </div>
-                <div className="card-2-bottom mt-30">
-                  <div className="row">
-                    <div className="col-lg-7 col-7">
-                      <span className="card-text-price">$800</span>
-                      <span className="text-muted">/Hour</span>
-                    </div>
-                    <div className="col-lg-5 col-5 text-end">
-                      <Link href="/job-details">
-                        <span className="btn btn-apply-now">Apply now</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="card-grid-2 hover-up wow animate__animated animate__fadeIn">
-              <div className="card-grid-2-image-left">
-                <span className="flash" />
-                <div className="image-box">
-                  <img src="/assets/imgs/brands/brand-4.png" alt="jobBox" />
-                </div>
-                <div className="right-info">
-                  <Link href="/company-details">
-                    <span className="name-job">Dailymotion</span>
-                  </Link>
-                  <span className="location-small">New York, US</span>
-                </div>
-              </div>
-              <div className="card-block-info">
-                <h6>
-                  <Link href="/job-details">
-                    <span>Frontend Developer</span>
-                  </Link>
-                </h6>
-                <div className="mt-5">
-                  <span className="card-briefcase">Full time</span>
-                  <span className="card-time">
-                    6<span> minutes ago</span>
-                  </span>
-                </div>
-                <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
-                <div className="mt-30">
-                  <Link href="/jobs-grid">
-                    <span className="btn btn-grey-small mr-5">Typescript</span>
-                  </Link>
-
-                  <Link href="/jobs-grid">
-                    <span className="btn btn-grey-small mr-5">Java</span>
-                  </Link>
-                </div>
-                <div className="card-2-bottom mt-30">
-                  <div className="row">
-                    <div className="col-lg-7 col-7">
-                      <span className="card-text-price">$250</span>
-                      <span className="text-muted">/Hour</span>
-                    </div>
-                    <div className="col-lg-5 col-5 text-end">
-                      <Link href="/job-details">
-                        <span className="btn btn-apply-now">Apply now</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="card-grid-2 hover-up wow animate__animated animate__fadeIn">
-              <div className="card-grid-2-image-left">
-                <span className="flash" />
-                <div className="image-box">
-                  <img src="/assets/imgs/brands/brand-8.png" alt="jobBox" />
-                </div>
-                <div className="right-info">
-                  <Link href="/company-details">
-                    <span className="name-job">Periscope</span>
-                  </Link>
-                  <span className="location-small">New York, US</span>
-                </div>
-              </div>
-              <div className="card-block-info">
-                <h6>
-                  <Link href="/job-details">
-                    <span>Lead Quality Control QA</span>
-                  </Link>
-                </h6>
-                <div className="mt-5">
-                  <span className="card-briefcase">Full time</span>
-                  <span className="card-time">
-                    6<span> minutes ago</span>
-                  </span>
-                </div>
-                <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
-                <div className="mt-30">
-                  <Link href="/job-details">
-                    <span className="btn btn-grey-small mr-5">iOS</span>
-                  </Link>
-
-                  <Link href="/job-details">
-                    <span className="btn btn-grey-small mr-5">Laravel</span>
-                  </Link>
-
-                  <Link href="/job-details">
-                    <span className="btn btn-grey-small mr-5">Golang</span>
-                  </Link>
-                </div>
-                <div className="card-2-bottom mt-30">
-                  <div className="row">
-                    <div className="col-lg-7 col-7">
-                      <span className="card-text-price">$250</span>
-                      <span className="text-muted">/Hour</span>
-                    </div>
-                    <div className="col-lg-5 col-5 text-end">
-                      <Link href="/job-details">
-                        <span className="btn btn-apply-now">Apply now</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="card-grid-2 hover-up wow animate__animated animate__fadeIn">
-              <div className="card-grid-2-image-left">
-                <span className="flash" />
-                <div className="image-box">
-                  <img src="/assets/imgs/brands/brand-4.png" alt="jobBox" />
-                </div>
-                <div className="right-info">
-                  <Link href="/company-details">
-                    <span className="name-job">Dailymotion</span>
-                  </Link>
-                  <span className="location-small">New York, US</span>
-                </div>
-              </div>
-              <div className="card-block-info">
-                <h6>
-                  <Link href="/job-details">
-                    <span>Frontend Developer</span>
-                  </Link>
-                </h6>
-                <div className="mt-5">
-                  <span className="card-briefcase">Full time</span>
-                  <span className="card-time">
-                    6<span> minutes ago</span>
-                  </span>
-                </div>
-                <p className="font-sm color-text-paragraph mt-15">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
-                <div className="mt-30">
-                  <Link href="/jobs-grid">
-                    <span className="btn btn-grey-small mr-5">Typescript</span>
-                  </Link>
-
-                  <Link href="/jobs-grid">
-                    <span className="btn btn-grey-small mr-5">Java</span>
-                  </Link>
-                </div>
-                <div className="card-2-bottom mt-30">
-                  <div className="row">
-                    <div className="col-lg-7 col-7">
-                      <span className="card-text-price">$250</span>
-                      <span className="text-muted">/Hour</span>
-                    </div>
-                    <div className="col-lg-5 col-5 text-end">
-                      <Link href="/job-details">
-                        <span className="btn btn-apply-now">Apply now</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-        </Swiper>
-
-        <div className="swiper-button-next swiper-button-next-4" />
-        <div className="swiper-button-prev swiper-button-prev-4" />
+            ))}
+        </div>
       </div>
+      <style jsx>{`
+        .featured-scroll {
+          -ms-overflow-style: none; /* IE and Edge */
+          scrollbar-width: none; /* Firefox */
+        }
+        .featured-scroll::-webkit-scrollbar { display: none; } /* Chrome, Safari */
+        .featured-scroll .dragging { cursor: grabbing; }
+        .featured-scroll.dragging { cursor: grabbing; }
+        .featured-scroll { cursor: grab; }
+      `}</style>
     </>
   );
 };

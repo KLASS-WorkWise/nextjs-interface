@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 /* eslint-disable react/no-unescaped-entities */
 import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
+import { useSession } from "next-auth/react";
 import FeaturedSlider from "@/components/sliders/Featured";
 
 export default function JobDetails2() {
@@ -16,6 +17,61 @@ export default function JobDetails2() {
       .then((data) => setJob(data))
       .catch(() => setJob(null));
   }, [id]);
+
+  const [active, setActive] = useState(1);
+  
+    const handleOnClick = (index: number) => {
+      setActive(index);
+    };
+    const { data: session } = useSession();
+      const role = session?.user?.roles;
+      // Hook lấy dữ liệu job từ API
+      const [jobs, setJobs] = useState<any[]>([]);
+      const [jobsLoading, setJobsLoading] = useState(false);
+      const [jobsError, setJobsError] = useState("");
+  
+    useEffect(() => {
+        const fetchJobs = async () => {
+          setJobsLoading(true);
+          setJobsError("");
+          try {
+            const res = await fetch("http://localhost:8080/api/job-postings/all");
+            if (!res.ok) throw new Error("Không thể lấy danh sách công việc");
+            const data = await res.json();
+            setJobs(data);
+          } catch (err: any) {
+            setJobsError(err.message || "Lỗi không xác định");
+          } finally {
+            setJobsLoading(false);
+          }
+        };
+        fetchJobs();
+      }, []);
+
+      // Helper: robustly parse createdAt value from API (supports ms, seconds, ISO string)
+      const parseToDate = (val: any): Date | null => {
+        if (!val && val !== 0) return null;
+        if (typeof val === 'number') {
+          return new Date(val > 1e12 ? val : val * 1000);
+        }
+        if (typeof val === 'string') {
+          const num = Number(val);
+          if (!isNaN(num)) return new Date(num > 1e12 ? num : num * 1000);
+          const d = new Date(val);
+          if (!isNaN(d.getTime())) return d;
+        }
+        return null;
+      };
+
+      const formatCreatedAt = (date: Date) => {
+        const diff = Date.now() - date.getTime();
+        const minutes = Math.floor(diff / 60000);
+        if (minutes < 60) return `${minutes} mins ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours} hrs ago`;
+        // show readable date for older posts
+        return date.toLocaleDateString();
+      };
   return (
     <>
       <Layout>
@@ -144,18 +200,8 @@ export default function JobDetails2() {
                                   {/* Deadline icon */}
                                   <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#8a94a6" strokeWidth="1.5"/><path d="M16 2v4M8 2v4" stroke="#8a94a6" strokeWidth="1.5" strokeLinecap="round"/><path d="M3 10h18" stroke="#8a94a6" strokeWidth="1.5"/></svg>
                                 </span>
-                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Deadline</span>
+                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Expiration date</span>
                                 <span style={{fontWeight:600, marginLeft: 8}}>{new Date(job.endAt).toLocaleDateString()}</span>
-                              </div>
-                            )}
-                            {job.status && (
-                              <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
-                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
-                                  {/* Status icon */}
-                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#8a94a6" strokeWidth="1.5"/><path d="M8 12l2 2 4-4" stroke="#8a94a6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                </span>
-                                <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Status</span>
-                                <span style={{fontWeight:600, marginLeft: 8}}>{job.status}</span>
                               </div>
                             )}
                             {job.employer && job.employer.name && (
@@ -212,304 +258,73 @@ export default function JobDetails2() {
                   <div className="sidebar-border">
                     <h6 className="f-18">Similar jobs</h6>
                     <div className="sidebar-list-job">
-                      <ul>
-                        <li>
-                          <div className="card-list-4 wow animate__animated animate__fadeIn hover-up">
-                            <div className="image">
-                              <Link href="/job-details">
-                                <span>
-                                  <img src="/assets/imgs/brands/brand-1.png" alt="jobBox" />
-                                </span>
-                              </Link>
-                            </div>
-                            <div className="info-text">
-                              <h5 className="font-md font-bold color-brand-1">
-                                <Link href="/job-details">
-                                  <span>UI / UX Designer fulltime</span>
-                                </Link>
-                              </h5>
-                              <div className="mt-0">
-                                <span className="card-briefcase">Fulltime</span>
-                                <span className="card-time">
-                                  <span>3</span>
-                                  <span> mins ago</span>
-                                </span>
-                              </div>
-                              <div className="mt-5">
-                                <div className="row">
-                                  <div className="col-6">
-                                    <h6 className="card-price">
-                                      $250<span>/Hour</span>
-                                    </h6>
-                                  </div>
-                                  <div className="col-6 text-end">
-                                    <span className="card-briefcase">New York, US</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="card-list-4 wow animate__animated animate__fadeIn hover-up">
-                            <div className="image">
-                              <Link href="/job-details">
-                                <span>
-                                  <img src="/assets/imgs/brands/brand-2.png" alt="jobBox" />
-                                </span>
-                              </Link>
-                            </div>
-                            <div className="info-text">
-                              <h5 className="font-md font-bold color-brand-1">
-                                <Link href="/job-details">
-                                  <span>Java Software Engineer</span>
-                                </Link>
-                              </h5>
-                              <div className="mt-0">
-                                <span className="card-briefcase">Fulltime</span>
-                                <span className="card-time">
-                                  <span>5</span>
-                                  <span> mins ago</span>
-                                </span>
-                              </div>
-                              <div className="mt-5">
-                                <div className="row">
-                                  <div className="col-6">
-                                    <h6 className="card-price">
-                                      $500<span>/Hour</span>
-                                    </h6>
-                                  </div>
-                                  <div className="col-6 text-end">
-                                    <span className="card-briefcase">Tokyo, Japan</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="card-list-4 wow animate__animated animate__fadeIn hover-up">
-                            <div className="image">
-                              <Link href="/job-details">
-                                <span>
-                                  <img src="/assets/imgs/brands/brand-3.png" alt="jobBox" />
-                                </span>
-                              </Link>
-                            </div>
-                            <div className="info-text">
-                              <h5 className="font-md font-bold color-brand-1">
-                                <Link href="/job-details">
-                                  <span>Frontend Developer</span>
-                                </Link>
-                              </h5>
-                              <div className="mt-0">
-                                <span className="card-briefcase">Fulltime</span>
-                                <span className="card-time">
-                                  <span>8</span>
-                                  <span> mins ago</span>
-                                </span>
-                              </div>
-                              <div className="mt-5">
-                                <div className="row">
-                                  <div className="col-6">
-                                    <h6 className="card-price">
-                                      $650<span>/Hour</span>
-                                    </h6>
-                                  </div>
-                                  <div className="col-6 text-end">
-                                    <span className="card-briefcase">Hanoi, Vietnam</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="card-list-4 wow animate__animated animate__fadeIn hover-up">
-                            <div className="image">
-                              <Link href="/job-details">
-                                <span>
-                                  <img src="/assets/imgs/brands/brand-4.png" alt="jobBox" />
-                                </span>
-                              </Link>
-                            </div>
-                            <div className="info-text">
-                              <h5 className="font-md font-bold color-brand-1">
-                                <Link href="/job-details">
-                                  <span>Cloud Engineer</span>
-                                </Link>
-                              </h5>
-                              <div className="mt-0">
-                                <span className="card-briefcase">Fulltime</span>
-                                <span className="card-time">
-                                  <span>12</span>
-                                  <span> mins ago</span>
-                                </span>
-                              </div>
-                              <div className="mt-5">
-                                <div className="row">
-                                  <div className="col-6">
-                                    <h6 className="card-price">
-                                      $380<span>/Hour</span>
-                                    </h6>
-                                  </div>
-                                  <div className="col-6 text-end">
-                                    <span className="card-briefcase">Losangl, Au</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="card-list-4 wow animate__animated animate__fadeIn hover-up">
-                            <div className="image">
-                              <Link href="/job-details">
-                                <span>
-                                  <img src="/assets/imgs/brands/brand-5.png" alt="jobBox" />
-                                </span>
-                              </Link>
-                            </div>
-                            <div className="info-text">
-                              <h5 className="font-md font-bold color-brand-1">
-                                <Link href="/job-details">
-                                  <span>DevOps Engineer</span>
-                                </Link>
-                              </h5>
-                              <div className="mt-0">
-                                <span className="card-briefcase">Fulltime</span>
-                                <span className="card-time">
-                                  <span>34</span>
-                                  <span> mins ago</span>
-                                </span>
-                              </div>
-                              <div className="mt-5">
-                                <div className="row">
-                                  <div className="col-6">
-                                    <h6 className="card-price">
-                                      $140<span>/Hour</span>
-                                    </h6>
-                                  </div>
-                                  <div className="col-6 text-end">
-                                    <span className="card-briefcase">Paris, France</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="card-list-4 wow animate__animated animate__fadeIn hover-up">
-                            <div className="image">
-                              <Link href="/job-details">
-                                <span>
-                                  <img src="/assets/imgs/brands/brand-6.png" alt="jobBox" />
-                                </span>
-                              </Link>
-                            </div>
-                            <div className="info-text">
-                              <h5 className="font-md font-bold color-brand-1">
-                                <Link href="/job-details">
-                                  <span>Figma design UI/UX</span>
-                                </Link>
-                              </h5>
-                              <div className="mt-0">
-                                <span className="card-briefcase">Fulltime</span>
-                                <span className="card-time">
-                                  <span>45</span>
-                                  <span> mins ago</span>
-                                </span>
-                              </div>
-                              <div className="mt-5">
-                                <div className="row">
-                                  <div className="col-6">
-                                    <h6 className="card-price">
-                                      $290<span>/Hour</span>
-                                    </h6>
-                                  </div>
-                                  <div className="col-6 text-end">
-                                    <span className="card-briefcase">New York, US</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="card-list-4 wow animate__animated animate__fadeIn hover-up">
-                            <div className="image">
-                              <Link href="/job-details">
-                                <span>
-                                  <img src="/assets/imgs/brands/brand-7.png" alt="jobBox" />
-                                </span>
-                              </Link>
-                            </div>
-                            <div className="info-text">
-                              <h5 className="font-md font-bold color-brand-1">
-                                <Link href="/job-details">
-                                  <span>Product Manage</span>
-                                </Link>
-                              </h5>
-                              <div className="mt-0">
-                                <span className="card-briefcase">Fulltime</span>
-                                <span className="card-time">
-                                  <span>50</span>
-                                  <span> mins ago</span>
-                                </span>
-                              </div>
-                              <div className="mt-5">
-                                <div className="row">
-                                  <div className="col-6">
-                                    <h6 className="card-price">
-                                      $650<span>/Hour</span>
-                                    </h6>
-                                  </div>
-                                  <div className="col-6 text-end">
-                                    <span className="card-briefcase">New York, US</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="card-list-4 wow animate__animated animate__fadeIn hover-up">
-                            <div className="image">
-                              <Link href="/job-details">
-                                <span>
-                                  <img src="/assets/imgs/brands/brand-8.png" alt="jobBox" />
-                                </span>
-                              </Link>
-                            </div>
-                            <div className="info-text">
-                              <h5 className="font-md font-bold color-brand-1">
-                                <Link href="/job-details">
-                                  <span>UI / UX Designer</span>
-                                </Link>
-                              </h5>
-                              <div className="mt-0">
-                                <span className="card-briefcase">Fulltime</span>
-                                <span className="card-time">
-                                  <span>58</span>
-                                  <span> mins ago</span>
-                                </span>
-                              </div>
-                              <div className="mt-5">
-                                <div className="row">
-                                  <div className="col-6">
-                                    <h6 className="card-price">
-                                      $270<span>/Hour</span>
-                                    </h6>
-                                  </div>
-                                  <div className="col-6 text-end">
-                                    <span className="card-briefcase">New York, US</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
+                      {jobsLoading && <div className="py-3">Đang tải...</div>}
+                      {jobsError && <div className="py-3 text-danger">{jobsError}</div>}
+                      {!jobsLoading && !jobsError && jobs.length === 0 && <div className="py-3">Không có công việc tương tự</div>}
+                      {!jobsLoading && !jobsError && jobs.length > 0 && (
+                        <ul>
+                          {(() => {
+                            // determine current employer identifier (id or name)
+                            const currentEmployerKey = job?.employer?.id ?? job?.employerId ?? job?.employerName ?? job?.employer?.name ?? null;
+                            return jobs
+                              .slice()
+                              .filter((j: any) => {
+                                if (!currentEmployerKey) return false;
+                                return (
+                                  String(j.employer?.id ?? j.employerId ?? j.employerName ?? j.employer?.name ?? '') === String(currentEmployerKey)
+                                );
+                              })
+                              .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                              .slice(0, 9)
+                              .map((j: any) => {
+                                const createdDate = parseToDate(j.createdAt);
+                                  const timeText = createdDate ? formatCreatedAt(createdDate) : '';
+                                return (
+                                  <li key={j.id} style={{ marginBottom: 10 }}>
+                                    <div
+                                      className="card-list-4 wow animate__animated animate__fadeIn hover-up"
+                                      style={{ minHeight: 88, display: 'flex', gap: 10, padding: '8px' }}
+                                    >
+                                      <div className="image" style={{ width: 44, flex: '0 0 44px' }}>
+                                        <Link href={`/job-details-2/${j.id}`}>
+                                          <span>
+                                            <img
+                                              src={j.companyLogo || '/assets/imgs/brands/brand-8.png'}
+                                              alt={j.companyName || 'jobBox'}
+                                              style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover' }}
+                                            />
+                                          </span>
+                                        </Link>
+                                      </div>
+                                      <div className="info-text" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1 }}>
+                                        <div>
+                                          <h5 className="font-md font-bold color-brand-1" style={{ fontSize: '0.95rem', marginBottom: 6 }}>
+                                            <Link href={`/job-details-2/${j.id}`}>
+                                              <span>{j.title || 'No title'}</span>
+                                            </Link>
+                                          </h5>
+                                          <div className="mt-0" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                            <span className="card-briefcase" style={{ fontSize: '0.82rem' }}>{j.jobType || 'Fulltime'}</span>
+                                            <span className="card-time" style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+                                              <span>{timeText}</span>
+                                            </span>
+                                          </div>
+                                        </div>
+                                        <div className="mt-5">
+                                          <div className="row">
+                                            <div className="col-12 text-end">
+                                              <span className="card-briefcase" style={{ fontSize: '0.82rem' }}>{j.location || 'Unknown'}</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </li>
+                                );
+                              });
+                          })()}
+                        </ul>
+                      )}
                     </div>
                   </div>
                   <div className="sidebar-border">
