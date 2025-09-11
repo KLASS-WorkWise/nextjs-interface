@@ -3,29 +3,64 @@ import { apiClient } from "@/lib/api-client";
 import { ApiResponse, PaginatedResponse } from "@/types/api";
 import { Applicant } from "@/types/applicant";
 
+export type ApplicantHistory = {
+  id: number;
+  status: string;
+  note: string;
+  changedAt: string;
+  // changedBy: string;
+};
+
+export type ApplicantTimeline = {
+  stepOrder: number;
+  status: string;
+  events: ApplicantHistory[];
+  currentStep: boolean;
+  completed: boolean;
+};
+
 export const applicantService = {
   applyJobWithFile: (jobId: number, formData: FormData, config?: any) =>
-    apiClient.post<ApiResponse<Applicant>>(`/applicant/${jobId}/apply`, formData, {
+    apiClient.post<ApiResponse<Applicant>>(`/api/applicant/${jobId}/apply`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
       ...config,
     }),
 
-  getAllApplicantsByPage: (page = 0, size = 5, sortBy = "appliedAt", sortDir = "desc") =>
-    apiClient.get<PaginatedResponse<Applicant>>(`/applicant`, {
-      params: { page, size, sortBy, sortDir },
-    }),
+ getAllApplicantsByPage: ({
+  page = 0,
+  size = 5,
+  sortBy = "appliedAt",
+  sortDir = "desc",
+}: {
+  page?: number;
+  size?: number;
+  sortBy?: string;
+  sortDir?: string;
+}) =>
+  apiClient.get<PaginatedResponse<Applicant>>(`/api/applicant`, {
+    params: { page, size, sortBy, sortDir },
+  }),
 
   getApplicantDetail: (id: number) =>
-    apiClient.get<Applicant>(`/applicant/detail/${id}`),
+    apiClient.get<Applicant>(`/api/applicant/detail/${id}`),
 
   deleteApplicant: (id: number) =>
-    apiClient.delete<ApiResponse<null>>(`/applicant/delete/${id}`),
+    apiClient.delete<ApiResponse<null>>(`/api/applicant/delete/${id}`),
 
   getResumeLink: (filename: string) =>
-    apiClient.get(`/applicant/resume-link/${filename}`, { responseType: "blob" }),
+    apiClient.get(`/api/applicant/resume-link/${filename}`, { responseType: "blob" }),
 
-    updateStep: (id: number, step: string, status: string = "done") =>
-    apiClient.patch(`/applicant/${id}/history`, null, {
-      params: { step, status },
-    }),
+    getMyResumes: () =>
+    apiClient.get(`/api/resumes`),
+    
+    getTimeline: (id: number) =>
+    apiClient.get<ApplicantTimeline[]>(`/api/applicants/${id}/timeline`),
+    addHistory: (applicantId: number, data: { step: string; status: string; note?: string }) =>
+  apiClient.post(`/api/applicant/${applicantId}/history`, data),
+
+     // ✅ HR update status
+  updateStatus: (id: number, data: { status: string; note?: string }) =>
+    apiClient.put(`/api/applicants/${id}/status`, data),
+
+
 };

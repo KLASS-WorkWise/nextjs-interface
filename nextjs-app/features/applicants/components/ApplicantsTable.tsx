@@ -10,8 +10,6 @@ export default function ApplicantsTable() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-
-  
   // UI mặc định page = 1
   const currentPage = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 5;
@@ -29,7 +27,6 @@ export default function ApplicantsTable() {
   //     router.replace("?page=1");
   //   }
   // }, [searchParams, router]);
-
 
   if (loading) return <p>Loading...</p>;
   if (!applications || applications.length === 0)
@@ -75,7 +72,7 @@ export default function ApplicantsTable() {
             <div className="card-block-info">
               <h4>
                 <Link href="/job-details">
-                  <span>React Native Web Developer</span>
+                  <span>{app.jobTitle}</span>
                 </Link>
               </h4>
               <div className="mt-5">
@@ -112,12 +109,11 @@ export default function ApplicantsTable() {
                       Xem chi tiết
                     </button> */}
                     <button
-  className="btn btn-apply-now"
-  onClick={() => router.push(`/applicants/${app.id}`)}
->
-  Xem chi tiết
-</button>
-
+                      className="btn btn-apply-now"
+                      onClick={() => router.push(`/applicants/${app.id}`)}
+                    >
+                      Xem chi tiết
+                    </button>
                   </div>
                 </div>
               </div>

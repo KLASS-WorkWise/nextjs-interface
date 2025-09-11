@@ -1,0 +1,200 @@
+/* ApplicantDetail.module.css */
+
+/* Card container */
+.card {
+  max-width: 950px;
+  margin: 2rem auto;
+  background-color: #ffffff;
+  border-radius: 1.5rem;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  font-family: "Inter", sans-serif;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1e3a8a;
+  border-bottom: 2px solid #e0e7ff;
+  padding-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #1e40af;
+}
+
+.text {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  color: white;
+  font-weight: 600;
+  padding: 0.65rem 1.3rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  border: none;
+}
+
+.btn:hover {
+  background: linear-gradient(90deg, #1e40af, #2563eb);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* Lists */
+.historyList {
+  margin-top: 0.5rem;
+  padding-left: 1.5rem;
+  list-style-type: disc;
+}
+
+.historyItem {
+  padding: 0.5rem 0;
+  border-left: 4px solid #2563eb;
+  margin-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.historyItem:hover {
+  background-color: #f0f4ff;
+  border-left-color: #1e40af;
+}
+
+/* Text colors */
+.textSuccess {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.textDanger {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Missing skills */
+.missingSkill {
+  display: inline-block;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 0.35rem 0.7rem;
+  border-radius: 0.5rem;
+  margin: 0.2rem 0.2rem 0.2rem 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.missingSkill:hover {
+  background-color: #fca5a5;
+  color: #7f1d1d;
+  transform: scale(1.05);
+}
+
+/* Divider */
+.divider {
+  border: 0;
+  border-top: 1px solid #d1d5db;
+  margin: 2rem 0;
+}
+
+/* Cover letter */
+.coverLetter {
+  background-color: #f0f4ff;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin-top: 1rem;
+  font-style: italic;
+  color: #1e3a8a;
+}
+
+/* Evaluation */
+.evaluationText {
+  margin-bottom: 0.5rem;
+}
+
+.evaluationSpan {
+  font-weight: 600;
+}
+
+/* Resume section */
+.resumeSection {
+  margin-top: 1.5rem;
+}
+.timeline {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  position: relative;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #ddd;
+}
+
+.timelineItem {
+  position: relative;
+  margin-bottom: 20px;
+  padding-left: 40px;
+}
+
+.timelineDot {
+  position: absolute;
+  left: 8px;
+  top: 5px;
+  width: 14px;
+  height: 14px;
+  background: #4f46e5; /* Indigo */
+  border-radius: 50%;
+}
+
+.timelineContent {
+  background: #f9f9f9;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.timelineDate {
+  font-size: 12px;
+  color: gray;
+}
+
+.note {
+  font-size: 13px;
+  color: #333;
+  margin-top: 4px;
+}

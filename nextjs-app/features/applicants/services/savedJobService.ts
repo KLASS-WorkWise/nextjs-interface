@@ -2,11 +2,11 @@ import { apiClient } from "@/lib/api-client";
 
 export const savedJobService = {
   saveJob: (jobPostingId: number) =>
-    apiClient.post(`/saved-jobs/${jobPostingId}`),
+    apiClient.post(`/api/saved-jobs/${jobPostingId}`),
 
   getMySavedJobs: () =>
-    apiClient.get(`/saved-jobs`),
+    apiClient.get(`/api/saved-jobs`),
 
   removeSavedJob: (id: number) =>
-    apiClient.delete(`/saved-jobs/${id}`),
+    apiClient.delete(`/api/saved-jobs/${id}`),
 };

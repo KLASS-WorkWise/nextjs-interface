@@ -9,7 +9,7 @@ import Link from "next/link";
 import SocialIcons from "./SocialIcon/SocialIcons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-// import JobChatBot from "./ChatBotJob/page";
+import JobChatBot from "./ChatBotJob/page";
 
 export default function Home() {
   const router = useRouter();
@@ -493,7 +493,7 @@ export default function Home() {
           </div>
         </section>
       </Layout>
-      {/* <JobChatBot isOpen={isChatOpen} setIsOpen={setIsChatOpen} /> */}
+      <JobChatBot isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
       <SocialIcons isChatOpen={isChatOpen} />
     </>
   );

@@ -29,8 +29,15 @@ export default function CandidateProfile() {
   const handleOnClick = (tabKey: string) => {
     const params = new URLSearchParams(window.location.search);
     params.set("tab", tabKey);
-    router.replace(`?${params.toString()}`);
-  };
+   // 👇 Nếu tab là apply thì reset page = 1
+  if (tabKey === "apply") {
+    params.set("page", "1");
+  } else {
+    params.delete("page"); // tab khác thì bỏ page đi cho sạch URL
+  }
+
+  router.replace(`?${params.toString()}`);
+};
 
   return (
     <>

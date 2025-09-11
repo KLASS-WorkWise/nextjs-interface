@@ -23,6 +23,8 @@ export default function SavedJobsList() {
 
   const handleRemove = async (savedJobId: number) => {
     try {
+      const confirmed = confirm("Are you sure you want to delete this saved job??");
+      if (!confirmed) return false;
       setRemovingId(savedJobId);
       await savedJobService.removeSavedJob(savedJobId);
 
@@ -78,7 +80,7 @@ export default function SavedJobsList() {
                   onClick={() => handleRemove(job.savedJobId)}
                   disabled={removingId === job.savedJobId}
                 >
-                  {removingId === job.savedJobId ? "Đang xóa..." : "Remove"}
+                  {removingId === job.savedJobId ? "Deleting..." : "Delete"}
                 </button>
               </div>
             </div>
