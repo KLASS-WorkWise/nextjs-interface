@@ -40,7 +40,11 @@ export function CVDashboard() {
         typeof window !== "undefined"
           ? new URLSearchParams(window.location.search).get("action")
           : null;
-      if (currentView !== "builder" && action !== "create") {
+      if (
+        currentView !== "builder" &&
+        action !== "create" &&
+        action !== "edit"
+      ) {
         if (mappedResumes.length > 0) {
           setCurrentView("list");
         } else {
@@ -73,10 +77,11 @@ export function CVDashboard() {
       if (idParam) {
         (async () => {
           try {
+            // Mở builder ngay lập tức để tránh giật về list trong khi fetch
+            setCurrentView("builder");
             const getDataResumeById = await resumeApi.getResumeById(idParam);
             const mappedResume = mapApiToForm(getDataResumeById);
             setEditingResume(mappedResume as any);
-            setCurrentView("builder");
           } catch (error) {
             console.error("Failed to load resume (deeplink edit):", error);
             toast({ description: "Lỗi: Không thể tải CV" });
@@ -133,6 +138,11 @@ export function CVDashboard() {
   };
 
   const handleBackToList = () => {
+    const source = searchParams.get("source");
+    if (source === "candidate-profile") {
+      router.push("/candidate-profile?tab=profile");
+      return;
+    }
     if (resumes.length > 0) {
       setCurrentView("list");
     } else {
