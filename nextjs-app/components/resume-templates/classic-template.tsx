@@ -218,8 +218,13 @@ export function ClassicTemplate({
         {data.activities.length > 0 && (
           <div className={styles.classicResumeSection}>
             <div className={styles.classicResumeSectionTitle}>Hoạt động</div>
-            {data.activities.map((activity) => (
-              <div key={activity.id} className={styles.classicResumeSubSection}>
+            {data.activities.map((activity, index) => (
+              <div
+                key={
+                  activity?.id || `${activity?.title || "activity"}-${index}`
+                }
+                className={styles.classicResumeSubSection}
+              >
                 <div className={styles.classicResumeSubSectionTitle}>
                   {activity.organization}
                 </div>

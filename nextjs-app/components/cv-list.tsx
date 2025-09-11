@@ -22,7 +22,7 @@ export function CVList({
 }: CVListProps) {
   const router = useRouter();
   return (
-    <div className="py-4">
+    <div className="pb-4">
       <div className="container">
         {/* Header */}
         {/* <div className="d-flex justify-content-between align-items-center mb-4">

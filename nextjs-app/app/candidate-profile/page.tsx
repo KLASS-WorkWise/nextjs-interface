@@ -2,6 +2,7 @@
 "use client";
 import Link from "next/link";
 import React from "react";
+import { useSession } from "next-auth/react";
 import Layout from "@/components/Layout/Layout";
 import ApplicantsTable from "@/features/applicants/components/ApplicantsTable";
 
@@ -11,6 +12,7 @@ import SavedJobsList from "@/features/applicants/components/SavedJobsList";
 import { CVDashboard } from "@/components/cv-dashboard";
 
 export default function CandidateProfile() {
+  const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -33,7 +35,7 @@ export default function CandidateProfile() {
 
   // Xử lý tạo CV: điều hướng sang trang tạo CV trong danh sách CV
   const handleCreateNew = () => {
-    router.push("/page-resume?action=create");
+    router.push("/page-resume?action=create&source=candidate-profile");
   };
 
   return (
@@ -49,21 +51,27 @@ export default function CandidateProfile() {
               <div className="box-company-profile">
                 <div className="image-compay">
                   <img
-                    src="assets/imgs/page/candidates/candidate-profile.png"
+                    src={
+                      (session as any)?.user?.avatar ||
+                      "/assets/imgs/avatar/logoLogin.jpg"
+                    }
                     alt="jobbox"
+                    style={{
+                      width: 90,
+                      height: 100,
+                      marginBottom: 10,
+                      objectFit: "cover",
+                      borderRadius: 8,
+                      backgroundColor: "#f5f5f5",
+                      display: "block",
+                    }}
                   />
                 </div>
                 <div className="row mt-10">
                   <div className="col-lg-8 col-md-12">
                     <h5 className="f-18">
-                      Steven Jobs{" "}
-                      <span className="card-location font-regular ml-20">
-                        New York, US
-                      </span>
+                      {(session as any)?.user?.fullName}{" "}
                     </h5>
-                    <p className="mt-0 font-md color-text-paragraph-2 mb-15">
-                      UI/UX Designer. Front end Developer
-                    </p>
                   </div>
                   <div className="col-lg-4 col-md-12 text-lg-end">
                     <button

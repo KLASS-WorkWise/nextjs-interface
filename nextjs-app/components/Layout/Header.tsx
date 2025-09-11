@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Settings, KeyRound, LogOut } from 'lucide-react';
+import { Settings, KeyRound, LogOut } from "lucide-react";
 import CompanyRegistrationModal from "../Company/company-registration-modal";
 
 interface HeaderProps {
@@ -53,14 +53,16 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
     };
   }, [dropdownOpen]);
 
-  const [openModal, setOpenModal] = useState(false)
+  const [openModal, setOpenModal] = useState(false);
 
-  const handleOpen2 = () => setOpenModal(true)
-  const handleClose = () => setOpenModal(false)
+  const handleOpen2 = () => setOpenModal(true);
+  const handleClose = () => setOpenModal(false);
 
   return (
     <>
-      <header className={scroll ? "header sticky-bar stick" : "header sticky-bar"}>
+      <header
+        className={scroll ? "header sticky-bar stick" : "header sticky-bar"}
+      >
         <div className="container">
           <div className="main-header">
             {/* Logo */}
@@ -68,7 +70,10 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
               <div className="header-logo">
                 <Link href="/">
                   <span className="d-flex">
-                    <img alt="jobBox" src="/assets/imgs/template/jobhub-logo.svg" />
+                    <img
+                      alt="jobBox"
+                      src="/assets/imgs/template/jobhub-logo.svg"
+                    />
                   </span>
                 </Link>
               </div>
@@ -78,38 +83,57 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
             <div className="header-nav">
               <nav className="nav-main-menu">
                 <ul className="main-menu">
-
                   {/* chưa log */}
                   {!session?.user && (
                     <>
-                      <li><Link href="/"><span>Home</span></Link></li>
-
                       <li>
-                        <Link href="/jobs-grid"><span>Find a Job</span></Link>
+                        <Link href="/">
+                          <span>Home</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/companies-grid"><span>Recruiters</span></Link>
+                        <Link href="/jobs-grid">
+                          <span>Find a Job</span>
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link href="/companies-grid">
+                          <span>Recruiters</span>
+                        </Link>
                       </li>
 
                       <li className="has-children">
-                        <Link href="/candidates-grid"><span>Candidates</span></Link>
+                        <Link href="/candidates-grid">
+                          <span>Candidates</span>
+                        </Link>
                         <ul className="sub-menu">
-                          <li><Link href="/page-resume"><span>Create Cv</span></Link></li>
-                          <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
+                          {/* <li><Link href="/page-resume"><span>Create Cv</span></Link></li> */}
+                          <li>
+                            <Link href="/candidate-profile">
+                              <span>Candidate Profile</span>
+                            </Link>
+                          </li>
                         </ul>
                       </li>
 
                       <li>
-                        <Link href="/page-about"><span>About Us</span></Link>
+                        <Link href="/page-about">
+                          <span>About Us</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/blog-grid-2"><span>Blog</span></Link>
+                        <Link href="/blog-grid-2">
+                          <span>Blog</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/page-contact"><span>Contact</span></Link>
+                        <Link href="/page-contact">
+                          <span>Contact</span>
+                        </Link>
                       </li>
                     </>
                   )}
@@ -117,34 +141,58 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                   {/* log với user */}
                   {session?.user && role?.includes("Users") && (
                     <>
-                      <li><Link href="/"><span>Home</span></Link></li>
-
                       <li>
-                        <Link href="/jobs-grid"><span>Find a Job</span></Link>
+                        <Link href="/">
+                          <span>Home</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/companies-grid"><span>Recruiters</span></Link>
+                        <Link href="/jobs-grid">
+                          <span>Find a Job</span>
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link href="/companies-grid">
+                          <span>Recruiters</span>
+                        </Link>
                       </li>
 
                       <li className="has-children">
-                        <Link href="/candidates-grid"><span>Candidates</span></Link>
+                        <Link href="/candidates-grid">
+                          <span>Candidates</span>
+                        </Link>
                         <ul className="sub-menu">
-                          <li><Link href="/page-resume"><span>Create Cv</span></Link></li>
-                          <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
+                          <li>
+                            <Link href="/page-resume">
+                              <span>Create Cv</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link href="/candidate-profile">
+                              <span>Candidate Profile</span>
+                            </Link>
+                          </li>
                         </ul>
                       </li>
 
                       <li>
-                        <Link href="/page-about"><span>About Us</span></Link>
+                        <Link href="/page-about">
+                          <span>About Us</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/blog-grid-2"><span>Blog</span></Link>
+                        <Link href="/blog-grid-2">
+                          <span>Blog</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/page-contact"><span>Contact</span></Link>
+                        <Link href="/page-contact">
+                          <span>Contact</span>
+                        </Link>
                       </li>
                     </>
                   )}
@@ -152,30 +200,46 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                   {/* Nếu là Employer */}
                   {session?.user && role?.includes("Employers") && (
                     <>
-                      <li><Link href="/"><span>Home</span></Link></li>
-
                       <li>
-                        <Link href="/jobs-grid"><span> Manager Job</span></Link>
+                        <Link href="/">
+                          <span>Home</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/companies-grid"><span>Manager Recruiters</span></Link>
+                        <Link href="/jobs-grid">
+                          <span> Manager Job</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/candidates-grid"><span>Manager Candidates</span></Link>
+                        <Link href="/companies-grid">
+                          <span>Manager Recruiters</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/page-about"><span>About Us</span></Link>
+                        <Link href="/candidates-grid">
+                          <span>Manager Candidates</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/blog-grid-2"><span>Blog</span></Link>
+                        <Link href="/page-about">
+                          <span>About Us</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/page-contact"><span>Contact</span></Link>
+                        <Link href="/blog-grid-2">
+                          <span>Blog</span>
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link href="/page-contact">
+                          <span>Contact</span>
+                        </Link>
                       </li>
                     </>
                   )}
@@ -184,34 +248,58 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                   {session?.user && role?.includes("Administrators") && (
                     <>
                       <>
-                        <li><Link href="/"><span>Home</span></Link></li>
-
                         <li>
-                          <Link href="/jobs-grid"><span>Find a Job</span></Link>
+                          <Link href="/">
+                            <span>Home</span>
+                          </Link>
                         </li>
 
                         <li>
-                          <Link href="/companies-grid"><span>Recruiters</span></Link>
+                          <Link href="/jobs-grid">
+                            <span>Find a Job</span>
+                          </Link>
+                        </li>
+
+                        <li>
+                          <Link href="/companies-grid">
+                            <span>Recruiters</span>
+                          </Link>
                         </li>
 
                         <li className="has-children">
-                          <Link href="/candidates-grid"><span>Candidates</span></Link>
+                          <Link href="/candidates-grid">
+                            <span>Candidates</span>
+                          </Link>
                           <ul className="sub-menu">
-                            <li><Link href="/page-resume"><span>Create Cv</span></Link></li>
-                            <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
+                            <li>
+                              <Link href="/page-resume">
+                                <span>Create Cv</span>
+                              </Link>
+                            </li>
+                            <li>
+                              <Link href="/candidate-profile">
+                                <span>Candidate Profile</span>
+                              </Link>
+                            </li>
                           </ul>
                         </li>
 
                         <li>
-                          <Link href="/page-about"><span>About Us</span></Link>
+                          <Link href="/page-about">
+                            <span>About Us</span>
+                          </Link>
                         </li>
 
                         <li>
-                          <Link href="/blog-grid-2"><span>Blog</span></Link>
+                          <Link href="/blog-grid-2">
+                            <span>Blog</span>
+                          </Link>
                         </li>
 
                         <li>
-                          <Link href="/page-contact"><span>Contact</span></Link>
+                          <Link href="/page-contact">
+                            <span>Contact</span>
+                          </Link>
                         </li>
                       </>
                     </>
@@ -296,7 +384,10 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                     )}
 
                     {/* Modal đăng ký */}
-                    <CompanyRegistrationModal isOpen={openModal} onClose={handleClose} />
+                    <CompanyRegistrationModal
+                      isOpen={openModal}
+                      onClose={handleClose}
+                    />
 
                     {/* Dropdown menu */}
                     {dropdownOpen && (
@@ -356,20 +447,25 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                             marginBottom: 12,
                           }}
                         />
-                        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                        <ul
+                          style={{ listStyle: "none", padding: 0, margin: 0 }}
+                        >
                           <li>
                             <Link href="/page-account">
-                              <span className="dropdown-link" style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 10,
-                                padding: "10px 0",
-                                color: "#333",
-                                fontWeight: 500,
-                                borderRadius: 8,
-                                cursor: "pointer",
-                                transition: "background 0.2s, color 0.2s",
-                              }}>
+                              <span
+                                className="dropdown-link"
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 10,
+                                  padding: "10px 0",
+                                  color: "#333",
+                                  fontWeight: 500,
+                                  borderRadius: 8,
+                                  cursor: "pointer",
+                                  transition: "background 0.2s, color 0.2s",
+                                }}
+                              >
                                 <Settings size={18} />
                                 <span>Quản lý tài khoản</span>
                               </span>
@@ -377,17 +473,20 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                           </li>
                           <li>
                             <Link href="/page-reset-password">
-                              <span className="dropdown-link" style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 10,
-                                padding: "10px 0",
-                                color: "#333",
-                                fontWeight: 500,
-                                borderRadius: 8,
-                                cursor: "pointer",
-                                transition: "background 0.2s, color 0.2s",
-                              }}>
+                              <span
+                                className="dropdown-link"
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 10,
+                                  padding: "10px 0",
+                                  color: "#333",
+                                  fontWeight: 500,
+                                  borderRadius: 8,
+                                  cursor: "pointer",
+                                  transition: "background 0.2s, color 0.2s",
+                                }}
+                              >
                                 <KeyRound size={18} />
                                 <span>Reset Password</span>
                               </span>
@@ -432,7 +531,9 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                 ) : (
                   <>
                     <Link href="/page-register">
-                      <span className="text-link-bd-btom hover-up">Register</span>
+                      <span className="text-link-bd-btom hover-up">
+                        Register
+                      </span>
                     </Link>
                     <Link href="/page-signin">
                       <span className="btn btn-default btn-shadow ml-40 hover-up">

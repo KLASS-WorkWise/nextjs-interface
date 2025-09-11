@@ -64,6 +64,25 @@ export function CVDashboard() {
     if (action === "create") {
       setEditingResume(null);
       setCurrentView("builder");
+      return;
+    }
+
+    // Deep-link: ?action=edit&id=...
+    if (action === "edit") {
+      const idParam = searchParams.get("id");
+      if (idParam) {
+        (async () => {
+          try {
+            const getDataResumeById = await resumeApi.getResumeById(idParam);
+            const mappedResume = mapApiToForm(getDataResumeById);
+            setEditingResume(mappedResume as any);
+            setCurrentView("builder");
+          } catch (error) {
+            console.error("Failed to load resume (deeplink edit):", error);
+            toast({ description: "Lỗi: Không thể tải CV" });
+          }
+        })();
+      }
     }
   }, [searchParams]);
 
@@ -73,10 +92,20 @@ export function CVDashboard() {
   };
 
   const handleEditCV = async (resume: ResumeData) => {
+    // Nếu đang ở My CV trong candidate-profile, mở trang builder riêng
     try {
+      const pathname =
+        typeof window !== "undefined" ? window.location.pathname : "";
+      if (pathname.includes("candidate-profile")) {
+        router.push(
+          `/page-resume?action=edit&id=${resume.id}&source=candidate-profile`
+        );
+        return;
+      }
+
+      // Hành vi mặc định: load và mở builder trong cùng trang
       const getDataResumeById = await resumeApi.getResumeById(resume.id);
       const mappedResume = mapApiToForm(getDataResumeById);
-      console.log("[Edit Icon Clicked] Resume data:", mappedResume);
       setEditingResume(mappedResume);
       setCurrentView("builder");
     } catch (error) {
@@ -126,6 +155,11 @@ export function CVDashboard() {
 
   const handleCVSaved = async (newResume: ResumeData) => {
     await loadResumes(); // Gọi lại API để lấy danh sách mới nhất
+    const source = searchParams.get("source");
+    if (source === "candidate-profile") {
+      router.push("/candidate-profile?tab=profile");
+      return;
+    }
     setCurrentView("list");
   };
 
