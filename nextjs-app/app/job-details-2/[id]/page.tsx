@@ -1,14 +1,46 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 /* eslint-disable react/no-unescaped-entities */
 import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
 import FeaturedSlider from "@/components/sliders/Featured";
+import ApplyJob from "@/features/applicants/components/ApplyJob";
+import { applicantService } from "@/features/applicants/services/applicant.service";
+import { toast } from "react-toastify";
+import { useSession } from "next-auth/react";
 
 export default function JobDetails2() {
   const { id } = useParams();
   const [job, setJob] = useState<any>(null);
+    const { data: session } = useSession();
+    const role = session?.user?.roles;
+
+
+    // Lấy dữ liệu Applyjob từ API 
+    const [modalJob, setModalJob] = useState<any | null>(null);
+    const [resumes, setResumes] = useState<any[]>([]);
+    const router = useRouter();
+      const handleOpenApply = (job: any) => {
+        if (!session) {
+          toast.error("You need to login to apply!");
+          router.push("/page-signin"); // 👈 redirect sang trang login của bạn
+          return;
+        }
+        setModalJob(job);
+      };
+      useEffect(() => {
+        const fetchResumes = async () => {
+          try {
+            const res = await applicantService.getMyResumes();
+             setResumes(res.data || []);
+          } catch (err) {
+            console.error("Error fetching resumes:", err);
+          }
+        };
+        fetchResumes();
+      }, []);
+    
   useEffect(() => {
     if (!id) return;
     fetch(`http://localhost:8080/api/job-postings/${id}`)
@@ -39,9 +71,14 @@ export default function JobDetails2() {
                             </div>
                           </div>
                           <div className="col-lg-4 col-md-12 text-lg-end">
-                            <div className="btn btn-apply-icon btn-apply btn-apply-big hover-up" data-bs-toggle="modal" data-bs-target="#ModalApplyJobForm">
-                              Apply now
-                            </div>
+                           
+                              <button
+                                          onClick={() => handleOpenApply(job)}
+                                          className="btn-apply"
+                                        >
+                                          Apply 
+                                        </button>
+                           
                           </div>
                         </div>
                         <div className="border-bottom pt-10 pb-10" />
@@ -182,6 +219,14 @@ export default function JobDetails2() {
                     )}
                   </div>
                 </div>
+                   {modalJob && (
+                            <ApplyJob
+                              job={modalJob}
+                              resumes={resumes} // 👈 truyền resumes vào
+                              onClose={() => setModalJob(null)}
+                              onSuccess={() => toast.success("Applied successfully!")}
+                            />
+                          )}
                 <div className="col-lg-4 col-md-12 col-sm-12 col-12 pl-40 pl-lg-15 mt-lg-30">
                   <div className="sidebar-border">
                     <div className="sidebar-heading">

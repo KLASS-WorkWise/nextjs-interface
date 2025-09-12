@@ -29,8 +29,15 @@ export default function CandidateProfile() {
   const handleOnClick = (tabKey: string) => {
     const params = new URLSearchParams(window.location.search);
     params.set("tab", tabKey);
-    router.replace(`?${params.toString()}`);
-  };
+   // 👇 Nếu tab là apply thì reset page = 1
+  if (tabKey === "apply") {
+    params.set("page", "1");
+  } else {
+    params.delete("page"); // tab khác thì bỏ page đi cho sạch URL
+  }
+
+  router.replace(`?${params.toString()}`);
+};
 
   return (
     <>
@@ -243,14 +250,14 @@ export default function CandidateProfile() {
                          {/* Apply */}
                   {activeTab === "apply" && (
                     <div className="tab-pane show active">
-                      <h3 className="mt-0 color-brand-1 mb-50">My Apply</h3>
+                     
                       <ApplicantsTable />
                     </div>
                   )}
                   {/* Saved Jobs */}
                   {activeTab === "saved" && (
                       <div className="tab-pane fade show active">
-                        <h3 className="mt-0 color-brand-1 mb-50">Saved Jobs</h3>
+                      
                         <SavedJobsList />
                         <div className="paginations">
                           <ul className="pager">

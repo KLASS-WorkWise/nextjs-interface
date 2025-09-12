@@ -50,7 +50,7 @@
     "cmdk": "1.0.4",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
-    "framer-motion": "^12.23.12",
+    "event-source-polyfill": "^1.0.31",
     "framer-motion": "^12.23.12",
     "geist": "latest",
     "input-otp": "1.4.1",
@@ -78,6 +78,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/event-source-polyfill": "^1.0.5",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

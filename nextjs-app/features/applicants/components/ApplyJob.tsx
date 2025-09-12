@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { applyService } from "@/services/applyService";
+import { applicantService } from "../services/applicant.service";
 import { toast } from "react-toastify";
 import styles from "../../../styles/ApplyJob.module.css"; // css riêng cho component
 
@@ -40,7 +40,7 @@ export default function ApplyJob({
       if (file) formData.append("resumeFile", file);
       if (message) formData.append("coverLetter", message);
 
-      const res = (await applyService.applyJobWithFile(job.id, formData, {
+      const res = (await applicantService.applyJobWithFile(job.id, formData, {
         onUploadProgress: (event: ProgressEvent) => {
           if (event.total) {
             setProgress(Math.round((event.loaded * 100) / event.total));
@@ -50,6 +50,9 @@ export default function ApplyJob({
 
       if (res.data.missingSkills?.length) {
         toast.warning("Thiếu kỹ năng: " + res.data.missingSkills.join(", "));
+      }
+      if (res.data.skillMatchMessage) {
+        toast.warning(res.data.skillMatchMessage);
       }
       if (res.data.minExperience) {
         toast.info(res.data.minExperience);
