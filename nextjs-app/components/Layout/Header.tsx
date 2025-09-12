@@ -1,8 +1,8 @@
-﻿import Link from "next/link";
+﻿﻿import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Settings, KeyRound, LogOut } from 'lucide-react';
+import { Settings, KeyRound, LogOut } from "lucide-react";
 import CompanyRegistrationModal from "../Company/company-registration-modal";
 
 interface HeaderProps {
@@ -18,6 +18,8 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
   const router = useRouter();
 
   const { data: session } = useSession();
+  const [avatarSrc, setAvatarSrc] = useState<string>("");
+  const [avatarReady, setAvatarReady] = useState<boolean>(false);
   const role = session?.user?.roles;
 
   const handleLogout = async () => {
@@ -33,6 +35,62 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
       }
     });
   }, [scroll]);
+
+  // Load avatar from backend when session changes
+  useEffect(() => {
+    const loadAvatar = async () => {
+      const userId = (session as any)?.user?.id;
+      const token = (session as any)?.accessToken;
+      if (!userId) return;
+      try {
+        const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        const user = await res.json();
+        const url =
+          user?.avatarUrl ||
+          user?.avatar ||
+          "/assets/imgs/avatar/logoLogin.jpg";
+        setAvatarSrc(url);
+        setAvatarReady(true);
+      } catch {
+        setAvatarSrc("/assets/imgs/avatar/logoLogin.jpg");
+        setAvatarReady(true);
+      }
+    };
+    loadAvatar();
+  }, [session]);
+
+  useEffect(() => {
+    const handleCustom = async (evt: CustomEvent) => {
+      // Update immediately if payload is provided (base64/new url)
+      if (evt?.detail) {
+        const val = String(evt.detail);
+        setAvatarSrc(val.startsWith("http") ? `${val}?t=${Date.now()}` : val);
+        setAvatarReady(true);
+        return;
+      }
+      // Re-fetch from backend when avatar updated elsewhere
+      const userId = (session as any)?.user?.id;
+      const token = (session as any)?.accessToken;
+      if (!userId) return;
+      try {
+        const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        const user = await res.json();
+        const url = user?.avatarUrl || user?.avatar;
+        setAvatarSrc(
+          url ? `${url}?t=${Date.now()}` : "/assets/imgs/avatar/logoLogin.jpg"
+        );
+        setAvatarReady(true);
+      } catch {}
+    };
+    window.addEventListener("avatar-updated", handleCustom as any);
+    return () => {
+      window.removeEventListener("avatar-updated", handleCustom as any);
+    };
+  }, [session]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -53,14 +111,16 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
     };
   }, [dropdownOpen]);
 
-  const [openModal, setOpenModal] = useState(false)
+  const [openModal, setOpenModal] = useState(false);
 
-  const handleOpen2 = () => setOpenModal(true)
-  const handleClose = () => setOpenModal(false)
+  const handleOpen2 = () => setOpenModal(true);
+  const handleClose = () => setOpenModal(false);
 
   return (
     <>
-      <header className={scroll ? "header sticky-bar stick" : "header sticky-bar"}>
+      <header
+        className={scroll ? "header sticky-bar stick" : "header sticky-bar"}
+      >
         <div className="container">
           <div className="main-header">
             {/* Logo */}
@@ -68,7 +128,10 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
               <div className="header-logo">
                 <Link href="/">
                   <span className="d-flex">
-                    <img alt="jobBox" src="assets/imgs/template/jobhub-logo.svg" />
+                    <img
+                      alt="jobBox"
+                      src="/assets/imgs/template/jobhub-logo.svg"
+                    />
                   </span>
                 </Link>
               </div>
@@ -78,38 +141,57 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
             <div className="header-nav">
               <nav className="nav-main-menu">
                 <ul className="main-menu">
-
                   {/* chưa log */}
                   {!session?.user && (
                     <>
-                      <li><Link href="/"><span>Home</span></Link></li>
-
                       <li>
-                        <Link href="/jobs-grid"><span>Find a Job</span></Link>
+                        <Link href="/">
+                          <span>Home</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/companies-grid"><span>Recruiters</span></Link>
+                        <Link href="/jobs-grid">
+                          <span>Find a Job</span>
+                        </Link>
                       </li>
 
-                      <li className="has-children">
-                        <Link href="/candidates-grid"><span>Candidates</span></Link>
+                      <li>
+                        <Link href="/companies-grid">
+                          <span>Recruiters</span>
+                        </Link>
+                      </li>
+
+                      {/* <li className="has-children">
+                        <Link href="/candidates-grid">
+                          <span>Candidates</span>
+                        </Link>
                         <ul className="sub-menu">
-                          <li><Link href="/page-ressume"><span>Create Cv</span></Link></li>
-                          <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
+                          {/* <li><Link href="/page-resume"><span>Create Cv</span></Link></li> */}
+                          {/* <li>
+                            <Link href="/candidate-profile">
+                              <span>Candidate Profile</span>
+                            </Link>
+                          </li>
                         </ul>
+                      </li> */}
+
+                      <li>
+                        <Link href="/page-about">
+                          <span>About Us</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/page-about"><span>About Us</span></Link>
+                        <Link href="/blog-grid-2">
+                          <span>Blog</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/blog-grid-2"><span>Blog</span></Link>
-                      </li>
-
-                      <li>
-                        <Link href="/page-contact"><span>Contact</span></Link>
+                        <Link href="/page-contact">
+                          <span>Contact</span>
+                        </Link>
                       </li>
                     </>
                   )}
@@ -117,34 +199,58 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                   {/* log với user */}
                   {session?.user && role?.includes("Users") && (
                     <>
-                      <li><Link href="/"><span>Home</span></Link></li>
-
                       <li>
-                        <Link href="/jobs-grid"><span>Find a Job</span></Link>
+                        <Link href="/">
+                          <span>Home</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/companies-grid"><span>Recruiters</span></Link>
-                      </li>
-
-                      <li className="has-children">
-                        <Link href="/candidates-grid"><span>Candidates</span></Link>
-                        <ul className="sub-menu">
-                          <li><Link href="/page-ressume"><span>Create Cv</span></Link></li>
-                          <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
-                        </ul>
+                        <Link href="/jobs-grid">
+                          <span>Find a Job</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/page-about"><span>About Us</span></Link>
+                        <Link href="/companies-grid">
+                          <span>Recruiters</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/blog-grid-2"><span>Blog</span></Link>
+                        <Link href="/candidate-profile">
+                          <span>Candidates Profile</span>
+                        </Link>
+                        {/* <ul className="sub-menu">
+                          {/* <li>
+                            <Link href="/page-resume">
+                              <span>Create Cv</span>
+                            </Link>
+                          </li> */}
+                          {/* <li>
+                            <Link href="/candidate-profile">
+                              <span>Candidate Profile</span>
+                            </Link>
+                          </li>
+                        </ul> */} 
                       </li>
 
                       <li>
-                        <Link href="/page-contact"><span>Contact</span></Link>
+                        <Link href="/page-about">
+                          <span>About Us</span>
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link href="/blog-grid-2">
+                          <span>Blog</span>
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link href="/page-contact">
+                          <span>Contact</span>
+                        </Link>
                       </li>
                     </>
                   )}
@@ -152,30 +258,46 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                   {/* Nếu là Employer */}
                   {session?.user && role?.includes("Employers") && (
                     <>
-                      <li><Link href="/"><span>Home</span></Link></li>
-
                       <li>
-                        <Link href="/jobs-grid"><span> Manager Job</span></Link>
+                        <Link href="/">
+                          <span>Home</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/companies-grid"><span>Manager Recruiters</span></Link>
+                        <Link href="/jobs-grid">
+                          <span> Manager Job</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/candidates-grid"><span>Manager Candidates</span></Link>
+                        <Link href="/companies-grid">
+                          <span>Manager Recruiters</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/page-about"><span>About Us</span></Link>
+                        <Link href="/candidates-grid">
+                          <span>Manager Candidates</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/blog-grid-2"><span>Blog</span></Link>
+                        <Link href="/page-about">
+                          <span>About Us</span>
+                        </Link>
                       </li>
 
                       <li>
-                        <Link href="/page-contact"><span>Contact</span></Link>
+                        <Link href="/blog-grid-2">
+                          <span>Blog</span>
+                        </Link>
+                      </li>
+
+                      <li>
+                        <Link href="/page-contact">
+                          <span>Contact</span>
+                        </Link>
                       </li>
                     </>
                   )}
@@ -184,34 +306,58 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                   {session?.user && role?.includes("Administrators") && (
                     <>
                       <>
-                        <li><Link href="/"><span>Home</span></Link></li>
-
                         <li>
-                          <Link href="/jobs-grid"><span>Find a Job</span></Link>
+                          <Link href="/">
+                            <span>Home</span>
+                          </Link>
                         </li>
 
                         <li>
-                          <Link href="/companies-grid"><span>Recruiters</span></Link>
+                          <Link href="/jobs-grid">
+                            <span>Find a Job</span>
+                          </Link>
+                        </li>
+
+                        <li>
+                          <Link href="/companies-grid">
+                            <span>Recruiters</span>
+                          </Link>
                         </li>
 
                         <li className="has-children">
-                          <Link href="/candidates-grid"><span>Candidates</span></Link>
+                          <Link href="/candidates-grid">
+                            <span>Candidates</span>
+                          </Link>
                           <ul className="sub-menu">
-                            <li><Link href="/page-ressume"><span>Create Cv</span></Link></li>
-                            <li><Link href="/candidate-profile"><span>Candidate Profile</span></Link></li>
+                            <li>
+                              <Link href="/page-resume">
+                                <span>Create Cv</span>
+                              </Link>
+                            </li>
+                            <li>
+                              <Link href="/candidate-profile">
+                                <span>Candidate Profile</span>
+                              </Link>
+                            </li>
                           </ul>
                         </li>
 
                         <li>
-                          <Link href="/page-about"><span>About Us</span></Link>
+                          <Link href="/page-about">
+                            <span>About Us</span>
+                          </Link>
                         </li>
 
                         <li>
-                          <Link href="/blog-grid-2"><span>Blog</span></Link>
+                          <Link href="/blog-grid-2">
+                            <span>Blog</span>
+                          </Link>
                         </li>
 
                         <li>
-                          <Link href="/page-contact"><span>Contact</span></Link>
+                          <Link href="/page-contact">
+                            <span>Contact</span>
+                          </Link>
                         </li>
                       </>
                     </>
@@ -235,7 +381,11 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                   >
                     {/* Avatar user */}
                     <img
-                      src="/assets/imgs/avatar/logoLogin.jpg"
+                      src={
+                        avatarReady
+                          ? avatarSrc
+                          : "/assets/imgs/avatar/logoLogin.jpg"
+                      }
                       alt="Avatar"
                       style={{
                         width: 50,
@@ -296,7 +446,10 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                     )}
 
                     {/* Modal đăng ký */}
-                    <CompanyRegistrationModal isOpen={openModal} onClose={handleClose} />
+                    <CompanyRegistrationModal
+                      isOpen={openModal}
+                      onClose={handleClose}
+                    />
 
                     {/* Dropdown menu */}
                     {dropdownOpen && (
@@ -322,7 +475,11 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                           }}
                         >
                           <img
-                            src="/assets/imgs/avatar/logoLogin.jpg"
+                            src={
+                              avatarReady
+                                ? avatarSrc
+                                : "/assets/imgs/avatar/logoLogin.jpg"
+                            }
                             alt="Avatar"
                             style={{
                               width: 56,
@@ -356,20 +513,25 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                             marginBottom: 12,
                           }}
                         />
-                        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                        <ul
+                          style={{ listStyle: "none", padding: 0, margin: 0 }}
+                        >
                           <li>
                             <Link href="/page-account">
-                              <span className="dropdown-link" style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 10,
-                                padding: "10px 0",
-                                color: "#333",
-                                fontWeight: 500,
-                                borderRadius: 8,
-                                cursor: "pointer",
-                                transition: "background 0.2s, color 0.2s",
-                              }}>
+                              <span
+                                className="dropdown-link"
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 10,
+                                  padding: "10px 0",
+                                  color: "#333",
+                                  fontWeight: 500,
+                                  borderRadius: 8,
+                                  cursor: "pointer",
+                                  transition: "background 0.2s, color 0.2s",
+                                }}
+                              >
                                 <Settings size={18} />
                                 <span>Quản lý tài khoản</span>
                               </span>
@@ -377,17 +539,20 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                           </li>
                           <li>
                             <Link href="/page-reset-password">
-                              <span className="dropdown-link" style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 10,
-                                padding: "10px 0",
-                                color: "#333",
-                                fontWeight: 500,
-                                borderRadius: 8,
-                                cursor: "pointer",
-                                transition: "background 0.2s, color 0.2s",
-                              }}>
+                              <span
+                                className="dropdown-link"
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 10,
+                                  padding: "10px 0",
+                                  color: "#333",
+                                  fontWeight: 500,
+                                  borderRadius: 8,
+                                  cursor: "pointer",
+                                  transition: "background 0.2s, color 0.2s",
+                                }}
+                              >
                                 <KeyRound size={18} />
                                 <span>Reset Password</span>
                               </span>
@@ -432,7 +597,9 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                 ) : (
                   <>
                     <Link href="/page-register">
-                      <span className="text-link-bd-btom hover-up">Register</span>
+                      <span className="text-link-bd-btom hover-up">
+                        Register
+                      </span>
                     </Link>
                     <Link href="/page-signin">
                       <span className="btn btn-default btn-shadow ml-40 hover-up">

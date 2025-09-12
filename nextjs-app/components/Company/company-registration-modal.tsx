@@ -76,7 +76,7 @@ export default function CompanyRegistrationModal({ isOpen, onClose }: CompanyReg
   }
 
   // single-step validation (required fields)
-  const isValid = Boolean(formData.companyName&& formData.industry && formData.email && formData.phone)
+  const isValid = Boolean(formData.companyName && formData.industry && formData.email && formData.phone)
 
   useEffect(() => {
     // when modal closes, revoke previews
@@ -207,7 +207,7 @@ export default function CompanyRegistrationModal({ isOpen, onClose }: CompanyReg
       })
 
       if (response.ok) {
-        alert("🎉 Đăng ký thông tin công ty thành công!")
+        alert("🎉 Gửi Đăng ký thông tin công ty thành công!")
         handleCancel()
       } else {
         const err = await response.json().catch(() => null)

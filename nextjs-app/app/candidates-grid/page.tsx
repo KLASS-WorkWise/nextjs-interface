@@ -1,4 +1,5 @@
 "use client"
+import React from "react";
 import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
 import BlogSlider from "@/components/sliders/Blog";
@@ -7,6 +8,8 @@ import { useSession } from "next-auth/react";
 export default function CandidateGrid() {
 
   const { data: session } = useSession();
+  console.log("dieu tư session", session);
+
   const role = session?.user?.roles;
 
   return (
