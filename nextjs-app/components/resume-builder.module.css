@@ -18,7 +18,7 @@ Resume Builder Component Styles .container {
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: 1.3125rem; /* giảm ~3px từ 24px xuống 21px */
   font-weight: 700;
   color: #0f172a;
   overflow: hidden;
@@ -359,7 +359,7 @@ Resume Builder Component Styles .container {
   }
 
   .title {
-    font-size: 1.875rem;
+    font-size: 1.6875rem; /* giảm ~3px từ 30px xuống 27px */
   }
 
   .subtitleText {

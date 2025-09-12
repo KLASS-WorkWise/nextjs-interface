@@ -1,5 +1,5 @@
 "use client";
-
+/* eslint-disable */
 import { CVCard } from "@/components/cv-card";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -22,10 +22,10 @@ export function CVList({
 }: CVListProps) {
   const router = useRouter();
   return (
-    <div className="py-4">
+    <div className="pb-4">
       <div className="container">
         {/* Header */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        {/* <div className="d-flex justify-content-between align-items-center mb-4">
           <div className="d-flex align-items-center gap-2">
             <button
               className="btn btn-link p-0 me-2"
@@ -35,7 +35,6 @@ export function CVList({
             >
               <ArrowLeft size={22} />
             </button>
-            <h1 className="h4 fw-bold m-0">CV đã tạo trên JobPost</h1>
           </div>
           <button
             className="btn btn-primary fw-semibold px-3"
@@ -43,7 +42,7 @@ export function CVList({
           >
             + Tạo CV
           </button>
-        </div>
+        </div> */}
 
         {/* Resume grid */}
         <div className="row g-3">

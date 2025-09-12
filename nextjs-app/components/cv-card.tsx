@@ -1,5 +1,5 @@
 "use client";
-
+/* eslint-disable */
 import type { ResumeData } from "./resume-builder";
 
 import { Check, Eye } from "lucide-react";
@@ -30,7 +30,7 @@ export function CVCard({ resume, onEdit, onDelete, onPreview }: CVCardProps) {
   // Đánh dấu hàm là async
   const handleDownload = async () => {
     try {
-      await exportResumeToPDF(resume);
+      await exportResumeToPDF(resume, (resume as any)?.template || "modern");
       setDownload(true);
       setTimeout(() => setDownload(false), 2000);
     } catch {
@@ -45,6 +45,7 @@ export function CVCard({ resume, onEdit, onDelete, onPreview }: CVCardProps) {
           <ResumeCardItem
             data={resume}
             template={(resume as any)?.template || "modern"}
+            // isCompact
           />
         </div>
         <div className={styles.overlay}>
@@ -99,52 +100,53 @@ export function CVCard({ resume, onEdit, onDelete, onPreview }: CVCardProps) {
         </div>
       </div>
 
-      <div
-        className={styles.info}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 8,
-        }}
-      >
-        <div>
-          <h3 className={styles.name}>
-            {resume?.personalInfo?.fullName || "CV không có tên"}
-          </h3>
-          <p className={styles.date}>Cập nhật {formatDate(new Date())}</p>
-        </div>
-        <button
-          className={styles.downloadButton}
-          title="Tải xuống CV"
+      <div className={styles.info}>
+        <h3 className={styles.name} style={{ marginBottom: 6 }}>
+          {resume?.personalInfo?.fullName || "CV không có tên"}
+        </h3>
+        <div
           style={{
-            background: "none",
-            border: "none",
-            padding: 0,
-            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 8,
           }}
-          onClick={handleDownload}
-          disabled={download}
         >
-          {download ? (
-            <Check size={20} color="#16a34a" />
-          ) : (
-            <svg
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              viewBox="0 0 24 24"
-            >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-          )}
-        </button>
+          <p className={styles.date} style={{ margin: 0 }}>
+            Cập nhật {formatDate(new Date())}
+          </p>
+          <button
+            className={styles.downloadButton}
+            title="Tải xuống CV"
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
+            onClick={handleDownload}
+            disabled={download}
+          >
+            {download ? (
+              <Check size={20} color="#16a34a" />
+            ) : (
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                viewBox="0 0 24 24"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

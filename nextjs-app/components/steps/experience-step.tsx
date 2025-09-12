@@ -118,8 +118,8 @@ export function ExperienceStep() {
                   border: "1px solid #ced4da",
                 }}
               >
-                <option value="">
-                  <p style={{ color: "#FFFFFF" }}>Chọn vị trí công việc</p>
+                <option value="" disabled>
+                  Chọn vị trí công việc
                 </option>
                 {positionOptions.map((position) => (
                   <option key={position} value={position}>

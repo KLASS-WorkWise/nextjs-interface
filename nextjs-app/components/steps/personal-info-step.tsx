@@ -72,19 +72,23 @@ export function PersonalInfoStep() {
           />
 
           <div className="d-flex align-items-center gap-2">
-            <label
-              htmlFor="profile-image"
-              className="btn btn-outline-secondary btn-sm"
-            >
-              <i className="bi bi-upload me-1"></i> Tải ảnh lên
-            </label>
-            <input
-              id="profile-image"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              style={{ display: "none" }}
-            />
+            {!imagePreview && (
+              <>
+                <label
+                  htmlFor="profile-image"
+                  className="btn btn-outline-secondary btn-sm"
+                >
+                  <i className="bi bi-upload me-1"></i> Tải ảnh lên
+                </label>
+                <input
+                  id="profile-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{ display: "none" }}
+                />
+              </>
+            )}
             {imagePreview && (
               <button
                 type="button"

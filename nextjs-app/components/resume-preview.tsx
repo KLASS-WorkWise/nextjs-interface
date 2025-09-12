@@ -42,7 +42,8 @@ export function ResumePreview({
     if (isSaving) return;
     setIsSaving(true);
     try {
-      const apiData = mapFormToApi(data);
+      const dataWithTemplate = { ...data, template: template } as any;
+      const apiData = mapFormToApi(dataWithTemplate);
       if (data.id) {
         await resumeApi.updateMyResume(data.id, apiData);
       } else {
@@ -55,7 +56,7 @@ export function ResumePreview({
       });
 
       if (onSave) {
-        onSave(data);
+        onSave(dataWithTemplate as any);
       }
     } catch (error: any) {
       console.error("Error saving CV:", error);

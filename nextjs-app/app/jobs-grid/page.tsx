@@ -408,11 +408,30 @@ export default function JobGrid() {
                         <div className="col-xl-6 col-lg-7 text-lg-end mt-sm-15 ">
                           <div className="display-flex2">
                             {role?.includes("Employers") && (
-                              <Link href="/job-create">
-                                <button className="btn btn-primary" style={{ marginRight: "16px" }}>
-                                  Create Job
-                                </button>
-                              </Link>
+                              // <Link href="/job-create">
+                              //   <button className="btn btn-primary" style={{ marginRight: "16px" }}>
+                              //     Create Job
+                              //   </button>
+                              // </Link>
+                              <div className="display-flex2">
+                                <Link href="/job-create">
+                                  <button
+                                    className="btn btn-primary"
+                                    style={{ marginRight: "16px" }}
+                                  >
+                                    Create Job
+                                  </button>
+                                </Link>
+
+                                <Link href="http://localhost:3000/dashboard-employers/my-jobs">
+                                  <button className="btn btn-primary">
+                                    Manage Jobs
+                                  </button>
+                                </Link>
+                              </div>
+                            
+                              
+                              
                             )}
 
                             <div className="box-border mr-10">

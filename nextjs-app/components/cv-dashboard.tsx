@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable */
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { CVEmptyState } from "@/components/cv-empty-state";
 import type { ResumeData } from "@/components/resume-builder";
@@ -17,6 +17,7 @@ type ViewState = "empty" | "list" | "builder";
 
 export function CVDashboard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [currentView, setCurrentView] = useState<ViewState>("empty");
   const [resumes, setResumes] = useState<ResumeData[]>([]);
   const [editingResume, setEditingResume] = useState<ResumeData | null>(null);
@@ -34,10 +35,21 @@ export function CVDashboard() {
         : [];
       setResumes(mappedResumes);
 
-      if (mappedResumes.length > 0) {
-        setCurrentView("list");
-      } else {
-        setCurrentView("empty");
+      // Nếu đang ở chế độ tạo mới (builder) do action=create, không override view
+      const action =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search).get("action")
+          : null;
+      if (
+        currentView !== "builder" &&
+        action !== "create" &&
+        action !== "edit"
+      ) {
+        if (mappedResumes.length > 0) {
+          setCurrentView("list");
+        } else {
+          setCurrentView("empty");
+        }
       }
     } catch (error) {
       console.error("Failed to load resumes:", error);
@@ -50,16 +62,55 @@ export function CVDashboard() {
     loadResumes();
   }, []);
 
+  // Tự động mở builder khi có ?action=create
+  useEffect(() => {
+    const action = searchParams.get("action");
+    if (action === "create") {
+      setEditingResume(null);
+      setCurrentView("builder");
+      return;
+    }
+
+    // Deep-link: ?action=edit&id=...
+    if (action === "edit") {
+      const idParam = searchParams.get("id");
+      if (idParam) {
+        (async () => {
+          try {
+            // Mở builder ngay lập tức để tránh giật về list trong khi fetch
+            setCurrentView("builder");
+            const getDataResumeById = await resumeApi.getResumeById(idParam);
+            const mappedResume = mapApiToForm(getDataResumeById);
+            setEditingResume(mappedResume as any);
+          } catch (error) {
+            console.error("Failed to load resume (deeplink edit):", error);
+            toast({ description: "Lỗi: Không thể tải CV" });
+          }
+        })();
+      }
+    }
+  }, [searchParams]);
+
   const handleCreateNewCV = () => {
     setEditingResume(null);
     setCurrentView("builder");
   };
 
   const handleEditCV = async (resume: ResumeData) => {
+    // Nếu đang ở My CV trong candidate-profile, mở trang builder riêng
     try {
+      const pathname =
+        typeof window !== "undefined" ? window.location.pathname : "";
+      if (pathname.includes("candidate-profile")) {
+        router.push(
+          `/page-resume?action=edit&id=${resume.id}&source=candidate-profile`
+        );
+        return;
+      }
+
+      // Hành vi mặc định: load và mở builder trong cùng trang
       const getDataResumeById = await resumeApi.getResumeById(resume.id);
       const mappedResume = mapApiToForm(getDataResumeById);
-      console.log("[Edit Icon Clicked] Resume data:", mappedResume);
       setEditingResume(mappedResume);
       setCurrentView("builder");
     } catch (error) {
@@ -87,15 +138,38 @@ export function CVDashboard() {
   };
 
   const handleBackToList = () => {
+    const source = searchParams.get("source");
+    if (source === "candidate-profile") {
+      router.push("/candidate-profile?tab=profile");
+      return;
+    }
     if (resumes.length > 0) {
       setCurrentView("list");
     } else {
       setCurrentView("empty");
     }
+    // Xoá param action nếu có để tránh tự mở builder lần sau
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("action")) {
+        url.searchParams.delete("action");
+        const next =
+          url.pathname +
+          (url.searchParams.toString()
+            ? `?${url.searchParams.toString()}`
+            : "");
+        router.replace(next);
+      }
+    } catch {}
   };
 
   const handleCVSaved = async (newResume: ResumeData) => {
     await loadResumes(); // Gọi lại API để lấy danh sách mới nhất
+    const source = searchParams.get("source");
+    if (source === "candidate-profile") {
+      router.push("/candidate-profile?tab=profile");
+      return;
+    }
     setCurrentView("list");
   };
 
@@ -176,7 +250,11 @@ export function CVDashboard() {
                 Đóng
               </button>
               {/* Hiển thị ViewCv ở chế độ chỉ xem */}
-              <ViewCv data={previewResume} isCompact={false} />
+              <ViewCv
+                data={previewResume}
+                template={(previewResume as any)?.template || "modern"}
+                isCompact={false}
+              />
             </div>
           </div>
         )}
