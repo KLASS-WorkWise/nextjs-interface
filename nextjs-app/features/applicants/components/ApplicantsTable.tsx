@@ -12,7 +12,7 @@ export default function ApplicantsTable() {
 
   // UI mặc định page = 1
   const currentPage = parseInt(searchParams.get("page") ?? "1", 10);
-  const pageSize = 5;
+  const pageSize = 6;
 
   // Truyền (currentPage - 1) vào API vì backend zero-based
   const { applications, loading, totalPages, handleDeleteApplicant } =
@@ -41,7 +41,7 @@ export default function ApplicantsTable() {
   return (
     <div className="row display-list">
       {applications.map((app) => (
-        <div key={app.id} className="col-xl-12 col-12">
+        <div key={app.id} className="col-xl-6 col-lg-6 ">
           <div className="card-grid-2 hover-up">
             <span className="flash" />
             <div className="row">
@@ -52,9 +52,11 @@ export default function ApplicantsTable() {
                   </div>
                   <div className="right-info">
                     <Link href="#">
-                      <span className="name-job">{app.candidateId}</span>
+                      <span className="name-job">{app.companyName}</span>
                     </Link>
-                    <span className="location-small">New York, US</span>
+                    <span className="location-small">
+                      {app.location_company}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -83,8 +85,7 @@ export default function ApplicantsTable() {
                 </span>
               </div>
               <p className="font-sm color-text-paragraph mt-10">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                Recusandae architecto eveniet, dolor quo repellendus pariatur
+                {app.description_company?.substring(0, 100)}
               </p>
               <div className="card-2-bottom mt-20">
                 <div className="row">
@@ -92,9 +93,8 @@ export default function ApplicantsTable() {
                     <span className="card-text-price">$500</span>
                     <span className="text-muted">/Hour</span>
                   </div>
-                  <div className="col-lg-5 col-5 text-end">
+                  <div className="col-lg-5 col-5 d-flex justify-content-end gap-2">
                     <button
-                      style={{ marginRight: "5px" }}
                       className="btn btn-danger"
                       data-bs-toggle="modal"
                       data-bs-target="#ModalApplyJobForm"
@@ -102,12 +102,7 @@ export default function ApplicantsTable() {
                     >
                       Delete
                     </button>
-                    {/* <button
-                      className="btn btn-apply-now"
-                      onClick={() => setSelectedApplicantId(app.id)}
-                    >
-                      Xem chi tiết
-                    </button> */}
+
                     <button
                       className="btn btn-apply-now"
                       onClick={() => router.push(`/applicants/${app.id}`)}

@@ -51,6 +51,9 @@ export default function ApplyJob({
       if (res.data.missingSkills?.length) {
         toast.warning("Thiếu kỹ năng: " + res.data.missingSkills.join(", "));
       }
+      if (res.data.skillMatchMessage) {
+        toast.warning(res.data.skillMatchMessage);
+      }
       if (res.data.minExperience) {
         toast.info(res.data.minExperience);
       }

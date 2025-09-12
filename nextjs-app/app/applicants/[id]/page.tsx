@@ -2,6 +2,9 @@
 "use client";
 
 import { useParams } from "next/navigation";
+
+import Layout from "@/components/Layout/Layout";
+import React from "react";
 import ApplicantDetail from "@/features/applicants/components/ApplicantDetail";
 import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
@@ -42,9 +45,9 @@ export default function ApplicantDetailPage() {
                   </div>
                 </div>
                 <div className="col-lg-4 col-md-12 text-lg-end">
-                  <Link href="page-contact">
+                  {/* <Link href="page-contact">
                     <span className="btn btn-download-icon btn-apply btn-apply-big">Download CV</span>
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
             </div>
@@ -73,79 +76,10 @@ export default function ApplicantDetailPage() {
         <section className="section-box mt-50">
           <div className="container">
             <div className="row">
-              <div className="col-lg-8 col-md-12 col-sm-12 col-12">
-                <div className="container mt-4">
-          
+      
             <ApplicantDetail id={Number(id)} />
-            </div>
-              </div>
-              <div className="col-lg-4 col-md-12 col-sm-12 col-12 pl-40 pl-lg-15 mt-lg-30">
-                <div className="sidebar-border">
-                  <h5 className="f-18">Overview</h5>
-                  <div className="sidebar-list-job">
-                    <ul>
-                      <li>
-                        <div className="sidebar-icon-item">
-                          <i className="fi-rr-briefcase" />
-                        </div>
-                        <div className="sidebar-text-info">
-                          <span className="text-description">Experience</span>
-                          <strong className="small-heading">12 years</strong>
-                        </div>
-                      </li>
-                      <li>
-                        <div className="sidebar-icon-item">
-                          <i className="fi-rr-dollar" />
-                        </div>
-                        <div className="sidebar-text-info">
-                          <span className="text-description">Expected Salary</span>
-                          <strong className="small-heading">$26k - $30k</strong>
-                        </div>
-                      </li>
-                      <li>
-                        <div className="sidebar-icon-item">
-                          <i className="fi-rr-marker" />
-                        </div>
-                        <div className="sidebar-text-info">
-                          <span className="text-description">Language</span>
-                          <strong className="small-heading">English, German</strong>
-                        </div>
-                      </li>
-                      <li>
-                        <div className="sidebar-icon-item">
-                          <i className="fi-rr-time-fast" />
-                        </div>
-                        <div className="sidebar-text-info">
-                          <span className="text-description">Education Level</span>
-                          <strong className="small-heading">Master Degree</strong>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="sidebar-list-job">
-                    <ul className="ul-disc">
-                      <li>205 North Michigan Avenue, Suite 810 Chicago, 60601, USA</li>
-                      <li>Phone: (123) 456-7890</li>
-                      <li>Email: contact@Evara.com</li>
-                    </ul>
-                    <div className="mt-30">
-                      <Link href="page-contact">
-                        <span className="btn btn-send-message">Send Message</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-                <div className="sidebar-border-bg bg-right">
-                  <span className="text-grey">WE ARE</span>
-                  <span className="text-hiring">HIRING</span>
-                  <p className="font-xxs color-text-paragraph mt-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto</p>
-                  <div className="mt-15">
-                    <Link href="#">
-                      <span className="btn btn-paragraph-2">Know More</span>
-                    </Link>
-                  </div>
-                </div>
-              </div>
+           
+  
             </div>
           </div>
         </section>

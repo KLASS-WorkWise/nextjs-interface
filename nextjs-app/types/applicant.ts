@@ -8,6 +8,11 @@ export interface Applicant {
   applicationStatus: "PENDING" | "ACCEPTED" | "REJECTED";
   coverLetter: string | null;
   appliedAt: string;
+  description_company: string | null;
+  companyName: string | null;
+  logoUrl: string | null;
+  fullName: string;
+  location_company: string | null;
    // ✅ thêm field backend trả về
   missingSkills: string[] | null;
   minExperience: string | null;
@@ -15,5 +20,6 @@ export interface Applicant {
   skillMatchPercent: number;
   isSkillQualified: boolean;
   isExperienceQualified: boolean;
-  history?: { step: string; date: string | null; status: "done" | "in-progress" | "pending" ;changedAt: Date ;note: string|null }[];
+  skillMatchMessage: string | null;
+  history?: { step: string; date: string | null; status: "done" | "in-progress" | "pending" ;changedAt: Date ;note: string|null,changedBy: string }[];
 }
