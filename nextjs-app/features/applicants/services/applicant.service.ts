@@ -73,49 +73,66 @@ export const applicantService = {
   getApplicantTracking: (id: number) =>
     apiClient.get(`/api/applicant/${id}/tracking`),
 
-  
-subscribeApplicant(id: number, onMessage: (data: any) => void) {
-  const token = localStorage.getItem("accessToken");
-  if (!token) {
-    console.error("");
-    return () => {};
-  }
+  subscribeApplicant(
+  id: number,
+  onMessage: (data: any) => void,
+  reconnectInterval = 5000 // 5s
+) {
+  let eventSource: EventSource | null = null;
+  let reconnectTimer: NodeJS.Timeout;
 
-  const eventSource: EventSource = new EventSourcePolyfill(
-    `http://localhost:8080/api/applicant/${id}/subscribe`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      heartbeatTimeout: 60000,
+  const startSSE = () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      console.warn("❌ No access token, SSE cannot subscribe. Retrying...");
+      reconnectTimer = setTimeout(startSSE, reconnectInterval);
+      return;
     }
-  ) as unknown as EventSource; // ép 1 lần duy nhất để TS hiểu như EventSource chuẩn
 
-  // ✅ Helper bắt custom event
-  const addSSEListener = <T = any>(
-    source: EventSource,
-    eventName: string,
-    handler: (data: T) => void
-  ) => {
-    source.addEventListener(eventName, (ev: Event) => {
-      const msg = ev as MessageEvent;
-      try {
-        handler(JSON.parse(msg.data));
-      } catch (err) {
-        console.error(`❌ Error parsing SSE for ${eventName}:`, err);
+    // Close old connection nếu có
+    if (eventSource) eventSource.close();
+
+    eventSource = new EventSourcePolyfill(
+      `http://localhost:8080/api/applicant/${id}/subscribe`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        heartbeatTimeout: 60000,
       }
-    });
+    ) as unknown as EventSource;
+
+    // Custom event listener
+    const addSSEListener = <T = any>(
+      source: EventSource,
+      eventName: string,
+      handler: (data: T) => void
+    ) => {
+      source.addEventListener(eventName, (ev: Event) => {
+        const msg = ev as MessageEvent;
+        try {
+          handler(JSON.parse(msg.data));
+        } catch (err) {
+          console.error(`❌ Error parsing SSE for ${eventName}:`, err);
+        }
+      });
+    };
+
+    addSSEListener(eventSource, "statusUpdated", onMessage);
+
+    // Bắt lỗi SSE & reconnect
+    eventSource.onerror = (ev) => {
+      console.error("❌ SSE error, reconnecting...", ev);
+      if (eventSource) eventSource.close();
+      reconnectTimer = setTimeout(startSSE, reconnectInterval);
+    };
   };
 
-  // Lắng nghe custom event
-  addSSEListener(eventSource, "statusUpdated", onMessage);
+  startSSE();
 
-  // ✅ Bắt lỗi SSE
-  eventSource.onerror = function (this: EventSource, ev: Event) {
-    console.error("❌ SSE error:", ev);
+  // Cleanup khi component unmount
+  return () => {
+    if (eventSource) eventSource.close();
+    clearTimeout(reconnectTimer);
   };
-
-  // Hàm cleanup
-  return () => eventSource.close();
 }
+
 };

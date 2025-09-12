@@ -38,17 +38,16 @@ export default function ApplicantDetail({ id }: Props) {
     }
   };
 
-  useEffect(() => {
-    fetchData();
+useEffect(() => {
+  fetchData();
 
-    // SSE subscribe
-    const unsubscribe = applicantService.subscribeApplicant(id, (data) => {
-      if (data.detail) setApplicant(prev => ({ ...prev, ...data.detail }));
-      if (data.timeline) setTimeline(data.timeline);
-    });
+  const unsubscribe = applicantService.subscribeApplicant(id, (data) => {
+    if (data.detail) setApplicant(prev => ({ ...prev, ...data.detail }));
+    if (data.timeline) setTimeline(data.timeline);
+  });
 
-    return () => unsubscribe();
-  }, [id]);
+  return () => unsubscribe();
+}, [id]);
 
   const handleUpdateStatus = async () => {
     if (!status) {
