@@ -10,7 +10,7 @@ const SocialIcons: React.FC<SocialIconsProps> = ({ isChatOpen }) => {
     return (
         <div className="icon">
             {/* Zalo */}
-            <div className="zalo">
+            {/* <div className="zalo">
                 <div className="nen1"></div>
                 <div className="vien2"></div>
                 <a
@@ -20,26 +20,26 @@ const SocialIcons: React.FC<SocialIconsProps> = ({ isChatOpen }) => {
                 >
                     <img src="/assets/icons/zalo.png" alt="Zalo" className="icon-zalo" />
                 </a>
-            </div>
+            </div> */}
 
             {/* Điện thoại */}
-            <div className="dienthoai">
+            {/* <div className="dienthoai">
                 <div className="nen2"></div>
                 <div className="vien"></div>
                 <i className="bx bxs-phone-call"></i>
-            </div>
+            </div> */}
 
             {/* Messenger */}
-            <div className="message">
-                <a
-                    href="https://www.facebook.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <i className="fa-brands fa-facebook-messenger mess"></i>
-                </a>
-                <div className="vien3"></div>
-            </div>
+                {/* <div className="message">
+                    <a
+                        href="https://www.facebook.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <i className="fa-brands fa-facebook-messenger mess"></i>
+                    </a>
+                    <div className="vien3"></div>
+                </div> */}
         </div>
     );
 };

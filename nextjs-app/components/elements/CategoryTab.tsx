@@ -2,8 +2,35 @@
 import React, {useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { getCompanyByEmployerId } from "@/lib/company/api";
 
 const CategoryTab = () => {
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [companyInfoMap, setCompanyInfoMap] = useState<{ [key: string]: any }>({});
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      const jobsToShow = jobs
+        .slice()
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 6);
+      const employerIds = Array.from(new Set(jobsToShow.map((job: any) => job.employerId).filter(Boolean)));
+      const companyPromises = employerIds.map(async (employerId) => {
+        try {
+          const company = await getCompanyByEmployerId(employerId);
+          return { employerId, company };
+        } catch {
+          return { employerId, company: null };
+        }
+      });
+      const companyResults = await Promise.all(companyPromises);
+      const companyMap: { [key: string]: any } = {};
+      companyResults.forEach(({ employerId, company }) => {
+        companyMap[employerId] = company;
+      });
+      setCompanyInfoMap(companyMap);
+    };
+    if (jobs && jobs.length > 0) fetchCompanies();
+  }, [jobs]);
   const [active, setActive] = useState(1);
 
   const handleOnClick = (index: number) => {
@@ -12,7 +39,7 @@ const CategoryTab = () => {
   const { data: session } = useSession();
     const role = session?.user?.roles;
     // Hook lấy dữ liệu job từ API
-    const [jobs, setJobs] = useState<any[]>([]);
+   
     const [jobsLoading, setJobsLoading] = useState(false);
     const [jobsError, setJobsError] = useState("");
 
@@ -50,69 +77,84 @@ const CategoryTab = () => {
                 .slice()
                 .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                 .slice(0, 6)
-                .map((job: any) => (
-                  <div key={job.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                    <div className="card-grid-2 hover-up">
-                      <div className="card-grid-2-image-left">
-                        <span className="flash" />
-                        <div className="image-box">
-                          <img src={job.companyLogo || "/assets/imgs/brands/brand-1.png"} alt={job.companyName || "Company"} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} />
-                        </div>
-                        <div className="right-info">
-                          <span className="fw-bold" style={{ fontSize: '1.08rem', color: '#222' }}>{job.companyName || 'Company'}</span>
-                          <div className="d-flex align-items-center font-xs color-text-paragraph mt-1">
-                            <i className="fi-rr-marker mr-5" />
-                            {job.location || 'Unknown'}
+                .map((job: any) => {
+                  const company = job.employerId ? companyInfoMap[job.employerId] : null;
+                  return (
+                    <div key={job.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+                      <div className="card-grid-2 hover-up">
+                        <div className="card-grid-2-image-left">
+                          <span className="flash" />
+                          <div className="image-box" style={{ width: 48, height: 48 }}>
+                                  <img
+                                    src={company?.logoUrl || job.companyLogo || "/assets/imgs/brands/brand-1.png"}
+                                    alt={company?.companyName || job.companyName || "Company"}
+                                    style={{
+                                      maxWidth: "100%",
+                                      maxHeight: "100%",
+                                      borderRadius: 8,
+                                      objectFit: "contain", // hoặc "scale-down" để scale xuống khi quá lớn
+                                      display: "block",
+                                      margin: "auto"
+                                    }}
+                                  />
+                                </div>
+                          <div className="right-info">            
+                            <span className="fw-bold" style={{ fontSize: '1.08rem', color: '#222', display: 'block', marginTop: 8 }}>
+                              {company?.companyName || job.companyName || 'Company'}
+                            </span>
+                            <div className="d-flex align-items-center font-xs color-text-paragraph mt-1">
+                              <i className="fi-rr-marker mr-5" />
+                              {company?.location || job.location || 'Unknown'}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="card-block-info">
-                        <h6>
-                          <Link href={`/job-details-2/${job.id}`}>
-                            <span>{job.title || "No title"}</span>
-                          </Link>
-                        </h6>
-                        <div className="mt-5">
-                          <span className="card-briefcase">{job.type || "Fulltime"}</span>
-                          <span className="card-time">{job.createdAt ? new Date(job.createdAt).toLocaleDateString() : ""}</span>
-                        </div>
-                        <p
-                          className="font-sm color-text-paragraph mt-15"
-                          style={{
-                            maxWidth: '100%',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            marginBottom: 0
-                          }}
-                          title={job.description || "Không có mô tả"}
-                        >
-                          {job.description || "Không có mô tả"}
-                        </p>
-                        <div className="mt-30">
-                          {Array.isArray(job.skills) && job.skills.map((skill: string, idx: number) => (
-                            <span key={idx} className="btn btn-grey-small mr-5">{skill}</span>
-                          ))}
-                        </div>
-                        <div className="card-2-bottom mt-30">
-                          <div className="row">
-                            <div className="col-lg-7 col-7">
-                              <span className="card-text-price" style={{ fontSize: '1rem', color: '#2A6DF5', fontWeight: 700, letterSpacing: '0.5px', lineHeight: 1 }}>
-                                {job.salaryRange && job.salaryRange.trim() !== "" ? job.salaryRange : (job.salary && job.salary.trim() !== "" ? job.salary : "N/A")}
-                              </span>
-                              <span className="text-muted" style={{ fontSize: '0.85rem', marginLeft: 2 }}>/Tháng</span>
-                            </div>
-                            <div className="col-lg-5 col-5 text-end">
-                              <button className="btn btn-apply-now">Apply</button>
+                        <div className="card-block-info">
+                          <h6>
+                            <Link href={`/job-details-2/${job.id}`}>
+                              <span>{job.title || "No title"}</span>
+                            </Link>
+                          </h6>
+                          <div className="mt-5">
+                            <span className="card-briefcase">{job.type || "Fulltime"}</span>
+                            <span className="card-time">{job.createdAt ? new Date(job.createdAt).toLocaleDateString() : ""}</span>
+                          </div>
+                          <p
+                            className="font-sm color-text-paragraph mt-15"
+                            style={{
+                              maxWidth: '100%',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              marginBottom: 0
+                            }}
+                            title={job.description || "Không có mô tả"}
+                          >
+                            {job.description || "Không có mô tả"}
+                          </p>
+                          <div className="mt-30">
+                            {Array.isArray(job.skills) && job.skills.map((skill: string, idx: number) => (
+                              <span key={idx} className="btn btn-grey-small mr-5">{skill}</span>
+                            ))}
+                          </div>
+                          <div className="card-2-bottom mt-30">
+                            <div className="row">
+                              <div className="col-lg-7 col-7">
+                                <span className="card-text-price" style={{ fontSize: '1rem', color: '#2A6DF5', fontWeight: 700, letterSpacing: '0.5px', lineHeight: 1 }}>
+                                  {job.salaryRange && job.salaryRange.trim() !== "" ? job.salaryRange : (job.salary && job.salary.trim() !== "" ? job.salary : "N/A")}
+                                </span>
+                                <span className="text-muted" style={{ fontSize: '0.85rem', marginLeft: 2 }}>/Tháng</span>
+                              </div>
+                              <div className="col-lg-5 col-5 text-end">
+                                <button className="btn btn-apply-now">Apply</button>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
-            
           </div>
         </div>
         <div className={`tab-pane fade ${active == 2 && "show active"}`}>
