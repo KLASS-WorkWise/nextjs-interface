@@ -43,7 +43,8 @@ export function ResumeCardItem({
     if (isSaving) return;
     setIsSaving(true);
     try {
-      const apiData = mapFormToApi(data);
+      const dataWithTemplate = { ...data, template: template } as any;
+      const apiData = mapFormToApi(dataWithTemplate);
       const createResume = await resumeApi.saveMyResume(apiData);
 
       toast({
@@ -51,7 +52,7 @@ export function ResumeCardItem({
         description: "CV của bạn đã được lưu lên server.",
       });
       if (onSave) {
-        onSave(data); // Truyền dữ liệu CV đã lưu về parent component
+        onSave(dataWithTemplate as any); // Truyền dữ liệu CV đã lưu về parent component
       }
     } catch (error: any) {
       console.error("Error saving CV:", error);
@@ -69,15 +70,12 @@ export function ResumeCardItem({
     }
   };
 
+  // Sửa logic để phân biệt chính xác các template
   const renderTemplate = () => {
     const tpl = (template || "modern").toLowerCase();
-    const normalized = tpl.includes("classic")
-      ? "classic"
-      : tpl.includes("modern")
-      ? "modern"
-      : "modern";
-    switch (normalized) {
+    switch (tpl) {
       case "classic":
+      case "classic-template":
         return (
           <ClassicTemplate
             data={data}
@@ -86,7 +84,26 @@ export function ResumeCardItem({
           />
         );
       case "modern":
+      case "modern-template":
+        return (
+          <ModernTemplate
+            data={data}
+            customization={customization}
+            isCompact={isCompact}
+          />
+        );
+      // Nếu có template mới, thêm case ở đây
       default:
+        // fallback: nếu tên template chứa "classic" thì dùng classic, ngược lại modern
+        if (tpl.includes("classic")) {
+          return (
+            <ClassicTemplate
+              data={data}
+              customization={customization}
+              isCompact={isCompact}
+            />
+          );
+        }
         return (
           <ModernTemplate
             data={data}

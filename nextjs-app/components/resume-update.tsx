@@ -197,6 +197,9 @@ export function ResumeUpdate({
             : [],
           awards: Array.isArray(initialData.awards) ? initialData.awards : [],
         });
+        if ((initialData as any)?.template) {
+          setSelectedTemplate((initialData as any).template);
+        }
       } else {
         // Create new: always reset to empty
         methods.reset({
@@ -249,6 +252,9 @@ export function ResumeUpdate({
       try {
         const parsedData = JSON.parse(savedDraft);
         methods.reset(parsedData);
+        if (parsedData?.template) {
+          setSelectedTemplate(parsedData.template);
+        }
         toast({
           title: "Đã khôi phục bản nháp",
           description: "Dữ liệu đã lưu trước đó đã được khôi phục.",
@@ -302,6 +308,21 @@ export function ResumeUpdate({
     }
   };
 
+  // Back button in header: go to previous step if possible, else go to previous page, else fallback
+  const handleHeaderBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep((s) => (s > 0 ? s - 1 : s));
+      return;
+    }
+    try {
+      if (typeof window !== "undefined" && window.history.length > 1) {
+        router.back();
+        return;
+      }
+    } catch {}
+    if (onBack) onBack();
+  };
+
   const goToStep = async (stepIndex: number) => {
     if (stepIndex < currentStep || completedSteps.includes(stepIndex)) {
       setCurrentStep(stepIndex);
@@ -349,13 +370,11 @@ export function ResumeUpdate({
         <div className={styles.header}>
           <Button
             variant="outline"
-            onClick={onBack ? onBack : () => setShowPreview(false)}
+            onClick={() => setShowPreview(false)}
             className={styles.actionButton}
           >
             <ChevronLeft className="h-4 w-4" />
-            <span className={styles.hiddenOnMobile}>
-              {onBack ? "Quay lại danh sách" : "Quay lại chỉnh sửa"}
-            </span>
+            <span className={styles.hiddenOnMobile}>Quay lại chỉnh sửa</span>
             <span className={styles.hiddenOnDesktop}>Quay lại</span>
           </Button>
         </div>
@@ -391,8 +410,8 @@ export function ResumeUpdate({
             <Button
               variant="ghost"
               size="icon"
-              aria-label="Quay lại danh sách CV"
-              onClick={onBack}
+              aria-label="Quay lại"
+              onClick={handleHeaderBack}
               style={{ marginRight: 8 }}
             >
               <ChevronLeft className="h-5 w-5" />

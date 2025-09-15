@@ -31,6 +31,7 @@ export interface ApiResumeData {
   profilePicture?: string;
   summary: string;
   jobTitle: string;
+  template: string;
   educations: Array<{
     schoolName: string;
     degree: string;
@@ -70,6 +71,7 @@ export function mapFormToApi(formData: any): ApiResumeData {
     profilePicture: formData.personalInfo?.profileImage || "",
     summary: formData.personalInfo?.summary || "",
     jobTitle: formData.personalInfo?.jobTitle || "",
+    template: formData.template || "modern",
     educations: (formData.education || []).map((edu: any) => ({
       schoolName: edu.institution || "",
       degree: edu.degree || "",
@@ -145,6 +147,7 @@ export function mapApiToForm(apiData: ApiResumeData & { id?: number }): any {
       description: experience.description,
     })),
     skills: apiData.skillsResumes,
+    template: apiData.template,
   };
 }
 

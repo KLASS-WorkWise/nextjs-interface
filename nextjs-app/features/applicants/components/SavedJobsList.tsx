@@ -23,6 +23,8 @@ export default function SavedJobsList() {
 
   const handleRemove = async (savedJobId: number) => {
     try {
+      // const confirmed = confirm("Are you sure you want to delete this saved job??");
+      // if (!confirmed) return false;
       setRemovingId(savedJobId);
       await savedJobService.removeSavedJob(savedJobId);
 
@@ -30,8 +32,13 @@ export default function SavedJobsList() {
       setMessage("Xóa thành công!");
       setTimeout(() => setMessage(null), 3000); // 3s auto-hide
     } catch (err: any) {
-      console.error("Error removing saved job:", err.response?.data?.message || err.message);
-      setMessage("Xóa thất bại: " + (err.response?.data?.message || err.message));
+      console.error(
+        "Error removing saved job:",
+        err.response?.data?.message || err.message
+      );
+      setMessage(
+        "Xóa thất bại: " + (err.response?.data?.message || err.message)
+      );
       setTimeout(() => setMessage(null), 5000);
     } finally {
       setRemovingId(null);
@@ -47,20 +54,29 @@ export default function SavedJobsList() {
   return (
     <div className="row">
       {message && (
-        <div style={{ marginBottom: "15px", color: "green", fontWeight: "bold" }}>
+        <div
+          style={{ marginBottom: "15px", color: "green", fontWeight: "bold" }}
+        >
           {message}
         </div>
       )}
       {savedJobs.map((job) => (
-        <div key={job.savedJobId} className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+        <div
+          key={job.savedJobId}
+          className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12"
+        >
           <div className="card-grid-2 hover-up">
             <div className="card-grid-2-image-left">
               <div className="image-box">
                 <img src="assets/imgs/brands/brand-5.png" alt="jobBox" />
               </div>
               <div className="right-info">
-                <span className="name-job">Company Name</span>
-                <span className="location-small">{job.jobPostingResponseDTO.location}</span>
+                <span className="name-job">
+                  {job.jobPostingResponseDTO.employerName}
+                </span>
+                <span className="location-small">
+                  {job.jobPostingResponseDTO.location}
+                </span>
               </div>
             </div>
             <div className="card-block-info">
@@ -72,14 +88,16 @@ export default function SavedJobsList() {
               <p className="font-sm color-text-paragraph mt-15">
                 {job.jobPostingResponseDTO.description}
               </p>
-              <div className="card-2-bottom mt-30">
+              <div className="card-2-bottom mt-30 d-flex justify-content-between gap-2">
                 <button
                   className="btn btn-danger"
                   onClick={() => handleRemove(job.savedJobId)}
                   disabled={removingId === job.savedJobId}
                 >
-                  {removingId === job.savedJobId ? "Đang xóa..." : "Remove"}
+                  {removingId === job.savedJobId ? "Deleting..." : "Delete"}
                 </button>
+
+                <button className="btn btn-apply">Apply</button>
               </div>
             </div>
           </div>

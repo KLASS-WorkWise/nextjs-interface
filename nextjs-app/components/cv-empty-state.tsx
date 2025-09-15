@@ -1,5 +1,5 @@
 "use client";
-
+/* eslint-disable */
 interface CVEmptyStateProps {
   onCreateNew: () => void;
 }
@@ -8,15 +8,6 @@ export function CVEmptyState({ onCreateNew }: CVEmptyStateProps) {
   return (
     <div className="container vh-100 d-flex flex-column">
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="h4 fw-bold m-0">CV đã tạo trên JobPost</h1>
-        <button
-          className="btn btn-primary fw-semibold px-3"
-          onClick={onCreateNew}
-        >
-          + Tạo CV
-        </button>
-      </div>
 
       {/* Empty state - full center */}
       <div className="flex-grow-1 d-flex flex-column justify-content-center align-items-center">

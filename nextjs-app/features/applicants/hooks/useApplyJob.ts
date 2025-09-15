@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { applyService } from "@/services/applyService";
+import { applicantService } from "../services/applicant.service";
 
 type ApplyOptions = {
   onUploadProgress?: (progress: number) => void;
@@ -13,7 +13,7 @@ export function useApplyJob() {
     try {
       setLoading(true);
 
-      const res = await applyService.applyJobWithFile(Number(jobId), data, {
+      const res = await applicantService.applyJobWithFile(Number(jobId), data, {
         onUploadProgress: (event: ProgressEvent) => {
           if (event.total) {
             const progress = Math.round((event.loaded * 100) / event.total);

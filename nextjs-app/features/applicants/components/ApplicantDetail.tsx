@@ -1,139 +1,216 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import { useState } from "react";
-import { Applicant } from "@/types/applicant";
-import { applicantService } from "../services/applicant.service";
 
-type Props = {
-  applicant: Applicant;
-  role: "hr" | "applicant"; // phân quyền
+import { useEffect, useState } from "react";
+import { applicantService, ApplicantTimeline } from "../services/applicant.service";
+import { Applicant } from "@/types/applicant";
+import styles from '../../../styles/ApplicantDetail.module.css';// css riêng cho component
+import { Timeline } from "./Timeline";
+import { fi } from "date-fns/locale";
+
+
+
+
+type Props = { id: number };
+
+export default function ApplicantDetail({ id }: Props) {
+  const [applicant, setApplicant] = useState<Applicant | null>(null);
+  const [loading, setLoading] = useState(true);
+
+    const [timeline, setTimeline] = useState<ApplicantTimeline[]>([]);
+  // State cho HR update
+  const [status, setStatus] = useState("");
+  const [note, setNote] = useState("");
+ // Fetch applicant detail + timeline
+ // Fetch detail + timeline
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const res = await applicantService.getApplicantTracking(id);
+      setApplicant(res.data.detail ?? null);
+      setTimeline(res.data.timeline ?? []);
+    } catch (err) {
+      console.error("Error fetching applicant data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+useEffect(() => {
+  fetchData();
+
+  const unsubscribe = applicantService.subscribeApplicant(id, (data) => {
+    if (data.detail) setApplicant(prev => ({ ...prev, ...data.detail }));
+    if (data.timeline) setTimeline(data.timeline);
+  });
+
+  return () => unsubscribe();
+}, [id]);
+
+  const handleUpdateStatus = async () => {
+    if (!status) {
+      alert("❌ Vui lòng chọn status");
+      return;
+    }
+
+    try {
+      await applicantService.updateStatus(applicant!.id, { status, note });
+      alert("✅ Cập nhật trạng thái thành công");
+      setStatus("");
+      setNote("");
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert("❌ Lỗi khi cập nhật trạng thái");
+    }
+  };
+
+
+  // useEffect(() => {
+  //   const fetchDetail = async () => {
+  //     try {
+  //       const res = await applicantService.getApplicantDetail(id);
+  //       setApplicant(res.data ?? null);
+      
+  //       console.log("Applicant detail:", res.data);
+  //     } catch (err) {
+  //       console.error("Error fetching applicant detail:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchDetail();
+  // }, [id]);
+  
+
+
+  // const handleResume = async (filename: string) => {
+  //   try {
+  //     const res = await applicantService.getResumeLink(filename);
+  //     const contentType =
+  //       res.headers["content-type"] || "application/octet-stream";
+  //     const blob = new Blob([res.data], { type: contentType });
+  //     const url = window.URL.createObjectURL(blob);
+
+  //     if (contentType === "application/pdf") {
+  //       // PDF mở trực tiếp
+  //       window.open(url, "_blank");
+  //     } else {
+  //       // Các file khác download
+  //       const link = document.createElement("a");
+  //       link.href = url;
+  //       link.setAttribute("download", filename);
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       link.remove();
+  //     }
+
+  //     // Giải phóng memory
+  //     window.URL.revokeObjectURL(url);
+  //   } catch (err) {
+  //     console.error("Error downloading resume:", err);
+  //   }
+  // };
+  
+  const handleResume = async (firebaseUrl: string) => {
+  try {
+    // Lấy tên file từ URL Firebase
+    const getFilenameFromFirebaseUrl = (url: string) => {
+      const decoded = decodeURIComponent(url);
+      const parts = decoded.split('/');
+      const lastPart = parts[parts.length - 1]; // ..._NguyenThanhHoan.pdf?alt=media
+      return lastPart.split('?')[0]; // bỏ query params
+    };
+
+    const filename = getFilenameFromFirebaseUrl(firebaseUrl);
+
+    // Gọi API backend để lấy blob
+    const res = await applicantService.getResumeLink(firebaseUrl);
+
+    // Tạo object URL từ blob
+    const blob = new Blob([res.data], { type: res.data.type || "application/octet-stream" });
+    const fileURL = window.URL.createObjectURL(blob);
+
+    if (filename.endsWith(".pdf")) {
+      // Mở PDF trực tiếp
+      window.open(fileURL, "_blank");
+    } else {
+      // Download file khác
+      const link = document.createElement("a");
+      link.href = fileURL;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+    // Giải phóng memory
+    window.URL.revokeObjectURL(fileURL);
+
+    console.log(`Resume opened/downloaded: ${filename}`);
+  } catch (error) {
+    console.error("Error previewing resume:", error);
+  }
 };
 
-export default function ApplicantDetail({ applicant: initialApplicant, role }: Props) {
-  const [applicant, setApplicant] = useState<Applicant>(initialApplicant);
-  const [updatingStep, setUpdatingStep] = useState<string | null>(null);
 
-  // Cập nhật từng bước timeline (chỉ HR mới dùng)
-  const handleUpdateStep = async (step: string) => {
-    if (role !== "hr") return;
-    setUpdatingStep(step);
-    try {
-      const res = await applicantService.updateStep(applicant.id, step);
-      setApplicant(res.data); // cập nhật applicant + history
-    } finally {
-      setUpdatingStep(null);
-    }
-  };
+   if (loading) return <p>Loading...</p>;
+  if (!applicant) return <p>Applicant not found.</p>;
 
-  // Download resume (cả HR và applicant đều có thể)
-  const downloadResume = async () => {
-    if (!applicant.resumeLink) return alert("No resume available");
-    const res = await applicantService.getResumeLink(applicant.resumeLink);
-    const url = window.URL.createObjectURL(res.data);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = applicant.resumeLink;
-    link.click();
-    window.URL.revokeObjectURL(url);
-  };
+return (
+  <div className={styles.card}>
+    {/* Cột trái - Detail */}
+    <div className={styles.detailColumn}>
+      <div className={styles.headerRow}>
+    <h3 className={styles.title}>Applicant Detail</h3>
+    <button 
+      className={styles.btn} 
+      onClick={() => handleResume(applicant.resumeLink!)}
+    >
+      View / Download Resume
+    </button>
+  </div>
 
-  const getStepClass = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "done":
-        return "bg-green-500 text-white";
-      case "in-progress":
-        return "bg-blue-500 text-white";
-      case "pending":
-        return "bg-gray-300 text-gray-600";
-      default:
-        return "bg-gray-300 text-gray-600";
-    }
-  };
-
-  const getStepIcon = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "done":
-        return "✓";
-      case "in-progress":
-        return "…";
-      case "pending":
-        return "";
-      default:
-        return "";
-    }
-  };
-
-  return (
-    <div className="p-6 bg-white rounded-2xl shadow-lg max-w-4xl mx-auto my-6">
-      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">Applicant Detail</h1>
-
-      <div className="mb-6 space-y-2">
-        <p><strong>Job ID:</strong> {applicant.jobId}</p>
-        <p>
-          <strong>Status:</strong>{" "}
-          <span className="text-blue-600 font-semibold">{applicant.applicationStatus}</span>
-        </p>
-        <p><strong>Applied at:</strong> {new Date(applicant.appliedAt).toLocaleDateString()}</p>
-
-        {applicant.coverLetter && (
-          <p><strong>Cover letter:</strong> {applicant.coverLetter}</p>
-        )}
-
-        {applicant.resumeLink && (
-          <button
-            onClick={downloadResume}
-            style={{
-              padding: "0.6rem 1.2rem",
-              background: "#2563eb",
-              borderRadius: "8px",
-              fontWeight: 600,
-              border: "none",
-              cursor: "pointer",
-              color: "#fff",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              transition: "background 0.2s",
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.background = "#1d4ed8")}
-            onMouseOut={(e) => (e.currentTarget.style.background = "#2563eb")}
-          >
-            📄 Download Resume
-          </button>
-        )}
+      <div className={styles.grid}>
+        <p><strong>Job Title:</strong> {applicant.jobTitle}</p>
+        {/* Thêm các field khác */}
       </div>
 
-      <h2 className="font-semibold mb-3 text-gray-700">Application Timeline</h2>
-      <ol className="border-l-2 border-gray-300 ml-4">
-        {applicant.history?.map((h) => (
-          <li key={h.step} className="mb-6 relative pl-6">
-            <span
-              className={`absolute -left-3 top-0 w-6 h-6 rounded-full flex items-center justify-center ${getStepClass(h.status)}`}
-            >
-              {getStepIcon(h.status)}
-            </span>
+      {applicant.coverLetter && (
+        <p className={styles.coverLetter}>
+          <strong>Cover Letter:</strong> {applicant.coverLetter}
+        </p>
+      )}
 
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-              <div>
-                <p className="font-medium text-gray-800">{h.step}</p>
-                {h.date && (
-                  <p className="text-sm text-gray-500">{new Date(h.date).toLocaleDateString()}</p>
-                )}
-              </div>
 
-              {/* Nút update step chỉ hiển thị với HR */}
-              {role === "hr" && h.status.toLowerCase() !== "done" && (
-                <button
-                  disabled={updatingStep === h.step}
-                  onClick={() => handleUpdateStep(h.step)}
-                  className="mt-2 md:mt-0 ml-0 md:ml-4 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                >
-                  {updatingStep === h.step ? "Updating..." : "Mark Done"}
-                </button>
-              )}
-            </div>
-          </li>
-        ))}
-      </ol>
+      <hr className={styles.divider} />
+      
+
     </div>
-  );
+
+    {/* Cột phải - Timeline + History */}
+    <div className={styles.timelineColumn}>
+      <Timeline steps={timeline} />
+
+      {applicant.history && (
+        <div className="mt-6">
+          <h5 className={styles.subtitle}>History</h5>
+          <ul className={styles.historyList}>
+            {applicant.history.map((h, idx) => (
+              <li key={idx}>
+                <strong>{h.status}</strong> - {h.note} 
+                <span className="text-xs text-gray-400">
+                  ({new Date(h.changedAt).toLocaleString()} bởi {h.changedBy})
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 }

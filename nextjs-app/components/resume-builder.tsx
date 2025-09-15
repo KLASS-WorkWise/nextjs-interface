@@ -41,6 +41,7 @@ import {
 import { PDFExport } from "./pdf-export";
 import { useToast } from "@/hooks/use-toast";
 import styles from "./resume-builder.module.css";
+import { mapFormToApi, resumeApi } from "@/lib/api";
 
 export interface ResumeData {
   id: number;
@@ -169,17 +170,8 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
   } = methods;
 
   const autoSave = async () => {
-    if (!mounted) return;
-
-    setIsAutoSaving(true);
-    setTimeout(() => {
-      const current = watch();
-      localStorage.setItem(
-        "resume-draft",
-        JSON.stringify({ ...current, template: selectedTemplate })
-      );
-      setIsAutoSaving(false);
-    }, 1000);
+    // Đã xóa logic autoSave với localStorage
+    return;
   };
 
   useEffect(() => {
@@ -195,6 +187,9 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
       try {
         const parsedData = JSON.parse(savedDraft);
         methods.reset(parsedData);
+        if (parsedData?.template) {
+          setSelectedTemplate(parsedData.template);
+        }
         toast({
           title: "Đã khôi phục bản nháp",
           description: "Dữ liệu đã lưu trước đó đã được khôi phục.",
@@ -259,18 +254,29 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
     }
   };
 
-  const onSubmit = (data: ResumeData) => {
-    // Chuyển đổi trường date của awards thành số năm nếu có dạng 'YYYY-MM'
-    const awards =
-      data.awards?.map((award) => ({
-        ...award,
-        // Nếu date có dạng 'YYYY-MM', lấy phần năm, nếu không thì giữ nguyên
-        date: award.date ? Number(award.date.split("-")[0]) : award.date,
-      })) || [];
-    const fixedData = { ...data, awards };
-    console.log("Resume data:", fixedData);
-    setShowPreview(true);
-    // Nếu có hàm gửi API, hãy gửi fixedData thay vì data
+  // Thêm import ở đầu file nếu chưa có:
+  // import { resumeApi } from "@/lib/api";
+  const onSubmit = async (data: ResumeData) => {
+    // Gán template đã chọn vào data
+    console.log("[DEBUG] selectedTemplate khi submit:", selectedTemplate);
+    const dataWithTemplate = { ...data, template: selectedTemplate };
+    const apiData = mapFormToApi(dataWithTemplate);
+    try {
+      await resumeApi.saveMyResume(apiData);
+      toast({
+        title: "Lưu thành công",
+        description: "CV của bạn đã được lưu!",
+        variant: "default",
+      });
+      setShowPreview(true);
+      if (onSave) onSave(dataWithTemplate);
+    } catch (error) {
+      toast({
+        title: "Lỗi khi lưu CV",
+        description: "Vui lòng thử lại.",
+        variant: "destructive",
+      });
+    }
   };
 
   const stepHasErrors = (stepIndex: number) => {
@@ -292,7 +298,7 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
           >
             <ChevronLeft className="h-4 w-4" />
             <span className={styles.hiddenOnMobile}>
-              {onBack ? "Quay lại danh sách" : "Quay lại chỉnh sửa"}
+              {onBack ? "Quay lại" : "Quay lại chỉnh sửa"}
             </span>
             <span className={styles.hiddenOnDesktop}>Quay lại</span>
           </Button>

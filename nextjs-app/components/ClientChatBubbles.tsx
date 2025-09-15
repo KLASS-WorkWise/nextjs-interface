@@ -13,3 +13,12 @@
 //         </>
 //     );
 // }
+// export default function ClientChatBubbles() {
+//     const [isChatOpen, setIsChatOpen] = useState(false);
+//     return (
+//         <>
+//             <JobChatBot isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
+//             <SocialIcons isChatOpen={isChatOpen} />
+//         </>
+//     );
+// }

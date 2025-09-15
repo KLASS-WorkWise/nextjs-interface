@@ -1,24 +1,42 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Save, FolderOpen, Trash2, Edit, Calendar, Download, Upload } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { resumeApi, mapFormToApi, mapApiToForm } from "@/lib/api"
-import type { ResumeData } from "./resume-builder"
-import type { CustomizationOptions } from "./customization-panel"
-import type { SavedResume } from "@/app/api/resume/route"
+"use client";
+/* eslint-disable */
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Save,
+  FolderOpen,
+  Trash2,
+  Edit,
+  Calendar,
+  Download,
+  Upload,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { resumeApi, mapFormToApi, mapApiToForm } from "@/lib/api";
+import type { ResumeData } from "./resume-builder";
+import type { CustomizationOptions } from "./customization-panel";
+import type { SavedResume } from "@/app/api/resume/route";
 
 interface ResumeManagerProps {
-  currentData: ResumeData
-  currentTemplate: string
-  currentCustomization: CustomizationOptions
-  onLoadResume: (data: ResumeData, template: string, customization: CustomizationOptions) => void
+  currentData: ResumeData;
+  currentTemplate: string;
+  currentCustomization: CustomizationOptions;
+  onLoadResume: (
+    data: ResumeData,
+    template: string,
+    customization: CustomizationOptions
+  ) => void;
 }
 
 export function ResumeManager({
@@ -27,72 +45,76 @@ export function ResumeManager({
   currentCustomization,
   onLoadResume,
 }: ResumeManagerProps) {
-  const [savedResumes, setSavedResumes] = useState<SavedResume[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false)
-  const [resumeName, setResumeName] = useState("")
-  const [isLoadingFromApi, setIsLoadingFromApi] = useState(false)
-  const [isSavingToApi, setIsSavingToApi] = useState(false)
-  const { toast } = useToast()
+  const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [resumeName, setResumeName] = useState("");
+  const [isLoadingFromApi, setIsLoadingFromApi] = useState(false);
+  const [isSavingToApi, setIsSavingToApi] = useState(false);
+  const { toast } = useToast();
 
   // Load saved resumes from localStorage (simulating API)
   useEffect(() => {
-    const saved = localStorage.getItem("saved-resumes")
+    const saved = localStorage.getItem("saved-resumes");
     if (saved) {
-      setSavedResumes(JSON.parse(saved))
+      setSavedResumes(JSON.parse(saved));
     }
-  }, [])
+  }, []);
 
   const loadResumeFromApi = async () => {
-    setIsLoadingFromApi(true)
+    setIsLoadingFromApi(true);
     try {
-      const apiData = await resumeApi.getMyResume()
-      const formData = mapApiToForm(apiData)
+      const apiData = await resumeApi.getMyResume();
+      const formData = mapApiToForm(apiData);
 
-      onLoadResume(formData, currentTemplate, currentCustomization)
+      onLoadResume(formData, currentTemplate, currentCustomization);
 
       toast({
         title: "Thành công",
         description: "Đã tải resume từ server",
-      })
+      });
     } catch (error) {
-      console.error("Failed to load resume from API:", error)
+      console.error("Failed to load resume from API:", error);
       toast({
         title: "Lỗi",
         description: "Không thể tải resume từ server",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoadingFromApi(false)
+      setIsLoadingFromApi(false);
     }
-  }
+  };
 
   const saveResumeToApi = async () => {
-    setIsSavingToApi(true)
+    setIsSavingToApi(true);
     try {
-      const apiData = mapFormToApi(currentData)
-      await resumeApi.saveMyResume(apiData)
+      const dataWithTemplate = {
+        ...currentData,
+        template: currentTemplate,
+      } as any;
+      const apiData = mapFormToApi(dataWithTemplate);
+      await resumeApi.saveMyResume(apiData);
 
       toast({
         title: "Thành công",
         description: "Đã lưu resume lên server",
-      })
+      });
     } catch (error) {
-      console.error("Failed to save resume to API:", error)
+      console.error("Failed to save resume to API:", error);
       toast({
         title: "Lỗi",
         description: "Không thể lưu resume lên server",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSavingToApi(false)
+      setIsSavingToApi(false);
     }
-  }
+  };
 
   const saveResume = async () => {
-    if (!resumeName.trim()) return
+    if (!resumeName.trim()) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const newResume: SavedResume = {
         id: Date.now().toString(),
@@ -102,40 +124,40 @@ export function ResumeManager({
         customization: currentCustomization,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      }
+      };
 
-      const updatedResumes = [...savedResumes, newResume]
-      setSavedResumes(updatedResumes)
-      localStorage.setItem("saved-resumes", JSON.stringify(updatedResumes))
+      const updatedResumes = [...savedResumes, newResume];
+      setSavedResumes(updatedResumes);
+      localStorage.setItem("saved-resumes", JSON.stringify(updatedResumes));
 
-      setResumeName("")
-      setSaveDialogOpen(false)
+      setResumeName("");
+      setSaveDialogOpen(false);
 
       toast({
         title: "Thành công",
         description: "Đã lưu resume vào bộ nhớ local",
-      })
+      });
     } catch (error) {
-      console.error("Failed to save resume:", error)
+      console.error("Failed to save resume:", error);
       toast({
         title: "Lỗi",
         description: "Không thể lưu resume",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const loadResume = (resume: SavedResume) => {
-    onLoadResume(resume.data, resume.template, resume.customization)
-  }
+    onLoadResume(resume.data, resume.template, resume.customization);
+  };
 
   const deleteResume = (id: string) => {
-    const updatedResumes = savedResumes.filter((r) => r.id !== id)
-    setSavedResumes(updatedResumes)
-    localStorage.setItem("saved-resumes", JSON.stringify(updatedResumes))
-  }
+    const updatedResumes = savedResumes.filter((r) => r.id !== id);
+    setSavedResumes(updatedResumes);
+    localStorage.setItem("saved-resumes", JSON.stringify(updatedResumes));
+  };
 
   return (
     <div className="space-y-4">
@@ -157,7 +179,11 @@ export function ResumeManager({
               <Download className="h-4 w-4" />
               {isLoadingFromApi ? "Đang tải..." : "Tải từ Server"}
             </Button>
-            <Button onClick={saveResumeToApi} disabled={isSavingToApi} className="flex items-center gap-2">
+            <Button
+              onClick={saveResumeToApi}
+              disabled={isSavingToApi}
+              className="flex items-center gap-2"
+            >
               <Upload className="h-4 w-4" />
               {isSavingToApi ? "Đang lưu..." : "Lưu lên Server"}
             </Button>
@@ -166,7 +192,10 @@ export function ResumeManager({
           <div className="flex gap-2">
             <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2 bg-transparent">
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2 bg-transparent"
+                >
                   <Save className="h-4 w-4" />
                   Lưu Local
                 </Button>
@@ -186,10 +215,16 @@ export function ResumeManager({
                     />
                   </div>
                   <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setSaveDialogOpen(false)}
+                    >
                       Hủy
                     </Button>
-                    <Button onClick={saveResume} disabled={!resumeName.trim() || isLoading}>
+                    <Button
+                      onClick={saveResume}
+                      disabled={!resumeName.trim() || isLoading}
+                    >
                       {isLoading ? "Đang lưu..." : "Lưu"}
                     </Button>
                   </div>
@@ -202,11 +237,15 @@ export function ResumeManager({
             <div className="text-center py-8 text-muted-foreground">
               <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>Chưa có resume nào được lưu</p>
-              <p className="text-sm">Lưu resume hiện tại để quản lý và tái sử dụng</p>
+              <p className="text-sm">
+                Lưu resume hiện tại để quản lý và tái sử dụng
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
-              <h4 className="font-medium">Resume đã lưu ({savedResumes.length})</h4>
+              <h4 className="font-medium">
+                Resume đã lưu ({savedResumes.length})
+              </h4>
               <div className="space-y-2">
                 {savedResumes.map((resume) => (
                   <div
@@ -223,7 +262,9 @@ export function ResumeManager({
                       <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {new Date(resume.updatedAt).toLocaleDateString("vi-VN")}
+                          {new Date(resume.updatedAt).toLocaleDateString(
+                            "vi-VN"
+                          )}
                         </span>
                       </div>
                     </div>
@@ -254,5 +295,5 @@ export function ResumeManager({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

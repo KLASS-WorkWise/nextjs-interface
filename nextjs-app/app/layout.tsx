@@ -6,7 +6,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import type { Metadata } from "next";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// import ClientChatBubbles from "@/components/ClientChatBubbles";
+import { Toaster } from "sonner";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -38,10 +38,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${plusJakartaSans.className}`}>
         <NextAuthProvider>
           {children}
-          {/* Bong bóng chatbot và social luôn hiện trên mọi trang */}
-          {/* <ClientChatBubbles /> */}
+      
+          
         </NextAuthProvider>
-        <ToastContainer position="top-right" autoClose={4000} />
+         <ToastContainer position="top-right" autoClose={4000} />
+          <Toaster position="top-right" />
       </body>
     </html>
   );
