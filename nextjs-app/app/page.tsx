@@ -6,7 +6,7 @@ import TopRekruterSlider from "@/components/sliders/TopRekruter";
 import BlogSlider from "@/components/sliders/Blog";
 import CategoryTab from "@/components/elements/CategoryTab";
 import Link from "next/link";
-import SocialIcons from "./SocialIcon/SocialIcons";
+// import SocialIcons from "./SocialIcon/SocialIcons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import JobChatBot from "./ChatBotJob/page";
@@ -494,7 +494,7 @@ export default function Home() {
         </section>
       </Layout>
       <JobChatBot isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
-      <SocialIcons isChatOpen={isChatOpen} />
+      {/* <SocialIcons isChatOpen={isChatOpen} /> */}
     </>
   );
 }
