@@ -262,6 +262,7 @@ export default function JobDetails2() {
                               onSuccess={() => toast.success("Applied successfully!")}
                             />
                           )}
+                          
                 <div className="col-lg-4 col-md-12 col-sm-12 col-12 pl-40 pl-lg-15 mt-lg-30">
                   {/* <div className="sidebar-border">
                     <div className="sidebar-heading">
