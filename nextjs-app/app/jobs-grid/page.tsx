@@ -662,105 +662,56 @@ export default function JobGrid() {
                                     />
                                   </div>
 
-                                  <div className="right-info">
-                                    <span
-                                      className="fw-bold"
-                                      style={{
-                                        fontSize: "1.08rem",
-                                        color: "#222",
-                                      }}
-                                    >
-                                      {company?.companyName ||
-                                        job.companyName ||
-                                        "Company"}
-                                    </span>
-                                    <div className="d-flex align-items-center font-xs color-text-paragraph mt-1">
-                                      <i className="fi-rr-marker mr-5" />
-                                      {company?.location ||
-                                        job.location ||
-                                        "Unknown"}
-                                    </div>
+                                <div className="right-info">
+                                  <span className="fw-bold" style={{ fontSize: '1.08rem', color: '#222'}}>
+                                    {company?.companyName || job.companyName || 'Company'}
+                                  </span>
+                                  <div className="d-flex align-items-center font-xs color-text-paragraph mt-1">
+                                    <i className="fi-rr-marker mr-5" />
+                                    { job.location || 'Unknown'}
                                   </div>
                                 </div>
-                                <div className="card-block-info">
-                                  <h6>
-                                    <Link href={`/job-details-2/${job.id}`}>
-                                      <span>{job.title || "No title"}</span>
-                                    </Link>
-                                  </h6>
-                                  <div className="mt-5">
-                                    <span className="card-briefcase">
-                                      {job.jobType || "Fulltime"}
+                              </div>
+                            <div className="card-block-info">
+                              <h6>
+                                <Link href={`/job-details-2/${job.id}`}>
+                                  <span>{job.title || "No title"}</span>
+                                </Link>
+                              </h6>
+                              <div className="mt-5">
+                                <span className="card-briefcase">{job.jobType || "Fulltime"}</span>
+                                <span className="card-time">{job.createdAt ? new Date(job.createdAt).toLocaleDateString() : ""}</span>
+                              </div>
+                              <p
+                                className="font-sm color-text-paragraph mt-15"
+                                style={{
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 1,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'normal',
+                                  maxWidth: '100%',
+                                  marginBottom: 0
+                                }}
+                                title={job.description || "Không có mô tả"}
+                              >
+                                {job.description || "Không có mô tả"}
+                              </p>
+                              <div className="mt-30">
+                                {Array.isArray(job.skills) && job.skills.map((skill: string, idx: number) => (
+                                  <span key={idx} className="btn btn-grey-small mr-5">{skill}</span>
+                                ))}
+                              </div>
+                              <div className="card-2-bottom mt-30">
+                                <div className="row">
+                                  <div className="col-lg-7 col-7">
+                                    <span className="card-text-price" style={{ fontSize: '1rem', color: '#2A6DF5', fontWeight: 700, letterSpacing: '0.5px', lineHeight: 1 }}>
+                                      {job.salaryRange && job.salaryRange.trim() !== "" ? job.salaryRange : (job.salary && job.salary.trim() !== "" ? job.salary : "N/A")}
                                     </span>
-                                    <span className="card-time">
-                                      {job.createdAt
-                                        ? new Date(
-                                            job.createdAt
-                                          ).toLocaleDateString()
-                                        : ""}
-                                    </span>
+                                    <span className="text-muted" style={{ fontSize: '0.85rem', marginLeft: 2 }}>/Tháng</span>
                                   </div>
-                                  <p
-                                    className="font-sm color-text-paragraph mt-15"
-                                    style={{
-                                      display: "-webkit-box",
-                                      WebkitLineClamp: 1,
-                                      WebkitBoxOrient: "vertical",
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      whiteSpace: "normal",
-                                      maxWidth: "100%",
-                                      marginBottom: 0,
-                                    }}
-                                    title={job.description || "Không có mô tả"}
-                                  >
-                                    {job.description || "Không có mô tả"}
-                                  </p>
-                                  <div className="mt-30">
-                                    {Array.isArray(job.skills) &&
-                                      job.skills.map(
-                                        (skill: string, idx: number) => (
-                                          <span
-                                            key={idx}
-                                            className="btn btn-grey-small mr-5"
-                                          >
-                                            {skill}
-                                          </span>
-                                        )
-                                      )}
-                                  </div>
-                                  <div className="card-2-bottom mt-30">
-                                    <div className="row">
-                                      <div className="col-lg-7 col-7">
-                                        <span
-                                          className="card-text-price"
-                                          style={{
-                                            fontSize: "1rem",
-                                            color: "#2A6DF5",
-                                            fontWeight: 700,
-                                            letterSpacing: "0.5px",
-                                            lineHeight: 1,
-                                          }}
-                                        >
-                                          {job.salaryRange &&
-                                          job.salaryRange.trim() !== ""
-                                            ? job.salaryRange
-                                            : job.salary &&
-                                              job.salary.trim() !== ""
-                                            ? job.salary
-                                            : "N/A"}
-                                        </span>
-                                        <span
-                                          className="text-muted"
-                                          style={{
-                                            fontSize: "0.85rem",
-                                            marginLeft: 2,
-                                          }}
-                                        >
-                                          /Tháng
-                                        </span>
-                                      </div>
-                                      <div className="col-lg-5 col-5 text-end">
+                                  <div className="col-lg-5 col-5 text-end">
                                         <button
                                           onClick={() => handleOpenApply(job)}
                                           className="btn btn-apply-now"
