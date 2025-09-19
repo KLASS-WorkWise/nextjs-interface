@@ -6,9 +6,10 @@ import TopRekruterSlider from "@/components/sliders/TopRekruter";
 import BlogSlider from "@/components/sliders/Blog";
 import CategoryTab from "@/components/elements/CategoryTab";
 import Link from "next/link";
-import SocialIcons from "./SocialIcon/SocialIcons";
+// import SocialIcons from "./SocialIcon/SocialIcons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import JobChatBot from "./ChatBotJob/page";
 // import JobChatBot from "./ChatBotJob/page";
 
 export default function Home() {
@@ -48,7 +49,10 @@ export default function Home() {
                       <br className="d-none d-lg-block" />
                       applications every single day
                     </div>
-                    <div className="form-find mt-40 wow animate__animated animate__fadeIn" data-wow-delay=".2s">
+                    <div
+                      className="form-find mt-40 wow animate__animated animate__fadeIn"
+                      data-wow-delay=".2s"
+                    >
                       <form onSubmit={handleSearch}>
                         {/* <div className="box-industry">
                           <select className="form-input mr-10 select-active input-industry">
@@ -65,7 +69,7 @@ export default function Home() {
                           <select
                             className="form-input mr-10 select-active  input-location"
                             value={location}
-                            onChange={e => setLocation(e.target.value)}
+                            onChange={(e) => setLocation(e.target.value)}
                           >
                             <option value="">Location</option>
                             <option value="Hà Nội">Hà Nội</option>
@@ -109,12 +113,14 @@ export default function Home() {
                           type="text"
                           placeholder="Your keyword... "
                           value={keyword}
-                          onChange={e => setKeyword(e.target.value)}
+                          onChange={(e) => setKeyword(e.target.value)}
                         />
-                        <button className="btn btn-default btn-find font-sm">Search</button>
+                        <button className="btn btn-default btn-find font-sm">
+                          Search
+                        </button>
                       </form>
                     </div>
-                    <div
+                    {/* <div
                       className="list-tags-banner mt-60 wow animate__animated animate__fadeInUp"
                       data-wow-delay=".3s"
                     >
@@ -126,7 +132,7 @@ export default function Home() {
                       <Link href="#">PHP,</Link>
                       <Link href="#">Senior,</Link>
                       <Link href="#">Engineer,</Link>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div className="col-xl-4 col-lg-12 d-none d-xl-block col-md-6">
@@ -170,7 +176,7 @@ export default function Home() {
           <div className="section-box wow animate__animated animate__fadeIn">
             <div className="container">
               <div className="text-center">
-                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
+                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp" style={{ color: 'black' }}>
                   Browse by category
                 </h2>
                 <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
@@ -276,7 +282,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className="section-box overflow-visible mt-50 mb-50">
+        {/* <section className="section-box overflow-visible mt-50 mb-50">
           <div className="container">
             <div className="row">
               <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
@@ -344,7 +350,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
         <section className="section-box mt-50">
           <div className="container">
             <div className="text-center">
@@ -642,8 +648,8 @@ export default function Home() {
           </div>
         </section>
       </Layout>
-      {/* <JobChatBot isOpen={isChatOpen} setIsOpen={setIsChatOpen} /> */}
-      <SocialIcons isChatOpen={isChatOpen} />
+      <JobChatBot isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
+      {/* <SocialIcons isChatOpen={isChatOpen} /> */}
     </>
   );
 }

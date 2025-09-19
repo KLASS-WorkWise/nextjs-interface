@@ -18,12 +18,13 @@ import { savedJobService } from "@/features/applicants/services/savedJobService"
 import { Bookmark } from "lucide-react";
 import "@/styles/globals.css";
 
-
 export default function JobGrid() {
   // Map employerId -> company info
-  const [companyInfoMap, setCompanyInfoMap] = useState<{ [key: string]: any }>({});
+  const [companyInfoMap, setCompanyInfoMap] = useState<{ [key: string]: any }>(
+    {}
+  );
   const searchParams = useSearchParams();
-  
+
   useEffect(() => {
     const qLocation = searchParams.get("location") || "";
     const qKeyword = searchParams.get("keyword") || "";
@@ -52,8 +53,7 @@ export default function JobGrid() {
   // Keyword search
   const [keyword, setKeyword] = useState("");
 
-
-  // Lấy dữ liệu Applyjob từ API 
+  // Lấy dữ liệu Applyjob từ API
   const [modalJob, setModalJob] = useState<any | null>(null);
   const [resumes, setResumes] = useState<any[]>([]);
   const router = useRouter();
@@ -76,7 +76,9 @@ export default function JobGrid() {
         setJobs(jobsData);
 
         // 2. Lấy tất cả employerId duy nhất
-        const employerIds = Array.from(new Set(jobsData.map((job: any) => job.employerId).filter(Boolean)));
+        const employerIds = Array.from(
+          new Set(jobsData.map((job: any) => job.employerId).filter(Boolean))
+        );
 
         // 3. Lấy thông tin công ty cho từng employerId
         const companyPromises = employerIds.map(async (employerId) => {
@@ -104,7 +106,11 @@ export default function JobGrid() {
 
   // Helper: loại bỏ dấu tiếng Việt
   function removeVietnameseTones(str: string) {
-    return str.normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+    return str
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
   }
   // Helper: parse lương từ chuỗi
   function parseSalaryRange(s: string): [number, number] | null {
@@ -122,12 +128,17 @@ export default function JobGrid() {
     // Filter category (so sánh gần đúng, không phân biệt dấu/chữ hoa)
     if (!categoryChecked.includes("All")) {
       const jobCat = removeVietnameseTones((job.category || "").toLowerCase());
-      const checked = categoryChecked.some(cat => jobCat.includes(removeVietnameseTones(cat.toLowerCase())));
+      const checked = categoryChecked.some((cat) =>
+        jobCat.includes(removeVietnameseTones(cat.toLowerCase()))
+      );
       if (!checked) return false;
     }
     // Filter salary
     if (!salaryChecked.includes("All")) {
-      const jobSalaryStr = (job.salaryRange || job.salary || "").replace(/[^\d\- ]/g, "");
+      const jobSalaryStr = (job.salaryRange || job.salary || "").replace(
+        /[^\d\- ]/g,
+        ""
+      );
       const jobSalary = parseSalaryRange(jobSalaryStr);
       if (!jobSalary) return false;
       const salaryRanges = [
@@ -135,11 +146,11 @@ export default function JobGrid() {
         { label: "20 - 50 triệu", min: 20, max: 50 },
         { label: "50 - 70 triệu", min: 50, max: 70 },
         { label: "70 - 100 triệu", min: 70, max: 100 },
-        { label: "Trên 100 triệu", min: 100, max: 9999 }
+        { label: "Trên 100 triệu", min: 100, max: 9999 },
       ];
       // Nếu job lương giao với bất kỳ khoảng nào được chọn thì hiện
-      const match = salaryChecked.some(label => {
-        const range = salaryRanges.find(r => r.label === label);
+      const match = salaryChecked.some((label) => {
+        const range = salaryRanges.find((r) => r.label === label);
         if (!range) return false;
         if (label === "Duới 20 triệu") {
           // Chỉ lấy job có max < 20
@@ -152,7 +163,9 @@ export default function JobGrid() {
     // Filter position (tiêu đề chứa từ khóa vị trí được chọn)
     if (!positionChecked.includes("All")) {
       const title = removeVietnameseTones((job.title || "").toLowerCase());
-      const checked = positionChecked.some(pos => title.includes(removeVietnameseTones(pos.toLowerCase())));
+      const checked = positionChecked.some((pos) =>
+        title.includes(removeVietnameseTones(pos.toLowerCase()))
+      );
       if (!checked) return false;
     }
     // Filter job type
@@ -160,21 +173,29 @@ export default function JobGrid() {
       // Ưu tiên job.jobType, fallback sang job.type nếu không có
       const jobTypeRaw = job.jobType || job.type || "";
       const jobType = removeVietnameseTones(jobTypeRaw.toLowerCase());
-      const checked = jobTypeChecked.some(type => jobType.includes(removeVietnameseTones(type.toLowerCase())));
+      const checked = jobTypeChecked.some((type) =>
+        jobType.includes(removeVietnameseTones(type.toLowerCase()))
+      );
       if (!checked) return false;
     }
     // Filter degree
     if (!degreeChecked.includes("All")) {
-      const jobDegree = removeVietnameseTones((job.requiredDegree || "").toLowerCase());
-      const checked = degreeChecked.some(deg => jobDegree.includes(removeVietnameseTones(deg.toLowerCase())));
+      const jobDegree = removeVietnameseTones(
+        (job.requiredDegree || "").toLowerCase()
+      );
+      const checked = degreeChecked.some((deg) =>
+        jobDegree.includes(removeVietnameseTones(deg.toLowerCase()))
+      );
       if (!checked) return false;
     }
     // Filter keyword (tìm gần đúng trên nhiều trường)
     if (keyword.trim() !== "") {
-      const kwArr = removeVietnameseTones(keyword.toLowerCase()).split(/\s|,|\./).filter(Boolean);
+      const kwArr = removeVietnameseTones(keyword.toLowerCase())
+        .split(/\s|,|\./)
+        .filter(Boolean);
       // Phân loại từ khóa số (lương) và từ khóa text
-      const kwNumbers = kwArr.filter(k => /^\d+$/.test(k)).map(Number);
-      const kwTexts = kwArr.filter(k => !/^\d+$/.test(k));
+      const kwNumbers = kwArr.filter((k) => /^\d+$/.test(k)).map(Number);
+      const kwTexts = kwArr.filter((k) => !/^\d+$/.test(k));
       // Ghép các trường text lại để so sánh
       const jobText = [
         job.title,
@@ -186,18 +207,23 @@ export default function JobGrid() {
         job.requiredDegree,
         job.type,
         job.jobType,
-        Array.isArray(job.skills) ? job.skills.join(" ") : ""
-      ].map(x => removeVietnameseTones((x || "").toLowerCase())).join(" ");
+        Array.isArray(job.skills) ? job.skills.join(" ") : "",
+      ]
+        .map((x) => removeVietnameseTones((x || "").toLowerCase()))
+        .join(" ");
       // Nếu có từ khóa text, phải match ít nhất 1 từ
       if (kwTexts.length > 0) {
-        const matchText = kwTexts.some(kw => jobText.includes(kw));
+        const matchText = kwTexts.some((kw) => jobText.includes(kw));
         if (!matchText) return false;
       }
       // Nếu có từ khóa số (lương), chỉ hiện job có lương giao với khoảng nhập
       if (kwNumbers.length > 0) {
         const min = Math.min(...kwNumbers);
         const max = Math.max(...kwNumbers);
-        const jobSalaryStr = (job.salaryRange || job.salary || "").replace(/[^\d\- ]/g, "");
+        const jobSalaryStr = (job.salaryRange || job.salary || "").replace(
+          /[^\d\- ]/g,
+          ""
+        );
         const jobSalary = parseSalaryRange(jobSalaryStr);
         if (!jobSalary) return false;
         // Lấy job có lương giao với khoảng nhập
@@ -207,7 +233,10 @@ export default function JobGrid() {
     return true;
   });
   const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
-  const pagedJobs = filteredJobs.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
+  const pagedJobs = filteredJobs.slice(
+    (currentPage - 1) * jobsPerPage,
+    currentPage * jobsPerPage
+  );
 
   // Đã fetch company cùng lúc với jobs, không cần fetch lại theo pagedJobs
 
@@ -217,10 +246,8 @@ export default function JobGrid() {
     setCurrentPage(1);
   };
 
-
-
   // Xử lý mở  apply job
-    const toggleSaveJob = async (jobId: number) => {
+  const toggleSaveJob = async (jobId: number) => {
     if (!session) {
       toast.error("You need to login to saved job!");
       router.push("/page-signin"); // 👈 redirect sang trang login của bạn
@@ -268,7 +295,7 @@ export default function JobGrid() {
     const fetchResumes = async () => {
       try {
         const res = await applicantService.getMyResumes();
-         setResumes(res.data || []);
+        setResumes(res.data || []);
       } catch (err) {
         console.error("Error fetching resumes:", err);
       }
@@ -301,9 +328,6 @@ export default function JobGrid() {
     console.log("SavedJobs:", savedJobs);
   }, [jobs, savedJobs]);
 
-
-
-
   return (
     <>
       <Layout>
@@ -313,13 +337,23 @@ export default function JobGrid() {
               <div className="banner-hero banner-single banner-single-bg">
                 <div className="block-banner text-center">
                   <h3 className="wow animate__animated animate__fadeInUp">
-                    <span className="color-brand-2">{filteredJobs.length} Jobs</span> Available Now
+                    <span className="color-brand-2">
+                      {filteredJobs.length} Jobs
+                    </span>{" "}
+                    Available Now
                   </h3>
-                  <div className="font-sm color-text-paragraph-2 mt-10 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero repellendus magni, <br className="d-none d-xl-block" />
+                  <div
+                    className="font-sm color-text-paragraph-2 mt-10 wow animate__animated animate__fadeInUp"
+                    data-wow-delay=".1s"
+                  >
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Vero repellendus magni, <br className="d-none d-xl-block" />
                     atque delectus molestias quis?
                   </div>
-                  <div className="form-find text-start mt-40 wow animate__animated animate__fadeInUp" data-wow-delay=".2s">
+                  <div
+                    className="form-find text-start mt-40 wow animate__animated animate__fadeInUp"
+                    data-wow-delay=".2s"
+                  >
                     <form onSubmit={handleSearch}>
                       {/* <div className="box-industry">
                         <select className="form-input mr-10 select-active input-industry">
@@ -334,7 +368,11 @@ export default function JobGrid() {
                         </select>
                       </div> */}
                       <div className="box-industry">
-                        <select className="form-input mr-10 select-active input-location" value={location} onChange={e => setLocation(e.target.value)}>
+                        <select
+                          className="form-input mr-10 select-active input-location"
+                          value={location}
+                          onChange={(e) => setLocation(e.target.value)}
+                        >
                           <option value="">Location</option>
                           <option value="Hà Nội">Hà Nội</option>
                           <option value="Hải Phòng">Hải Phòng</option>
@@ -373,15 +411,11 @@ export default function JobGrid() {
                         </select>
                       </div>
                       <input
-
                         className="form-input input-keysearch mr-10"
-
                         type="text"
-
                         placeholder="Your keyword... "
-
                         value={keyword}
-                        onChange={e => setKeyword(e.target.value)}
+                        onChange={(e) => setKeyword(e.target.value)}
                       />
                       <button className="btn btn-default btn-find font-sm">
                         Search
@@ -401,7 +435,8 @@ export default function JobGrid() {
                       <div className="row">
                         <div className="col-xl-6 col-lg-5">
                           <span className="text-small text-showing">
-                            Showing <strong>10-15 </strong>of <strong>30 </strong>jobs
+                            Showing <strong>10-15 </strong>of{" "}
+                            <strong>30 </strong>jobs
                           </span>
                         </div>
 
@@ -429,9 +464,6 @@ export default function JobGrid() {
                                   </button>
                                 </Link>
                               </div>
-                            
-                              
-                              
                             )}
 
                             <div className="box-border mr-10">
@@ -448,10 +480,15 @@ export default function JobGrid() {
                                   <span>15</span>
                                   <i className="fi-rr-angle-small-down" />
                                 </button>
-                                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownSort">
+                                <ul
+                                  className="dropdown-menu dropdown-menu-light"
+                                  aria-labelledby="dropdownSort"
+                                >
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item active">10</span>
+                                      <span className="dropdown-item active">
+                                        10
+                                      </span>
                                     </Link>
                                   </li>
                                   <li>
@@ -470,24 +507,40 @@ export default function JobGrid() {
                             <div className="box-border">
                               <span className="text-sortby">Sort by:</span>
                               <div className="dropdown dropdown-sort">
-                                <button className="btn dropdown-toggle" id="dropdownSort2" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+                                <button
+                                  className="btn dropdown-toggle"
+                                  id="dropdownSort2"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  data-bs-display="static"
+                                >
                                   <span>Newest Post</span>
                                   <i className="fi-rr-angle-small-down" />
                                 </button>
-                                <ul className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownSort2">
+                                <ul
+                                  className="dropdown-menu dropdown-menu-light"
+                                  aria-labelledby="dropdownSort2"
+                                >
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item active">Newest Post</span>
+                                      <span className="dropdown-item active">
+                                        Newest Post
+                                      </span>
                                     </Link>
                                   </li>
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item">Oldest Post</span>
+                                      <span className="dropdown-item">
+                                        Oldest Post
+                                      </span>
                                     </Link>
                                   </li>
                                   <li>
                                     <Link href="#">
-                                      <span className="dropdown-item">Rating Post</span>
+                                      <span className="dropdown-item">
+                                        Rating Post
+                                      </span>
                                     </Link>
                                   </li>
                                 </ul>
@@ -496,13 +549,19 @@ export default function JobGrid() {
                             <div className="box-view-type">
                               <Link href="/jobs-list">
                                 <span className="view-type">
-                                  <img src="assets/imgs/template/icons/icon-list.svg" alt="jobBox" />
+                                  <img
+                                    src="assets/imgs/template/icons/icon-list.svg"
+                                    alt="jobBox"
+                                  />
                                 </span>
                               </Link>
 
                               <Link href="/jobs-grid">
                                 <span className="view-type">
-                                  <img src="assets/imgs/template/icons/icon-grid-hover.svg" alt="jobBox" />
+                                  <img
+                                    src="assets/imgs/template/icons/icon-grid-hover.svg"
+                                    alt="jobBox"
+                                  />
                                 </span>
                               </Link>
                             </div>
@@ -512,48 +571,96 @@ export default function JobGrid() {
                     </div>
                     <div className="row">
                       {/* Render động danh sách job từ API cho candidate */}
-                      {jobsLoading && <div className="col-12 text-center">Đang tải dữ liệu...</div>}
-                      {jobsError && <div className="col-12 text-center text-danger">{jobsError}</div>}
-                      {!jobsLoading && !jobsError && jobs.length === 0 && <div className="col-12 text-center">Không có công việc nào</div>}
-                      {!jobsLoading && !jobsError && jobs.length > 0 && pagedJobs.map((job: any) => {
-                        const isSaved = savedJobs.some((j) => j.jobId === job.id);
-                        const company = job.employerId ? companyInfoMap[job.employerId] : null;
-                        return (
-                          <div key={job.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                            <div className="card-grid-2 hover-up">
-                              <div className="card-grid-2-image-left">
-                                <span className="flash" style={{ marginRight: "20px" }}>
-                                  <button
-                                    onClick={() => toggleSaveJob(job.id)}
-                                    disabled={savingJobId === job.id}
-                                    className="saved-job-button"
-                                    style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0 }}
+                      {jobsLoading && (
+                        <div className="col-12 text-center">
+                          Đang tải dữ liệu...
+                        </div>
+                      )}
+                      {jobsError && (
+                        <div className="col-12 text-center text-danger">
+                          {jobsError}
+                        </div>
+                      )}
+                      {!jobsLoading && !jobsError && jobs.length === 0 && (
+                        <div className="col-12 text-center">
+                          Không có công việc nào
+                        </div>
+                      )}
+                      {!jobsLoading &&
+                        !jobsError &&
+                        jobs.length > 0 &&
+                        pagedJobs.map((job: any) => {
+                          const isSaved = savedJobs.some(
+                            (j) => j.jobId === job.id
+                          );
+                          const company = job.employerId
+                            ? companyInfoMap[job.employerId]
+                            : null;
+                          return (
+                            <div
+                              key={job.id}
+                              className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12"
+                            >
+                              <div className="card-grid-2 hover-up">
+                                <div className="card-grid-2-image-left">
+                                  <span
+                                    className="flash"
+                                    style={{ marginRight: "20px" }}
                                   >
-                                    {savingJobId === job.id ? (
-                                      <span className="loading-dots">...</span>
-                                    ) : (
-                                      <Bookmark
-                                        size={22}
-                                        color={isSaved ? "red" : "gray"}
-                                        fill={isSaved ? "red" : "none"}
-                                      />
-                                    )}
-                                  </button>
-                                </span>
-                                <div className="image-box" style={{ width: 48, height: 48,borderRadius: 8, objectFit: 'cover' }}>
-                                  <img
-                                    src={company?.logoUrl || job.companyLogo || "/assets/imgs/brands/brand-1.png"}
-                                    alt={company?.companyName || job.companyName || "Company"}
+                                    <button
+                                      onClick={() => toggleSaveJob(job.id)}
+                                      disabled={savingJobId === job.id}
+                                      className="saved-job-button"
+                                      style={{
+                                        background: "transparent",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        padding: 0,
+                                      }}
+                                    >
+                                      {savingJobId === job.id ? (
+                                        <span className="loading-dots">
+                                          ...
+                                        </span>
+                                      ) : (
+                                        <Bookmark
+                                          size={22}
+                                          color={isSaved ? "red" : "gray"}
+                                          fill={isSaved ? "red" : "none"}
+                                        />
+                                      )}
+                                    </button>
+                                  </span>
+                                  <div
+                                    className="image-box"
                                     style={{
-                                      maxWidth: "100%",
-                                      maxHeight: "100%",
+                                      width: 48,
+                                      height: 48,
                                       borderRadius: 8,
-                                      objectFit: "contain", // hoặc "scale-down" để scale xuống khi quá lớn
-                                      display: "block",
-                                      margin: "auto"
+                                      objectFit: "cover",
                                     }}
-                                  />
-                                </div>
+                                  >
+                                    <img
+                                      src={
+                                        company?.logoUrl ||
+                                        job.companyLogo ||
+                                        "/assets/imgs/brands/brand-1.png"
+                                      }
+                                      alt={
+                                        company?.companyName ||
+                                        job.companyName ||
+                                        "Company"
+                                      }
+                                      style={{
+                                        maxWidth: "100%",
+                                        maxHeight: "100%",
+                                        borderRadius: 8,
+                                        objectFit: "contain", // hoặc "scale-down" để scale xuống khi quá lớn
+                                        display: "block",
+                                        margin: "auto",
+                                      }}
+                                    />
+                                  </div>
 
                                 <div className="right-info">
                                   <span className="fw-bold" style={{ fontSize: '1.08rem', color: '#222'}}>
@@ -609,17 +716,17 @@ export default function JobGrid() {
                                           onClick={() => handleOpenApply(job)}
                                           className="btn btn-apply-now"
                                         >
-                                          Apply 
+                                          Apply
                                         </button>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                        );
+                          );
                         })}
-                    </div> 
+                    </div>
 
                     {/* Modal ApplyJob */}
                     {modalJob && (
@@ -630,23 +737,33 @@ export default function JobGrid() {
                         onSuccess={() => toast.success("Applied successfully!")}
                       />
                     )}
-
                   </div>
                   <div className="paginations">
                     <ul className="pager">
                       <li>
                         <a
-                          className={`pager-prev${currentPage === 1 ? ' disabled' : ''}`}
+                          className={`pager-prev${
+                            currentPage === 1 ? " disabled" : ""
+                          }`}
                           href="#"
-                          onClick={e => { e.preventDefault(); if (currentPage > 1) setCurrentPage(currentPage - 1); }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (currentPage > 1)
+                              setCurrentPage(currentPage - 1);
+                          }}
                         />
                       </li>
                       {Array.from({ length: totalPages }, (_, i) => (
                         <li key={i + 1}>
                           <a
                             href="#"
-                            className={`pager-number${currentPage === i + 1 ? ' active' : ''}`}
-                            onClick={e => { e.preventDefault(); setCurrentPage(i + 1); }}
+                            className={`pager-number${
+                              currentPage === i + 1 ? " active" : ""
+                            }`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setCurrentPage(i + 1);
+                            }}
                           >
                             {i + 1}
                           </a>
@@ -654,9 +771,15 @@ export default function JobGrid() {
                       ))}
                       <li>
                         <a
-                          className={`pager-next${currentPage === totalPages ? ' disabled' : ''}`}
+                          className={`pager-next${
+                            currentPage === totalPages ? " disabled" : ""
+                          }`}
                           href="#"
-                          onClick={e => { e.preventDefault(); if (currentPage < totalPages) setCurrentPage(currentPage + 1); }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (currentPage < totalPages)
+                              setCurrentPage(currentPage + 1);
+                          }}
                         />
                       </li>
                     </ul>
@@ -675,7 +798,12 @@ export default function JobGrid() {
                       </div>
                       <div className="filter-block mb-30">
                         <div className="form-group select-style select-style-icon">
-                          <input className="form-control form-icons select-active" value={location || "Location"} disabled style={{ background: '#f7f7f7', color: '#222' }} />
+                          <input
+                            className="form-control form-icons select-active"
+                            value={location || "Location"}
+                            disabled
+                            style={{ background: "#f7f7f7", color: "#222" }}
+                          />
                           <i className="fi-rr-marker" />
                         </div>
                       </div>
@@ -692,7 +820,7 @@ export default function JobGrid() {
                               "Marketing",
                               "Thiết kế đồ họa",
                               "Truyền thông đa phương tiện",
-                              "Nhân viên kinh doanh"
+                              "Nhân viên kinh doanh",
                             ].map((cat) => (
                               <li key={cat}>
                                 <label className="cb-container">
@@ -703,10 +831,19 @@ export default function JobGrid() {
                                       if (cat === "All") {
                                         setCategoryChecked(["All"]);
                                       } else {
-                                        let newChecked = categoryChecked.includes(cat)
-                                          ? categoryChecked.filter((c) => c !== cat)
-                                          : [...categoryChecked.filter((c) => c !== "All"), cat];
-                                        if (newChecked.length === 0) newChecked = ["All"];
+                                        let newChecked =
+                                          categoryChecked.includes(cat)
+                                            ? categoryChecked.filter(
+                                                (c) => c !== cat
+                                              )
+                                            : [
+                                                ...categoryChecked.filter(
+                                                  (c) => c !== "All"
+                                                ),
+                                                cat,
+                                              ];
+                                        if (newChecked.length === 0)
+                                          newChecked = ["All"];
                                         setCategoryChecked(newChecked);
                                       }
                                     }}
@@ -729,8 +866,8 @@ export default function JobGrid() {
                               "20 - 50 triệu",
                               "50 - 70 triệu",
                               "70 - 100 triệu",
-                              "Trên 100 triệu"
-                            ].map(label => (
+                              "Trên 100 triệu",
+                            ].map((label) => (
                               <li key={label}>
                                 <label className="cb-container">
                                   <input
@@ -740,10 +877,20 @@ export default function JobGrid() {
                                       if (label === "All") {
                                         setSalaryChecked(["All"]);
                                       } else {
-                                        let newChecked = salaryChecked.includes(label)
-                                          ? salaryChecked.filter(l => l !== label)
-                                          : [...salaryChecked.filter(l => l !== "All"), label];
-                                        if (newChecked.length === 0) newChecked = ["All"];
+                                        let newChecked = salaryChecked.includes(
+                                          label
+                                        )
+                                          ? salaryChecked.filter(
+                                              (l) => l !== label
+                                            )
+                                          : [
+                                              ...salaryChecked.filter(
+                                                (l) => l !== "All"
+                                              ),
+                                              label,
+                                            ];
+                                        if (newChecked.length === 0)
+                                          newChecked = ["All"];
                                         setSalaryChecked(newChecked);
                                       }
                                     }}
@@ -766,8 +913,8 @@ export default function JobGrid() {
                               "Middle",
                               "Junior",
                               "Fresher",
-                              "Intern"
-                            ].map(pos => (
+                              "Intern",
+                            ].map((pos) => (
                               <li key={pos}>
                                 <label className="cb-container">
                                   <input
@@ -777,10 +924,19 @@ export default function JobGrid() {
                                       if (pos === "All") {
                                         setPositionChecked(["All"]);
                                       } else {
-                                        let newChecked = positionChecked.includes(pos)
-                                          ? positionChecked.filter(p => p !== pos)
-                                          : [...positionChecked.filter(p => p !== "All"), pos];
-                                        if (newChecked.length === 0) newChecked = ["All"];
+                                        let newChecked =
+                                          positionChecked.includes(pos)
+                                            ? positionChecked.filter(
+                                                (p) => p !== pos
+                                              )
+                                            : [
+                                                ...positionChecked.filter(
+                                                  (p) => p !== "All"
+                                                ),
+                                                pos,
+                                              ];
+                                        if (newChecked.length === 0)
+                                          newChecked = ["All"];
                                         setPositionChecked(newChecked);
                                       }
                                     }}
@@ -805,8 +961,8 @@ export default function JobGrid() {
                               "Cao đẳng",
                               "Trung cấp",
                               "THPT",
-                              "Chứng chỉ nghề"
-                            ].map(deg => (
+                              "Chứng chỉ nghề",
+                            ].map((deg) => (
                               <li key={deg}>
                                 <label className="cb-container">
                                   <input
@@ -816,10 +972,20 @@ export default function JobGrid() {
                                       if (deg === "All") {
                                         setDegreeChecked(["All"]);
                                       } else {
-                                        let newChecked = degreeChecked.includes(deg)
-                                          ? degreeChecked.filter(d => d !== deg)
-                                          : [...degreeChecked.filter(d => d !== "All"), deg];
-                                        if (newChecked.length === 0) newChecked = ["All"];
+                                        let newChecked = degreeChecked.includes(
+                                          deg
+                                        )
+                                          ? degreeChecked.filter(
+                                              (d) => d !== deg
+                                            )
+                                          : [
+                                              ...degreeChecked.filter(
+                                                (d) => d !== "All"
+                                              ),
+                                              deg,
+                                            ];
+                                        if (newChecked.length === 0)
+                                          newChecked = ["All"];
                                         setDegreeChecked(newChecked);
                                       }
                                     }}
@@ -842,8 +1008,8 @@ export default function JobGrid() {
                               "Part-Time",
                               "Contract",
                               "Remote",
-                              "Onsite"
-                            ].map(type => (
+                              "Onsite",
+                            ].map((type) => (
                               <li key={type}>
                                 <label className="cb-container">
                                   <input
@@ -853,10 +1019,19 @@ export default function JobGrid() {
                                       if (type === "All") {
                                         setJobTypeChecked(["All"]);
                                       } else {
-                                        let newChecked = jobTypeChecked.includes(type)
-                                          ? jobTypeChecked.filter(t => t !== type)
-                                          : [...jobTypeChecked.filter(t => t !== "All"), type];
-                                        if (newChecked.length === 0) newChecked = ["All"];
+                                        let newChecked =
+                                          jobTypeChecked.includes(type)
+                                            ? jobTypeChecked.filter(
+                                                (t) => t !== type
+                                              )
+                                            : [
+                                                ...jobTypeChecked.filter(
+                                                  (t) => t !== "All"
+                                                ),
+                                                type,
+                                              ];
+                                        if (newChecked.length === 0)
+                                          newChecked = ["All"];
                                         setJobTypeChecked(newChecked);
                                       }
                                     }}
@@ -875,7 +1050,7 @@ export default function JobGrid() {
               </div>
             </div>
           </section>
-           {modalJob && (
+          {modalJob && (
             <ApplyJob
               job={modalJob}
               resumes={resumes} // 👈 truyền resumes vào
@@ -886,8 +1061,12 @@ export default function JobGrid() {
           <section className="section-box mt-50 mb-50">
             <div className="container">
               <div className="text-start">
-                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">News and Blog</h2>
-                <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">Get the latest news, updates and tips</p>
+                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
+                  News and Blog
+                </h2>
+                <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
+                  Get the latest news, updates and tips
+                </p>
               </div>
             </div>
             <div className="container">
@@ -897,7 +1076,9 @@ export default function JobGrid() {
                 </div>
                 <div className="text-center">
                   <Link href="blog-grid">
-                    <span className="btn btn-brand-1 btn-icon-load mt--30 hover-up">Load More Posts</span>
+                    <span className="btn btn-brand-1 btn-icon-load mt--30 hover-up">
+                      Load More Posts
+                    </span>
                   </Link>
                 </div>
               </div>
@@ -908,7 +1089,10 @@ export default function JobGrid() {
               <div className="box-newsletter">
                 <div className="row">
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img src="assets/imgs/template/newsletter-left.png" alt="joxBox" />
+                    <img
+                      src="assets/imgs/template/newsletter-left.png"
+                      alt="joxBox"
+                    />
                   </div>
                   <div className="col-lg-12 col-xl-6 col-12">
                     <h2 className="text-md-newsletter text-center">
@@ -917,13 +1101,22 @@ export default function JobGrid() {
                     </h2>
                     <div className="box-form-newsletter mt-40">
                       <form className="form-newsletter">
-                        <input className="input-newsletter" type="text" placeholder="Enter your email here" />
-                        <button className="btn btn-default font-heading icon-send-letter">Subscribe</button>
+                        <input
+                          className="input-newsletter"
+                          type="text"
+                          placeholder="Enter your email here"
+                        />
+                        <button className="btn btn-default font-heading icon-send-letter">
+                          Subscribe
+                        </button>
                       </form>
                     </div>
                   </div>
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img src="assets/imgs/template/newsletter-right.png" alt="joxBox" />
+                    <img
+                      src="assets/imgs/template/newsletter-right.png"
+                      alt="joxBox"
+                    />
                   </div>
                 </div>
               </div>
