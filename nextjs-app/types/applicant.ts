@@ -11,6 +11,7 @@ export interface Applicant {
   description_company: string | null;
   companyName: string | null;
   logoUrl: string | null;
+  salaryRange: string | null;
   fullName: string;
   location_company: string | null;
    // ✅ thêm field backend trả về
