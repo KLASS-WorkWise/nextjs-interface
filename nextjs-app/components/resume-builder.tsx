@@ -46,13 +46,15 @@ import { mapFormToApi, resumeApi } from "@/lib/api";
 export interface ResumeData {
   id: number;
   template?: string;
+  resumeLink?: string;
   personalInfo: {
     fullName: string;
     email: string;
     phone: string;
     jobTitle: string; // Changed from address to jobTitle
     summary: string;
-    profileImage?: string;
+    // profileImage?: string;
+    profilePicture?:string
   };
   experience: Array<{
     id: string;

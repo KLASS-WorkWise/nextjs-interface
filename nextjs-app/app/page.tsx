@@ -6,9 +6,10 @@ import TopRekruterSlider from "@/components/sliders/TopRekruter";
 import BlogSlider from "@/components/sliders/Blog";
 import CategoryTab from "@/components/elements/CategoryTab";
 import Link from "next/link";
-import SocialIcons from "./SocialIcon/SocialIcons";
+// import SocialIcons from "./SocialIcon/SocialIcons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import JobChatBot from "./ChatBotJob/page";
 // import JobChatBot from "./ChatBotJob/page";
 
 export default function Home() {
@@ -175,7 +176,7 @@ export default function Home() {
           <div className="section-box wow animate__animated animate__fadeIn">
             <div className="container">
               <div className="text-center">
-                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
+                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp" style={{ color: 'black' }}>
                   Browse by category
                 </h2>
                 <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
@@ -647,8 +648,8 @@ export default function Home() {
           </div>
         </section>
       </Layout>
-      {/* <JobChatBot isOpen={isChatOpen} setIsOpen={setIsChatOpen} /> */}
-      <SocialIcons isChatOpen={isChatOpen} />
+      <JobChatBot isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
+      {/* <SocialIcons isChatOpen={isChatOpen} /> */}
     </>
   );
 }
