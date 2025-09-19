@@ -167,7 +167,7 @@ export function CVDashboard() {
     await loadResumes(); // Gọi lại API để lấy danh sách mới nhất
     const source = searchParams.get("source");
     if (source === "candidate-profile") {
-      router.push("/candidate-profile?tab=profile");
+      router.push(`/candidate-profile?tab=profile&cv_saved=true&resume_id=${newResume.id}`);
       return;
     }
     setCurrentView("list");
