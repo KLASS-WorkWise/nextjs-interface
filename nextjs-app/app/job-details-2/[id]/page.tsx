@@ -10,12 +10,15 @@ import FeaturedSlider from "@/components/sliders/Featured";
 import ApplyJob from "@/features/applicants/components/ApplyJob";
 import { applicantService } from "@/features/applicants/services/applicant.service";
 import { toast } from "react-toastify";
-import { useSession } from "next-auth/react";
+
 
 export default function JobDetails2() {
   const { id } = useParams();
   const [job, setJob] = useState<any>(null);
   const [company, setCompany] = useState<any>(null);
+  const [modalJob, setModalJob] = useState<any>(null); // 👈 Fix: declare modalJob state
+  const [resumes, setResumes] = useState<any[]>([]); // 👈 Optional: declare resumes if needed
+
   useEffect(() => {
     if (!id) return;
     fetch(`http://localhost:8080/api/job-postings/${id}`)
@@ -112,15 +115,13 @@ export default function JobDetails2() {
                               {job.jobType && <span className="card-briefcase">{job.jobType}</span>}
                               {job.createdAt && <span className="card-time">{new Date(job.createdAt).toLocaleDateString()}</span>}
                             </div>
-                          </div>
-                          <div className="col-lg-4 col-md-12 text-lg-end">
-                           
                               <button
-                                          onClick={() => handleOpenApply(job)}
-                                          className="btn-apply"
-                                        >
-                                          Apply 
-                                        </button>
+                                onClick={() => setModalJob(job)} // 👈 Fix: open modal by setting modalJob
+                                className="btn-apply"
+                              >
+                                Apply 
+                              </button>
+                              
                            
                           </div>
                         </div>

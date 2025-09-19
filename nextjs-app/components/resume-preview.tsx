@@ -44,19 +44,21 @@ export function ResumePreview({
     try {
       const dataWithTemplate = { ...data, template: template } as any;
       const apiData = mapFormToApi(dataWithTemplate);
+      let savedResume;
       if (data.id) {
-        await resumeApi.updateMyResume(data.id, apiData);
+        savedResume = await resumeApi.updateMyResume(data.id, apiData);
       } else {
-        await resumeApi.saveMyResume(apiData);
+        savedResume = await resumeApi.saveMyResume(apiData);
       }
+
+      const resumeId = savedResume?.id ?? savedResume?.data?.id;
 
       toast({
         title: "Lưu CV thành công!",
         description: "CV của bạn đã được lưu lên server.",
       });
-
       if (onSave) {
-        onSave(dataWithTemplate as any);
+        onSave({ ...dataWithTemplate, id: resumeId } as ResumeData);
       }
     } catch (error: any) {
       console.error("Error saving CV:", error);

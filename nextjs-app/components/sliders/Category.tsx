@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+
 const data = [
   {
     icon: "marketing.svg",

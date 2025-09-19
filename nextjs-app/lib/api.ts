@@ -30,6 +30,7 @@ export interface ApiResumeData {
   phone: string;
   profilePicture?: string;
   summary: string;
+  resumeLink?: string;
   jobTitle: string;
   template: string;
   educations: Array<{
@@ -148,6 +149,7 @@ export function mapApiToForm(apiData: ApiResumeData & { id?: number }): any {
     })),
     skills: apiData.skillsResumes,
     template: apiData.template,
+    resumeLink: apiData.resumeLink,
   };
 }
 
@@ -173,6 +175,11 @@ export const resumeApi = {
     });
     return response.data;
   },
+
+  getResumeByLink: async (resumeLink: string): Promise<ApiResumeData> => {
+  const response = await api.get(`/api/resumes/public/${resumeLink}`);
+  return response.data;
+},
 
   saveMyResume: async (data: ApiResumeData): Promise<any> => {
     const session = await getSession();
