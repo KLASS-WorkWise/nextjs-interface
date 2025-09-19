@@ -18,6 +18,7 @@ interface CVCardProps {
 
 export function CVCard({ resume, onEdit, onDelete, onPreview }: CVCardProps) {
   const [download, setDownload] = useState(false);
+  console.log("Resume in CVCard:", resume);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("vi-VN", {
@@ -50,13 +51,22 @@ export function CVCard({ resume, onEdit, onDelete, onPreview }: CVCardProps) {
         </div>
         <div className={styles.overlay}>
           <div className={styles.actions}>
-            {/* xem cv */}
+            {/* xem cv 1 */}
             <button
               className={styles.editButton}
               onClick={onPreview}
               title="Xem"
             >
               <Eye size={20} />
+            </button>
+
+            {/* xem cv 2 */}
+            <button
+              className={styles.editButton}
+              onClick={() => window.open(`/cv/preview/${resume.resumeLink}`, "_blank")}
+              title="Xem"
+            >
+              <Eye size={10} />
             </button>
             {/* chỉnh sửa */}
             <button

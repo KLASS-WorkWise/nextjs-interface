@@ -10,14 +10,43 @@ import { useRouter, useSearchParams } from "next/navigation";
 import "../../styles/CandidateProfile.css";
 import SavedJobsList from "@/features/applicants/components/SavedJobsList";
 import { CVDashboard } from "@/components/cv-dashboard";
+import { CVSuccessModal } from "@/components/jobRecommend/cv-success-modal";
+import type { ResumeData } from "@/components/resume-builder";
 
 export default function CandidateProfile() {
   const { data: session } = useSession();
+  const [resume, setResume] = useState<ResumeData | null>(null);
   const [avatarSrc, setAvatarSrc] = useState<string>(
     "/assets/imgs/avatar/logoLogin.jpg"
   );
   const router = useRouter();
   const searchParams = useSearchParams();
+  const resumeId = searchParams.get("resume_id");
+
+  // Modal hiển thị sau khi lưu CV
+  const [showModal, setShowModal] = useState(false);
+  // Lấy resume từ URL nếu có
+  useEffect(() => {
+    if (!resumeId) return;
+
+    const fetchResume = async () => {
+      try {
+        const res = await fetch(`http://localhost:8080/api/resumes/${resumeId}`);
+        const data = await res.json();
+        setResume(data);
+      } catch (err) {
+        console.error("Failed to fetch resume", err);
+      }
+    };
+
+    fetchResume();
+  }, [resumeId]);
+
+  useEffect(() => {
+    if (searchParams.get("cv_saved") === "true") {
+      setShowModal(true);
+    }
+  }, [searchParams]);
 
   // Tabs cấu hình
   const tabs = [
@@ -90,6 +119,16 @@ export default function CandidateProfile() {
   return (
     <>
       <Layout>
+
+         {/* Modal hiển thị khi cv_saved=true */}
+        <CVSuccessModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          resumeId={resumeId}
+          resume={resume}
+        />
+
+
         <div>
           <section className="section-box-2">
             <div className="container">
