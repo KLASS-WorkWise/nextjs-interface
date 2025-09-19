@@ -561,7 +561,7 @@ export default function JobGrid() {
                                   </span>
                                   <div className="d-flex align-items-center font-xs color-text-paragraph mt-1">
                                     <i className="fi-rr-marker mr-5" />
-                                    {company?.location || job.location || 'Unknown'}
+                                    { job.location || 'Unknown'}
                                   </div>
                                 </div>
                               </div>
