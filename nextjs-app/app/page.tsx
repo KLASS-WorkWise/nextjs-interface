@@ -16,12 +16,14 @@ export default function Home() {
   const router = useRouter();
   const [location, setLocation] = useState("");
   const [keyword, setKeyword] = useState("");
+  const [salary, setSalary] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     if (location) params.set("location", location);
     if (keyword) params.set("keyword", keyword);
+    if (salary) params.set("salary", salary);
     router.push(`/jobs-grid?${params.toString()}`);
   };
   return (
@@ -106,6 +108,21 @@ export default function Home() {
                             <option value="Thanh Hóa">Thanh Hóa</option>
                             <option value="Tuyên Quang">Tuyên Quang</option>
                             <option value="Vĩnh Long">Vĩnh Long</option>
+                          </select>
+                        </div>
+                        {/* Salary dropdown (labels match jobs-grid checkbox labels) */}
+                        <div className="box-industry">
+                          <select
+                            className="form-input mr-10 select-active input-location"
+                            value={salary}
+                            onChange={(e) => setSalary(e.target.value)}
+                          >
+                            <option value="">Salary</option>
+                            <option value="Duới 20 triệu">Duới 20 triệu</option>
+                            <option value="20 - 50 triệu">20 - 50 triệu</option>
+                            <option value="50 - 70 triệu">50 - 70 triệu</option>
+                            <option value="70 - 100 triệu">70 - 100 triệu</option>
+                            <option value="Trên 100 triệu">Trên 100 triệu</option>
                           </select>
                         </div>
                         <input
