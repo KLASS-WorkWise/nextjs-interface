@@ -26,10 +26,7 @@ export default function JobDetails2() {
       .then((data) => setJob(data))
       .catch(() => setJob(null));
   }, [id]);
-<<<<<<< HEAD
 // lấy thông tin bài đăng
-=======
->>>>>>> d5dbe4d9f30c7a3723c9da0f3ebde30b6ffa77f4
 
   const [active, setActive] = useState(1);
   
@@ -80,12 +77,11 @@ export default function JobDetails2() {
         const diff = Date.now() - date.getTime();
         const minutes = Math.floor(diff / 60000);
         if (minutes < 60) return `${minutes} mins ago`;
-        const hours = Math.floor(minutes / 60);
+const hours = Math.floor(minutes / 60);
         if (hours < 24) return `${hours} hrs ago`;
         // show readable date for older posts
         return date.toLocaleDateString();
       };
-<<<<<<< HEAD
 
   useEffect(() => {
     if (!job?.employerId) return;
@@ -98,8 +94,6 @@ export default function JobDetails2() {
       }
     })();
   }, [job?.employerId]);
-=======
->>>>>>> d5dbe4d9f30c7a3723c9da0f3ebde30b6ffa77f4
   return (
     <>
       <Layout>
@@ -143,7 +137,7 @@ export default function JobDetails2() {
                                 </span>
                                 <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Title</span>
                                 <span style={{fontWeight:600, marginLeft: 8}}>{job.title}</span>
-                              </div>
+</div>
                             )}
                             {job.location && (
                               <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
@@ -177,7 +171,7 @@ export default function JobDetails2() {
                             )}
                             {job.category && (
                               <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
-                                <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
+<span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
                                   {/* Category icon */}
                                   <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" stroke="#8a94a6" strokeWidth="1.5"/><path d="M16 3v4M8 3v4" stroke="#8a94a6" strokeWidth="1.5" strokeLinecap="round"/></svg>
                                 </span>
@@ -209,7 +203,7 @@ export default function JobDetails2() {
                               <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
                                 <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
                                   {/* Degree icon */}
-                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 3L2 9l10 6 10-6-10-6z" stroke="#8a94a6" strokeWidth="1.5"/><path d="M2 17l10 6 10-6" stroke="#8a94a6" strokeWidth="1.5"/></svg>
+<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M12 3L2 9l10 6 10-6-10-6z" stroke="#8a94a6" strokeWidth="1.5"/><path d="M2 17l10 6 10-6" stroke="#8a94a6" strokeWidth="1.5"/></svg>
                                 </span>
                                 <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Required Degree</span>
                                 <span style={{fontWeight:600, marginLeft: 8}}>{job.requiredDegree}</span>
@@ -235,15 +229,12 @@ export default function JobDetails2() {
                                 <span style={{fontWeight:600, marginLeft: 8}}>{new Date(job.endAt).toLocaleDateString()}</span>
                               </div>
                             )}
-<<<<<<< HEAD
             
-=======
->>>>>>> d5dbe4d9f30c7a3723c9da0f3ebde30b6ffa77f4
                             {job.employer && job.employer.name && (
                               <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
                                 <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
                                   {/* Employer icon */}
-                                  <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" stroke="#8a94a6" strokeWidth="1.5"/><circle cx="12" cy="12" r="3" stroke="#8a94a6" strokeWidth="1.5"/></svg>
+<svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" stroke="#8a94a6" strokeWidth="1.5"/><circle cx="12" cy="12" r="3" stroke="#8a94a6" strokeWidth="1.5"/></svg>
                                 </span>
                                 <span style={{color:'#8a94a6', minWidth: 110, marginLeft: 8}}>Employer</span>
                                 <span style={{fontWeight:600, marginLeft: 8}}>{job.employer.name}</span>
@@ -291,7 +282,7 @@ export default function JobDetails2() {
                     </div>
                     <div className="sidebar-list-job">
                       <div className="box-map">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2970.3150609575905!2d-87.6235655!3d41.886080899999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x880e2ca8b34afe61%3A0x6caeb5f721ca846!2s205%20N%20Michigan%20Ave%20Suit%20810%2C%20Chicago%2C%20IL%2060601%2C%20Hoa%20K%E1%BB%B3!5e0!3m2!1svi!2s!4v1658551322537!5m2!1svi!2s" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2970.…Hoa%20K%E1%BB%B3!5e0!3m2!1svi!2s!4v1658551322537!5m2!1svi!2s" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
                       </div>
                       <ul className="ul-disc">
                         <li>205 North Michigan Avenue, Suite 810 Chicago, 60601, USA</li>
@@ -337,7 +328,7 @@ export default function JobDetails2() {
                         ) : (
                           <span className="sidebar-company">{company?.companyName || "Company"}</span>
                         )}
-                        <span className="card-location">{company?.location || company?.address || "Unknown"}</span>
+<span className="card-location">{company?.location || company?.address || "Unknown"}</span>
                         {company?.openJobs && (
                           <Link href="#">
                             <span className="link-underline mt-15">{company.openJobs} Open Jobs</span>
@@ -388,7 +379,7 @@ export default function JobDetails2() {
                               .slice(0, 9)
                               .map((j: any) => {
                                 const createdDate = parseToDate(j.createdAt);
-                                  const timeText = createdDate ? formatCreatedAt(createdDate) : '';
+const timeText = createdDate ? formatCreatedAt(createdDate) : '';
                                 return (
                                   <li key={j.id} style={{ marginBottom: 10 }}>
                                     <div
@@ -397,7 +388,6 @@ export default function JobDetails2() {
                                     >
                                       <div className="image" style={{ width: 44, flex: '0 0 44px' }}>
                                         <Link href={`/job-details-2/${j.id}`}>
-<<<<<<< HEAD
                                           <span
                                             style={{
                                               display: 'inline-block',
@@ -416,13 +406,6 @@ export default function JobDetails2() {
                                                 height: '100%',
                                                 objectFit: 'contain', // co ảnh lại vừa khung, không crop
                                               }}
-=======
-                                          <span>
-                                            <img
-                                              src={j.companyLogo || '/assets/imgs/brands/brand-8.png'}
-                                              alt={j.companyName || 'jobBox'}
-                                              style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover' }}
->>>>>>> d5dbe4d9f30c7a3723c9da0f3ebde30b6ffa77f4
                                             />
                                           </span>
                                         </Link>
@@ -436,7 +419,7 @@ export default function JobDetails2() {
                                           </h5>
                                           <div className="mt-0" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                             <span className="card-briefcase" style={{ fontSize: '0.82rem' }}>{j.jobType || 'Fulltime'}</span>
-                                            <span className="card-time" style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+<span className="card-time" style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
                                               <span>{timeText}</span>
                                             </span>
                                           </div>
@@ -500,8 +483,7 @@ export default function JobDetails2() {
                       <Link href="/jobs-grid">
                         <span className="btn btn-grey-small bg-14 mb-10 mr-5">Finance</span>
                       </Link>
-
-                      <Link href="/jobs-grid">
+<Link href="/jobs-grid">
                         <span className="btn btn-grey-small bg-14 mb-10 mr-5">Manager</span>
                       </Link>
 

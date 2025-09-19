@@ -21,6 +21,7 @@ export const useApplicants = (pageSize: number, page: number) => {
         const apiRes: PaginatedResponse<Applicant> = res.data;
 
         setApplications(apiRes.data ?? []);
+        console.log("apiRes.totalPages", apiRes.data);
         setTotalPages(apiRes.totalPages ?? 1);
       } catch (error) {
         console.error("Error fetching applicants:", error);

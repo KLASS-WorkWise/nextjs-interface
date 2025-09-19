@@ -205,16 +205,16 @@ export default function CandidateProfile() {
                       {/* Apply */}
                       {activeTab === "apply" && (
                         <div className="tab-pane show active">
-                          <h3 className="mt-0 color-brand-1 mb-50">My Apply</h3>
+                          {/* <h3 className="mt-0 color-brand-1 mb-50">My Apply</h3> */}
                           <ApplicantsTable />
                         </div>
                       )}
                       {/* Saved Jobs */}
                       {activeTab === "saved" && (
                         <div className="tab-pane fade show active">
-                          <h3 className="mt-0 color-brand-1 mb-50">
+                          {/* <h3 className="mt-0 color-brand-1 mb-50">
                             Saved Jobs
-                          </h3>
+                          </h3> */}
                           <SavedJobsList />
                           <div className="paginations">
                             <ul className="pager">

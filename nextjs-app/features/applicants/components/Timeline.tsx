@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { CheckCircle, Clock } from "lucide-react";
-import { ApplicantTimeline, ApplicantHistory } from "../services/applicant.service";
-
+import { ApplicantTimeline } from "../services/applicant.service";
+import styles from '../../../styles/Timeline.module.css';
+export type ApplicantHistory = {
+  status: string;
+  note?: string | null;
+  changedAt: string;
+  changedBy: string;
+};
 type Props = { steps: ApplicantTimeline[] };
 
 export function Timeline({ steps }: Props) {
@@ -20,34 +26,47 @@ export function Timeline({ steps }: Props) {
   }, [steps]);
 
   return (
-    <div>
-      <h3 className="text-lg font-semibold mb-3">Application process TIMELINE</h3>
-      <ol className="relative border-l border-gray-200 ml-3">
-        {steps.map((step, idx) => (
-          <li key={idx} className="mb-6 ml-4 transition-colors duration-500">
+    <div className={styles.timelineWrapper}>
+      {/* <h3 className={styles.title}>Application Timeline</h3> */}
+      <ol className={styles.timelineList}>
+        {steps
+          .sort((a, b) => a.stepOrder - b.stepOrder)
+          .map((step, idx) => (
+          <li key={idx} className={styles.timelineStep}>
+            {/* Dot */}
             <span
-              className={`absolute -left-3 flex items-center justify-center w-6 h-6 rounded-full transition-all duration-500 
-                ${step.completed 
-                  ? "bg-green-500 text-white" 
-                  : step.currentStep 
-                    ? highlightStep === idx 
-                      ? "bg-blue-400 text-white animate-pulse" 
-                      : "bg-blue-500 text-white"
-                    : "bg-gray-300 text-gray-600"
+              className={`${styles.dot} ${
+                step.completed
+                  ? styles.completed
+                  : step.currentStep
+                  ? highlightStep === idx
+                    ? styles.currentPulse
+                    : styles.current
+                  : styles.pending
               }`}
             >
               {step.completed ? <CheckCircle size={14} /> : <Clock size={14} />}
             </span>
 
-            <h4 className={`font-medium ${highlightStep === idx ? "text-blue-600" : ""}`}>
-              {step.status}
-            </h4>
+            {/* Line */}
+            {idx < steps.length - 1 && <span className={styles.line}></span>}
 
-            {step.events?.map((ev: ApplicantHistory, i: number) => (
-              <p key={i} className="text-xs text-gray-500">
-                {new Date(ev.changedAt).toLocaleString()} - {ev.note} ({ev.changedBy})
-              </p>
-            ))}
+            <div className={styles.content}>
+              <h4 className={`${styles.stepTitle} ${
+                step.completed ? styles.textCompleted :
+                step.currentStep ? styles.textCurrent : styles.textPending
+              }`}>
+                {step.status} {step.currentStep && "(Current)"}
+              </h4>
+
+              <div className={styles.events}>
+                {step.events.map((ev, i) => (
+                  <p key={i} className={styles.event}>
+                    <span className={styles.eventTime}>{new Date(ev.changedAt).toLocaleString()}</span> - {ev.note} <span className={styles.eventBy}>({ev.changedBy})</span>
+                  </p>
+                ))}
+              </div>
+            </div>
           </li>
         ))}
       </ol>
