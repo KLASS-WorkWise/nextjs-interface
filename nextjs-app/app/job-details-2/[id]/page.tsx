@@ -26,10 +26,7 @@ export default function JobDetails2() {
       .then((data) => setJob(data))
       .catch(() => setJob(null));
   }, [id]);
-<<<<<<< HEAD
 // lấy thông tin bài đăng
-=======
->>>>>>> d5dbe4d9f30c7a3723c9da0f3ebde30b6ffa77f4
 
   const [active, setActive] = useState(1);
   
@@ -85,7 +82,6 @@ export default function JobDetails2() {
         // show readable date for older posts
         return date.toLocaleDateString();
       };
-<<<<<<< HEAD
 
   useEffect(() => {
     if (!job?.employerId) return;
@@ -98,8 +94,6 @@ export default function JobDetails2() {
       }
     })();
   }, [job?.employerId]);
-=======
->>>>>>> d5dbe4d9f30c7a3723c9da0f3ebde30b6ffa77f4
   return (
     <>
       <Layout>
@@ -235,10 +229,7 @@ export default function JobDetails2() {
                                 <span style={{fontWeight:600, marginLeft: 8}}>{new Date(job.endAt).toLocaleDateString()}</span>
                               </div>
                             )}
-<<<<<<< HEAD
             
-=======
->>>>>>> d5dbe4d9f30c7a3723c9da0f3ebde30b6ffa77f4
                             {job.employer && job.employer.name && (
                               <div className="col-md-6 d-flex align-items-center" style={{minHeight: '38px'}}>
                                 <span style={{width: 32, textAlign: 'center', display: 'inline-block'}}>
@@ -397,7 +388,6 @@ export default function JobDetails2() {
                                     >
                                       <div className="image" style={{ width: 44, flex: '0 0 44px' }}>
                                         <Link href={`/job-details-2/${j.id}`}>
-<<<<<<< HEAD
                                           <span
                                             style={{
                                               display: 'inline-block',
@@ -416,13 +406,6 @@ export default function JobDetails2() {
                                                 height: '100%',
                                                 objectFit: 'contain', // co ảnh lại vừa khung, không crop
                                               }}
-=======
-                                          <span>
-                                            <img
-                                              src={j.companyLogo || '/assets/imgs/brands/brand-8.png'}
-                                              alt={j.companyName || 'jobBox'}
-                                              style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover' }}
->>>>>>> d5dbe4d9f30c7a3723c9da0f3ebde30b6ffa77f4
                                             />
                                           </span>
                                         </Link>
