@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getCompanyByEmployerId } from "@/lib/company/api";
 import { useParams } from "next/navigation";
 /* eslint-disable react/no-unescaped-entities */
@@ -10,6 +10,10 @@ import FeaturedSlider from "@/components/sliders/Featured";
 import ApplyJob from "@/features/applicants/components/ApplyJob";
 import { applicantService } from "@/features/applicants/services/applicant.service";
 import { toast } from "react-toastify";
+
+
+import FloatingChatWithEmployer from "@/components/FloatingChatWithEmployer";
+import type { FloatingChatHandle } from "@/components/FloatingChatWithEmployer";
 
 
 export default function JobDetails2() {
@@ -35,6 +39,7 @@ export default function JobDetails2() {
     };
     const { data: session } = useSession();
       const role = session?.user?.roles;
+      const chatRef = useRef<FloatingChatHandle | null>(null);
       // Hook lấy dữ liệu job từ API
       const [jobs, setJobs] = useState<any[]>([]);
       const [jobsLoading, setJobsLoading] = useState(false);
@@ -247,8 +252,18 @@ const hours = Math.floor(minutes / 60);
                           <h5 className="border-bottom pb-15 mb-30">Job Description</h5>
                           <div dangerouslySetInnerHTML={{ __html: job.description ? job.description.replace(/\n/g, '<br>') : '' }} />
                         </div>
-                        <div className="author-single">
-                          <span>{job.employerName}</span>
+                        <div className="author-single" style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span>{job.employerName || job.employer?.name || company?.companyName}</span>
+                            {session?.user?.id && (
+                              <button
+                                onClick={() => chatRef.current?.open()}
+                                style={{ marginTop: 8, padding: '8px 12px', borderRadius: 6, border: '1px solid #1976d2', background: '#fff', color: '#1976d2', cursor: 'pointer' }}
+                              >
+                                Liên hệ với nhà tuyển dụng ngay
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </>
                     )}
@@ -537,7 +552,19 @@ const timeText = createdDate ? formatCreatedAt(createdDate) : '';
             </div>
           </section>
         </div>
-      </Layout>
-    </>
+      {/* Hiển thị chat nổi ở góc phải dưới nếu đã đăng nhập và có employerId */}
+      {job?.employerId && session?.user?.id && (
+        <FloatingChatWithEmployer
+          ref={chatRef}
+          employerId={job.employerId}
+          applicantId={session.user.id}
+          // Only pass applicantName when the session actually contains it. If undefined, the chat component
+          // will avoid writing a placeholder into Firestore and the admin-side fallback can populate the real name.
+          applicantName={session?.user?.fullName ?? session?.user?.name ?? undefined}
+          employerName={job.employer?.name || company?.companyName || job.employerName}
+        />
+      )}
+    </Layout>
+  </>
   );
 }
