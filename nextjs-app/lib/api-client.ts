@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import { getSession } from "next-auth/react";
 
@@ -19,3 +20,4 @@ apiClient.interceptors.request.use(async (config) => {
   }
   return config;
 });
+
