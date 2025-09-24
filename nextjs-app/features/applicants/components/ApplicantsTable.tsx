@@ -6,6 +6,7 @@ import { useApplicants } from "../hooks/useApplicants";
 // import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "../../../styles/ApplicantsTable.module.css";
+import Image from "next/image";
 
 export default function ApplicantsTable() {
   const router = useRouter();
@@ -40,18 +41,40 @@ export default function ApplicantsTable() {
   };
 
   return (
-   <>
+    <>
       <div className={styles.wrapper}>
         {applications.map((app) => (
           <div key={app.id} className={styles.card}>
             <div className={styles.header}>
               <div className={styles.company}>
-                <div className={styles.logo}>
+                {/* <div className={styles.logo}>
                   {app.logoUrl && <img src={app.logoUrl} alt="logo" />}
+                </div> */}
+                <div className={styles.logo}>
+                  {app.logoUrl ? (
+                    <Image
+                      src={app.logoUrl}
+                      alt="logo"
+                      width={58}
+                      height={58}
+                      className={styles.logoImg}
+                      unoptimized // tránh lỗi domain khi logoUrl là link ngoài
+                    />
+                  ) : (
+                    <Image
+                      src="/default-logo.png"
+                      alt="default logo"
+                      width={58}
+                      height={58}
+                      className={styles.logoImg}
+                    />
+                  )}
                 </div>
                 <div className={styles.info}>
                   <span className={styles.companyName}>{app.companyName}</span>
-                  <span className={styles.location}>{app.location_company}</span>
+                  <span className={styles.location}>
+                    {app.location_company}
+                  </span>
                 </div>
               </div>
               <span className={styles.status}>{app.applicationStatus}</span>
@@ -61,7 +84,7 @@ export default function ApplicantsTable() {
               <h4>{app.jobTitle}</h4>
               <div className={styles.meta}>
                 <span>{app.appliedAt}</span>
-                <span>• 4 mins ago</span>
+                <span>• mins ago</span>
               </div>
               <p className={styles.description}>
                 {app.description_company?.substring(0, 100)}
@@ -71,10 +94,16 @@ export default function ApplicantsTable() {
             <div className={styles.footer}>
               <span className={styles.salary}>{app.salaryRange}</span>
               <div className={styles.actions}>
-                <button className={`${styles.btn} ${styles.delete}`} onClick={() => handleDeleteApplicant(app.id)}>
+                <button
+                  className={`${styles.btn} ${styles.delete}`}
+                  onClick={() => handleDeleteApplicant(app.id)}
+                >
                   Delete
                 </button>
-                <button className={`${styles.btn} ${styles.view}`} onClick={() => router.push(`/applicants/${app.id}`)}>
+                <button
+                  className={`${styles.btn} ${styles.view}`}
+                  onClick={() => router.push(`/applicants/${app.id}`)}
+                >
                   View status
                 </button>
               </div>
@@ -85,14 +114,20 @@ export default function ApplicantsTable() {
 
       {/* Pagination */}
       <div className={styles.pagination}>
-        <button onClick={() => setPage(currentPage - 1)} disabled={currentPage === 1} className={styles.pageBtn}>
+        <button
+          onClick={() => setPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={styles.pageBtn}
+        >
           Prev
         </button>
 
         {[...Array(totalPages)].map((_, idx) => (
           <button
             key={idx}
-            className={`${styles.pageBtn} ${currentPage === idx + 1 ? styles.active : ""}`}
+            className={`${styles.pageBtn} ${
+              currentPage === idx + 1 ? styles.active : ""
+            }`}
             onClick={() => setPage(idx + 1)}
           >
             {idx + 1}

@@ -49,7 +49,7 @@ export default function ApplyJob({
       })) as any;
 
       if (res.data.missingSkills?.length) {
-        toast.warning("Thiếu kỹ năng: " + res.data.missingSkills.join(", "));
+        toast.warning("Lack of skills: " + res.data.missingSkills.join(", "));
       }
       if (res.data.skillMatchMessage) {
         toast.warning(res.data.skillMatchMessage);
@@ -78,7 +78,7 @@ export default function ApplyJob({
 
         {/* Title */}
         <h2 className={styles["modal-title"]}>
-          Apply for <span className="job-title">{job.title}</span>
+        <span className="job-title">{job.title}</span>
         </h2>
 
         {/* Select Resume */}

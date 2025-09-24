@@ -16,7 +16,7 @@ import ApplyJob from "@/features/applicants/components/ApplyJob";
 import { useRouter } from "next/navigation";
 import { savedJobService } from "@/features/applicants/services/savedJobService";
 import { Bookmark } from "lucide-react";
-import "@/styles/globals.css";
+// import "@/styles/globals.css";
 
 export default function JobGrid() {
   // Map employerId -> company info
@@ -261,6 +261,8 @@ export default function JobGrid() {
         await savedJobService.removeSavedJob(existing.savedJobId);
         setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
         toast.error("Removed successfully");
+        console.log("Removed job:", existing);
+         console.log("Removed job:", existing.savedJobId);
       } else {
         const res = await savedJobService.saveJob(jobId);
         setSavedJobs((prev) => [
@@ -268,6 +270,8 @@ export default function JobGrid() {
           { jobId, savedJobId: res.data.savedJobId },
         ]);
         toast.success("Saved successfully");
+        console.log("Saved job:", res.data);
+          console.log("Saved jobss:", res.data.savedJobId);
       }
     } catch (err: any) {
       console.error("Error saving job", err);
@@ -309,7 +313,7 @@ export default function JobGrid() {
       try {
         const res = await savedJobService.getMySavedJobs();
         const savedJobsMap =
-          res.data?.map((job: any) => ({
+          res.data.data.content?.map((job: any) => ({
             jobId: job.jobPostingResponseDTO?.id, // 👈 lấy id từ DTO
             savedJobId: job.savedJobId,
           })) || [];
