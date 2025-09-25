@@ -5,10 +5,15 @@ import { toast } from "react-toastify";
 import styles from "../../../styles/ApplyJob.module.css"; // css riêng cho component
 
 import { FileText, Upload, Pencil, X } from "lucide-react";
+import {  Applicant, JobPostingResponseDTO, Resume } from "@/types/applicant";
+
+import { AxiosProgressEvent } from "axios";
+import { ApiResponse } from "@/types/api";
+
 
 interface ApplyJobProps {
-  job: any;
-  resumes: any[];
+  job: JobPostingResponseDTO;
+  resumes: Resume[];
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -40,28 +45,31 @@ export default function ApplyJob({
       if (file) formData.append("resumeFile", file);
       if (message) formData.append("coverLetter", message);
 
-      const res = (await applicantService.applyJobWithFile(job.id, formData, {
-        onUploadProgress: (event: ProgressEvent) => {
+        const res = await applicantService.applyJobWithFile(job.id, formData, {
+        onUploadProgress: (event: AxiosProgressEvent) => {
           if (event.total) {
             setProgress(Math.round((event.loaded * 100) / event.total));
           }
         },
-      })) as any;
+      });
 
-      if (res.data.missingSkills?.length) {
-        toast.warning("Lack of skills: " + res.data.missingSkills.join(", "));
-      }
-      if (res.data.skillMatchMessage) {
-        toast.warning(res.data.skillMatchMessage);
-      }
-      if (res.data.minExperience) {
-        toast.info(res.data.minExperience);
-      }
+    const data = res.data as ApiResponse<Applicant>;
+      console.log("Apply job response:", data);
 
+      if (data?.data?.missingSkills?.length) {
+        toast.warning("Lack of skills: " + data.data.missingSkills.join(", "));
+      }
+      if (data?.data?.skillMatchMessage) {
+        toast.warning(data?.data?.skillMatchMessage || "");
+      }
+      if (data?.data?.minExperience) {
+        toast.info(data?.data?.minExperience || "");
+      }
       onSuccess();
       onClose();
-    } catch (err: any) {
-      const msg = err.response?.data?.message || "❌ Apply thất bại!";
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      const msg = error.response?.data?.message || "❌ Apply thất bại!";
       toast.error(msg);
     } finally {
       setSubmitting(false);
@@ -90,9 +98,9 @@ export default function ApplyJob({
               onChange={(e) => setSelectedResumeId(e.target.value)}
             >
               <option value="">-- Select Resume --</option>
-              {resumes.map((resume: any) => (
+              {resumes.map((resume: Resume) => (
                 <option key={resume.id} value={resume.id}>
-                  {resume.title || `Resume #${resume.fullName}`}
+                  { `Resume #${resume.fullName}`}
                 </option>
               ))}
             </select>
