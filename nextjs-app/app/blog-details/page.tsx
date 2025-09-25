@@ -7,21 +7,21 @@ import { blogApi, type BlogResponseDto } from "@/lib/blog/blog-api";
 
 export default function BlogDetails() {
   const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+  const slug = searchParams.get("slug");
   const [blog, setBlog] = useState<BlogResponseDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBlog = async () => {
-      if (!id) {
-        setError("Không tìm thấy bài viết");
+      if (!slug) {
+        setError("Không tìm thấy slug của bài viết");
         setLoading(false);
         return;
       }
       try {
         setLoading(true);
-        const data = await blogApi.getBlogById(id);
+        const data = await blogApi.getBlogBySlug(slug);
         setBlog(data);
       } catch {
         setError("Không thể tải bài viết");
@@ -30,7 +30,7 @@ export default function BlogDetails() {
       }
     };
     fetchBlog();
-  }, [id]);
+  }, [slug]);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";

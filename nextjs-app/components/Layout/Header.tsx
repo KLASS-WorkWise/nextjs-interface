@@ -276,11 +276,11 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                         </Link>
                       </li>
 
-                      <li>
+                      {/* <li>
                         <Link href="/candidates-grid">
                           <span>Manager Candidates</span>
                         </Link>
-                      </li>
+                      </li> */}
 
                       <li>
                         <Link href="/page-about">

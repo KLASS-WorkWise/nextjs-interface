@@ -2,18 +2,28 @@
 import { useEffect, useState } from "react";
 import { savedJobService } from "@/features/applicants/services/savedJobService";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "../../../styles/SavedJobsList.module.css";
 
 export default function SavedJobsList() {
   const [savedJobs, setSavedJobs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [removingId, setRemovingId] = useState<number | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  const fetchSavedJobs = async () => {
+  const fetchSavedJobs = async (page = 0) => {
+    setLoading(true);
     try {
-      const res = await savedJobService.getMySavedJobs();
-      setSavedJobs(res.data || []);
+      const res = await savedJobService.getMySavedJobs({ page, size: 10 });
+      const paginated = res.data;
+
+      setSavedJobs(paginated.data.content || []);
+      setTotalPages(paginated.data.totalPages || 1);
+      setCurrentPage(paginated.data.pageNumber || 0);
+      console.log("Saved jobs:", paginated.content);
+      console.log("Saved jobs1:", paginated);
     } catch (err: any) {
       console.error("Error fetching saved jobs", err);
       setMessage({ type: "error", text: "Failed to load saved jobs" });
@@ -28,7 +38,7 @@ export default function SavedJobsList() {
       await savedJobService.removeSavedJob(savedJobId);
 
       setSavedJobs(savedJobs.filter((job) => job.savedJobId !== savedJobId));
-      setMessage({ type: "success", text: "Xóa thành công!" });
+      setMessage({ type: "success", text: "Deleted successfully!" });
       setTimeout(() => setMessage(null), 3000);
     } catch (err: any) {
       console.error("Error removing saved job:", err);
@@ -48,6 +58,42 @@ export default function SavedJobsList() {
 
   if (loading) return <p>Loading...</p>;
 
+  // Custom pagination UI
+  const renderPagination = () => {
+    const pages = [];
+    for (let i = 0; i < totalPages; i++) {
+      pages.push(
+        <button
+          key={i}
+          className={`${styles.pageBtn} ${i === currentPage ? styles.activePage : ""}`}
+          onClick={() => fetchSavedJobs(i)}
+        >
+          {i + 1}
+        </button>
+      );
+    }
+
+    return (
+      <div className={styles.pagination}>
+        <button
+          className={styles.pageBtn}
+          disabled={currentPage === 0}
+          onClick={() => fetchSavedJobs(currentPage - 1)}
+        >
+          Prev
+        </button>
+        {pages}
+        <button
+          className={styles.pageBtn}
+          disabled={currentPage === totalPages - 1}
+          onClick={() => fetchSavedJobs(currentPage + 1)}
+        >
+          Next
+        </button>
+      </div>
+    );
+  };
+
   return (
     <>
       {message && (
@@ -61,7 +107,12 @@ export default function SavedJobsList() {
           <div key={job.savedJobId} className={styles.card}>
             <div className={styles.header}>
               <div className={styles.logo}>
-                <img src="assets/imgs/brands/brand-5.png" alt="jobBox" />
+                <Image
+                  src={job.jobPostingResponseDTO.requiredDegree || "/default-logo.png"}
+                  alt={job.jobPostingResponseDTO.employerName || "Company logo"}
+                  width={40}
+                  height={40}
+                />
               </div>
               <div className={styles.info}>
                 <span className={styles.company}>{job.jobPostingResponseDTO.employerName}</span>
@@ -86,12 +137,16 @@ export default function SavedJobsList() {
               >
                 {removingId === job.savedJobId ? "Deleting..." : "Delete"}
               </button>
-
-              <button className={`${styles.btn} ${styles.apply}`}>Apply</button>
+              <button className={`${styles.btn} ${styles.apply}`}> <Link href={`/job-details-2/${job.jobPostingResponseDTO.id}`}>
+                                              View
+                                              </Link></button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Custom Pagination */}
+      {renderPagination()}
     </>
   );
 }

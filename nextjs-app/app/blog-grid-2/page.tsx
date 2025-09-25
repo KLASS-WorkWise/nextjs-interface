@@ -120,7 +120,7 @@ export default function BlogGrid2() {
                 <div className="box-improve">
                   <div className="row">
                     <div className="col-lg-5 col-md-12 col-sm-12">
-                      <Link href={`/blog-details?id=${featuredBlog.id}`}>
+                      <Link href={`/blog/${featuredBlog.slug}`}>
                         <span>
                           <img
                             src={
@@ -141,7 +141,7 @@ export default function BlogGrid2() {
                         </Link>
 
                         <h2 className="mt-20 mb-20">
-                          <Link href={`/blog-details?id=${featuredBlog.id}`}>
+                          <Link href={`/blog-details?slug=${featuredBlog.slug}`}>
                             <span>{featuredBlog.title}</span>
                           </Link>
                         </h2>
@@ -150,7 +150,7 @@ export default function BlogGrid2() {
                             featuredBlog.content.substring(0, 200) + "..."}
                         </p>
                         <div>
-                          <Link href={`/blog-details?id=${featuredBlog.id}`}>
+                          <Link href={`/blog-details?slug=${featuredBlog.slug}`}>
                             <span className="btn btn-arrow-right">
                               Read More
                             </span>
@@ -182,7 +182,7 @@ export default function BlogGrid2() {
                         <div key={blog.id} className="col-lg-6 mb-30 d-flex">
                           <div className="card-grid-3 hover-up w-100 latest-card">
                             <div className="text-center card-grid-3-image">
-                              <Link href={`/blog-details?id=${blog.id}`}>
+                              <Link href={`/blog-details?slug=${blog.slug}`}>
                                 <span>
                                   <figure>
                                     <img
@@ -205,7 +205,7 @@ export default function BlogGrid2() {
                                 </Link>
                               </div>
                               <h5>
-                                <Link href={`/blog-details?id=${blog.id}`}>
+                                <Link href={`/blog-details?slug=${blog.slug}`}>
                                   <span>{blog.title}</span>
                                 </Link>
                               </h5>
@@ -276,7 +276,7 @@ export default function BlogGrid2() {
                             className="post-list-small-item d-flex align-items-start"
                           >
                             <figure className="thumb mr-15">
-                              <a href={`/blog-details?id=${blog.id}`}>
+                              <a href={`/blog-details?slug=${blog.slug}`}>
                                 <img
                                   src={
                                     blog.imageUrl ||
@@ -288,9 +288,7 @@ export default function BlogGrid2() {
                             </figure>
                             <div className="content">
                               <h5>
-                                <a href={`/blog-details?id=${blog.id}`}>
-                                  {blog.title}
-                                </a>
+                                <a href={`/blog-details?slug=${blog.slug}`}>{blog.title}</a>
                               </h5>
                               <div className="post-meta text-muted d-flex align-items-center mb-15">
                                 <div className="author d-flex align-items-center mr-20"></div>
@@ -324,7 +322,7 @@ export default function BlogGrid2() {
                         <ul className="gallery-3">
                           {blogs.map((blog) => (
                             <li key={blog.id}>
-                              <Link href={`/blog-details?id=${blog.id}`}>
+                              <Link href={`/blog-details?slug=${blog.slug}`}>
                                 <span>
                                   <img
                                     src={

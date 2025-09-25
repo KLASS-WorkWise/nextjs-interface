@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import Layout from "@/components/Layout/Layout";
 import React from "react";
 import ApplicantDetail from "@/features/applicants/components/ApplicantDetail";
+import Image from "next/image";
 
 export default function ApplicantDetailPage() {
   const { id } = useParams();
@@ -19,7 +20,7 @@ export default function ApplicantDetailPage() {
         <section className="section-box-2">
           <div className="container">
             <div className="banner-hero banner-image-single">
-              <img src="../../assets/imgs/page/candidates/img.png" alt="jobbox" />
+              <Image src="../../assets/imgs/page/candidates/img.png" alt="jobbox" width={1000} height={300} unoptimized />
             </div>
           
             <div className="box-nav-tabs mt-40 mb-5">
