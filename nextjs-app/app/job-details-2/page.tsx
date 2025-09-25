@@ -1,7 +1,9 @@
 /* eslint-disable react/no-unescaped-entities */
+
 import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
 import FeaturedSlider from "@/components/sliders/Featured";
+import Image from "next/image";
 
 export default function JobDetails2() {
   return (
@@ -29,14 +31,14 @@ export default function JobDetails2() {
                     </div>
                     <div className="border-bottom pt-10 pb-10" />
                     <div className="banner-hero banner-image-single mt-10 mb-20">
-                      <img src="assets/imgs/page/job-single-2/img.png" alt="jobBox" />
+                      <Image src="/assets/imgs/page/job-single-2/img.png" alt="jobBox" width={600} height={300} />
                     </div>
                     <div className="job-overview">
                       <h5 className="border-bottom pb-15 mb-30">Overview</h5>
                       <div className="row">
                         <div className="col-md-6 d-flex">
                           <div className="sidebar-icon-item">
-                            <img src="assets/imgs/page/job-single/industry.svg" alt="jobBox" />
+                            <Image src="/assets/imgs/page/job-single/industry.svg" alt="jobBox" width={40} height={40} />
                           </div>
                           <div className="sidebar-text-info ml-10">
                             <span className="text-description industry-icon mb-10">Industry</span>
@@ -45,7 +47,7 @@ export default function JobDetails2() {
                         </div>
                         <div className="col-md-6 d-flex mt-sm-15">
                           <div className="sidebar-icon-item">
-                            <img src="assets/imgs/page/job-single/job-level.svg" alt="jobBox" />
+                            <Image src="/assets/imgs/page/job-single/job-level.svg" alt="jobBox" width={40} height={40} />
                           </div>
                           <div className="sidebar-text-info ml-10">
                             <span className="text-description joblevel-icon mb-10">Job level</span>
@@ -56,7 +58,7 @@ export default function JobDetails2() {
                       <div className="row mt-25">
                         <div className="col-md-6 d-flex mt-sm-15">
                           <div className="sidebar-icon-item">
-                            <img src="assets/imgs/page/job-single/salary.svg" alt="jobBox" />
+                            <Image src="/assets/imgs/page/job-single/salary.svg" alt="jobBox" width={40} height={40} />
                           </div>
                           <div className="sidebar-text-info ml-10">
                             <span className="text-description salary-icon mb-10">Salary</span>
@@ -65,7 +67,7 @@ export default function JobDetails2() {
                         </div>
                         <div className="col-md-6 d-flex">
                           <div className="sidebar-icon-item">
-                            <img src="assets/imgs/page/job-single/experience.svg" alt="jobBox" />
+                            <Image src="/assets/imgs/page/job-single/experience.svg" alt="jobBox" width={40} height={40} />
                           </div>
                           <div className="sidebar-text-info ml-10">
                             <span className="text-description experience-icon mb-10">Experience</span>
@@ -76,7 +78,7 @@ export default function JobDetails2() {
                       <div className="row mt-25">
                         <div className="col-md-6 d-flex mt-sm-15">
                           <div className="sidebar-icon-item">
-                            <img src="assets/imgs/page/job-single/job-type.svg" alt="jobBox" />
+                            <Image src="/assets/imgs/page/job-single/job-type.svg" alt="jobBox" width={40} height={40} />
                           </div>
                           <div className="sidebar-text-info ml-10">
                             <span className="text-description jobtype-icon mb-10">Job type</span>
@@ -85,7 +87,7 @@ export default function JobDetails2() {
                         </div>
                         <div className="col-md-6 d-flex mt-sm-15">
                           <div className="sidebar-icon-item">
-                            <img src="assets/imgs/page/job-single/deadline.svg" alt="jobBox" />
+                            <Image src="/assets/imgs/page/job-single/deadline.svg" alt="jobBox" width={40} height={40} />
                           </div>
                           <div className="sidebar-text-info ml-10">
                             <span className="text-description mb-10">Deadline</span>
@@ -96,7 +98,7 @@ export default function JobDetails2() {
                       <div className="row mt-25">
                         <div className="col-md-6 d-flex mt-sm-15">
                           <div className="sidebar-icon-item">
-                            <img src="assets/imgs/page/job-single/updated.svg" alt="jobBox" />
+                            <Image src="/assets/imgs/page/job-single/updated.svg" alt="jobBox" width={40} height={40} />
                           </div>
                           <div className="sidebar-text-info ml-10">
                             <span className="text-description jobtype-icon mb-10">Updated</span>
@@ -105,7 +107,7 @@ export default function JobDetails2() {
                         </div>
                         <div className="col-md-6 d-flex mt-sm-15">
                           <div className="sidebar-icon-item">
-                            <img src="assets/imgs/page/job-single/location.svg" alt="jobBox" />
+                            <Image src="/assets/imgs/page/job-single/location.svg" alt="jobBox" width={40} height={40} />
                           </div>
                           <div className="sidebar-text-info ml-10">
                             <span className="text-description mb-10">Location</span>
@@ -168,25 +170,25 @@ export default function JobDetails2() {
                           <h6 className="color-text-paragraph-2 d-inline-block d-baseline mr-10">Share this</h6>
                           <Link href="#">
                             <span className="mr-5 d-inline-block d-middle">
-                              <img alt="jobBox" src="assets/imgs/template/icons/share-fb.svg" />
+                              <Image alt="jobBox" src="/assets/imgs/template/icons/share-fb.svg" width={24} height={24} />
                             </span>
                           </Link>
 
                           <Link href="#">
                             <span className="mr-5 d-inline-block d-middle">
-                              <img alt="jobBox" src="assets/imgs/template/icons/share-tw.svg" />
+                              <Image alt="jobBox" src="/assets/imgs/template/icons/share-tw.svg" width={24} height={24} />
                             </span>
                           </Link>
 
                           <Link href="#">
                             <span className="mr-5 d-inline-block d-middle">
-                              <img alt="jobBox" src="assets/imgs/template/icons/share-red.svg" />
+                              <Image alt="jobBox" src="/assets/imgs/template/icons/share-red.svg" width={24} height={24} />
                             </span>
                           </Link>
 
                           <Link href="#">
                             <span className="d-inline-block d-middle">
-                              <img alt="jobBox" src="assets/imgs/template/icons/share-whatsapp.svg" />
+                              <Image alt="jobBox" src="/assets/imgs/template/icons/share-whatsapp.svg" width={24} height={24} />
                             </span>
                           </Link>
                         </div>
@@ -199,7 +201,7 @@ export default function JobDetails2() {
                     <div className="sidebar-heading">
                       <div className="avatar-sidebar">
                         <figure>
-                          <img alt="jobBox" src="assets/imgs/page/job-single/avatar.png" />
+                          <Image alt="jobBox" src="/assets/imgs/page/job-single/avatar.png" width={60} height={60} />
                         </figure>
                         <div className="sidebar-info">
                           <span className="sidebar-company">AliThemes</span>
@@ -230,7 +232,7 @@ export default function JobDetails2() {
                             <div className="image">
                               <Link href="/job-details">
                                 <span>
-                                  <img src="assets/imgs/brands/brand-1.png" alt="jobBox" />
+                                  <Image src="/assets/imgs/brands/brand-1.png" alt="jobBox" width={40} height={40} />
                                 </span>
                               </Link>
                             </div>
@@ -267,7 +269,7 @@ export default function JobDetails2() {
                             <div className="image">
                               <Link href="/job-details">
                                 <span>
-                                  <img src="assets/imgs/brands/brand-2.png" alt="jobBox" />
+                                  <Image src="/assets/imgs/brands/brand-2.png" alt="jobBox" width={40} height={40} />
                                 </span>
                               </Link>
                             </div>
@@ -304,7 +306,7 @@ export default function JobDetails2() {
                             <div className="image">
                               <Link href="/job-details">
                                 <span>
-                                  <img src="assets/imgs/brands/brand-3.png" alt="jobBox" />
+                                  <Image src="/assets/imgs/brands/brand-3.png" alt="jobBox" width={40} height={40} />
                                 </span>
                               </Link>
                             </div>
@@ -341,7 +343,7 @@ export default function JobDetails2() {
                             <div className="image">
                               <Link href="/job-details">
                                 <span>
-                                  <img src="assets/imgs/brands/brand-4.png" alt="jobBox" />
+                                  <Image src="/assets/imgs/brands/brand-4.png" alt="jobBox" width={40} height={40} />
                                 </span>
                               </Link>
                             </div>
@@ -378,7 +380,7 @@ export default function JobDetails2() {
                             <div className="image">
                               <Link href="/job-details">
                                 <span>
-                                  <img src="assets/imgs/brands/brand-5.png" alt="jobBox" />
+                                  <Image src="/assets/imgs/brands/brand-5.png" alt="jobBox" width={40} height={40} />
                                 </span>
                               </Link>
                             </div>
@@ -415,7 +417,7 @@ export default function JobDetails2() {
                             <div className="image">
                               <Link href="/job-details">
                                 <span>
-                                  <img src="assets/imgs/brands/brand-6.png" alt="jobBox" />
+                                  <Image src="/assets/imgs/brands/brand-6.png" alt="jobBox" width={40} height={40} />
                                 </span>
                               </Link>
                             </div>
@@ -452,7 +454,7 @@ export default function JobDetails2() {
                             <div className="image">
                               <Link href="/job-details">
                                 <span>
-                                  <img src="assets/imgs/brands/brand-7.png" alt="jobBox" />
+                                  <Image src="/assets/imgs/brands/brand-7.png" alt="jobBox" width={40} height={40} />
                                 </span>
                               </Link>
                             </div>
@@ -489,7 +491,7 @@ export default function JobDetails2() {
                             <div className="image">
                               <Link href="/job-details">
                                 <span>
-                                  <img src="assets/imgs/brands/brand-8.png" alt="jobBox" />
+                                  <Image src="/assets/imgs/brands/brand-8.png" alt="jobBox" width={40} height={40} />
                                 </span>
                               </Link>
                             </div>
@@ -598,7 +600,7 @@ export default function JobDetails2() {
               <div className="box-newsletter">
                 <div className="row">
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img src="assets/imgs/template/newsletter-left.png" alt="joxBox" />
+                    <Image src="/assets/imgs/template/newsletter-left.png" alt="joxBox" width={120} height={120} />
                   </div>
                   <div className="col-lg-12 col-xl-6 col-12">
                     <h2 className="text-md-newsletter text-center">
@@ -613,7 +615,7 @@ export default function JobDetails2() {
                     </div>
                   </div>
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img src="assets/imgs/template/newsletter-right.png" alt="joxBox" />
+                    <Image src="/assets/imgs/template/newsletter-right.png" alt="joxBox" width={120} height={120} />
                   </div>
                 </div>
               </div>

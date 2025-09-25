@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, setDoc } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, setDoc, type Timestamp } from "firebase/firestore";
 import { db } from "../lib/firebaseConfig";
 
 interface ChatWithEmployerProps {
@@ -14,8 +14,16 @@ interface Message {
   id: string;
   senderId: string;
   text: string;
-  timestamp?: any;
+  timestamp?: Timestamp | null;
 }
+
+type ChatSummary = {
+  employerId: string;
+  applicantId: string;
+  lastMessage: string;
+  lastTimestamp: Timestamp | unknown;
+  applicantName?: string;
+};
 
 const ChatWithEmployer: React.FC<ChatWithEmployerProps> = ({ employerId, applicantId, applicantName, embedded }) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -58,7 +66,7 @@ const ChatWithEmployer: React.FC<ChatWithEmployerProps> = ({ employerId, applica
     });
     // Tạo/ghi document chat chính với id = chatId (để employer thấy ứng viên ở sidebar)
     // Only include applicantName when we actually have one (avoid writing placeholder defaults)
-    const summaryPayload: any = {
+    const summaryPayload: ChatSummary = {
       employerId,
       applicantId,
       lastMessage: input,

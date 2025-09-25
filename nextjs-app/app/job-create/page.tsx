@@ -126,7 +126,7 @@ export default function JobCreate() {
             (err.message || JSON.stringify(err) || "Không thể đăng việc")
         );
       }
-    } catch (error) {
+    } catch {
       setMessage("Lỗi kết nối API!");
     } finally {
       setLoading(false);
