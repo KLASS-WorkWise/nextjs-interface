@@ -1,22 +1,31 @@
 "use client";
-import { Navigation } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import React, {useEffect, useState, useRef } from "react";
 
+// Minimal Job shape for this slider (keeps changes small and safe)
+interface Job {
+  id: string;
+  employerId?: string | null;
+  title?: string;
+  createdAt?: string | number | Date;
+  companyLogo?: string;
+  companyName?: string;
+  location?: string;
+  type?: string;
+  description?: string;
+  skills?: string[];
+  salary?: string;
+  salaryRange?: string;
+}
+
 const FeaturedSlider = () => {
-  const [active, setActive] = useState(1);
-  
-  
-  
-    const handleOnClick = (index: number) => {
-      setActive(index);
-    };
-    const { data: session } = useSession();
-      const role = session?.user?.roles;
+  // active state not used in this presentational slider; remove to avoid lint noise
+  // preserve auth side-effects but we don't use session value here
+  useSession();
       // Hook lấy dữ liệu job từ API
-      const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
       const [jobsLoading, setJobsLoading] = useState(false);
       const [jobsError, setJobsError] = useState("");
   
@@ -29,8 +38,9 @@ const FeaturedSlider = () => {
           if (!res.ok) throw new Error("Không thể lấy danh sách công việc");
           const data = await res.json();
           setJobs(data);
-        } catch (err: any) {
-          setJobsError(err.message || "Lỗi không xác định");
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : String(err);
+          setJobsError(message || "Lỗi không xác định");
         } finally {
           setJobsLoading(false);
         }
@@ -156,14 +166,14 @@ const FeaturedSlider = () => {
         {!jobsLoading && !jobsError && jobs.length > 0 &&
           jobs
             .slice()
-            .filter((job: any) => {
+            .filter((job: Job) => {
               const salaryStr = (job.salaryRange && job.salaryRange.toString()) || (job.salary && job.salary.toString()) || '';
               const min = parseSalaryMin(salaryStr);
               return min !== null && min >= 30;
             })
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .sort((a, b) => (Date.parse(String(b.createdAt || '0')) || 0) - (Date.parse(String(a.createdAt || '0')) || 0))
             .slice(0, 7)
-            .map((job: any) => (
+            .map((job: Job) => (
               <div key={job.id} style={{ minWidth: 320, maxWidth: 340, flex: "0 0 auto" }}>
                 <div className="card-grid-2 hover-up h-100">
                   <div className="card-grid-2-image-left">

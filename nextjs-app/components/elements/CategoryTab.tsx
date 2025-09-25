@@ -1,20 +1,45 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 import React, {useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { getCompanyByEmployerId } from "@/lib/company/api";
 
+// Minimal typed shapes used in this component to avoid `any` and keep logic unchanged
+interface Job {
+  id: string;
+  employerId?: string | null;
+  title?: string;
+  createdAt?: string | number | Date;
+  companyLogo?: string;
+  companyName?: string;
+  location?: string;
+  type?: string;
+  description?: string;
+  skills?: string[];
+  salary?: string;
+  salaryRange?: string;
+}
+
+interface Company {
+  logoUrl?: string;
+  companyName?: string;
+  location?: string;
+}
+
 const CategoryTab = () => {
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [companyInfoMap, setCompanyInfoMap] = useState<{ [key: string]: any }>({});
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [companyInfoMap, setCompanyInfoMap] = useState<Record<string, Company | null>>({});
   useEffect(() => {
     const fetchCompanies = async () => {
       const jobsToShow = jobs
         .slice()
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  .sort((a, b) => (Date.parse(String(b.createdAt || '0')) || 0) - (Date.parse(String(a.createdAt || '0')) || 0))
         .slice(0, 6);
-      const employerIds = Array.from(new Set(jobsToShow.map((job: any) => job.employerId).filter(Boolean)));
-      const companyPromises = employerIds.map(async (employerId) => {
+      const employerIds = Array.from(
+        new Set(jobsToShow.map((job: Job) => job.employerId).filter(Boolean) as string[])
+      );
+      const companyPromises = employerIds.map(async (employerId: string) => {
         try {
           const company = await getCompanyByEmployerId(employerId);
           return { employerId, company };
@@ -23,21 +48,17 @@ const CategoryTab = () => {
         }
       });
       const companyResults = await Promise.all(companyPromises);
-      const companyMap: { [key: string]: any } = {};
-      companyResults.forEach(({ employerId, company }) => {
+      const companyMap: Record<string, Company | null> = {};
+      companyResults.forEach(({ employerId, company }: { employerId: string; company: Company | null }) => {
         companyMap[employerId] = company;
       });
       setCompanyInfoMap(companyMap);
     };
     if (jobs && jobs.length > 0) fetchCompanies();
   }, [jobs]);
-  const [active, setActive] = useState(1);
-
-  const handleOnClick = (index: number) => {
-    setActive(index);
-  };
-  const { data: session } = useSession();
-    const role = session?.user?.roles;
+  const [active] = useState(1);
+  // call useSession to preserve any auth-related side-effects; session value not used here
+  useSession();
     // Hook lấy dữ liệu job từ API
    
     const [jobsLoading, setJobsLoading] = useState(false);
@@ -52,8 +73,9 @@ const CategoryTab = () => {
           if (!res.ok) throw new Error("Không thể lấy danh sách công việc");
           const data = await res.json();
           setJobs(data);
-        } catch (err: any) {
-          setJobsError(err.message || "Lỗi không xác định");
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : String(err);
+          setJobsError(message || "Lỗi không xác định");
         } finally {
           setJobsLoading(false);
         }
@@ -75,10 +97,10 @@ const CategoryTab = () => {
             {!jobsLoading && !jobsError && jobs.length > 0 &&
               jobs
                 .slice()
-                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .sort((a, b) => (Date.parse(String(b.createdAt || '0')) || 0) - (Date.parse(String(a.createdAt || '0')) || 0))
                 .slice(0, 6)
-                .map((job: any) => {
-                  const company = job.employerId ? companyInfoMap[job.employerId] : null;
+                .map((job: Job) => {
+                  const company = job.employerId ? companyInfoMap[String(job.employerId)] : null;
                   return (
                     <div key={job.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
                       <div className="card-grid-2 hover-up">
