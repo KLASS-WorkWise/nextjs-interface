@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable */
 import { useFormContext, useFieldArray } from "react-hook-form";
 import { Plus, Trash2, GraduationCap } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
@@ -51,13 +50,22 @@ export function EducationStep() {
       gpa: "",
     });
   };
+  type EducationField = {
+    id: string;
+    institution: string;
+    degree: string;
+    field: string;
+    startDate: string;
+    endDate: string;
+    gpa?: string;
+  };
 
   const handleReorder = (oldIndex: number, newIndex: number) => {
     move(oldIndex, newIndex);
   };
 
   const renderEducationItem = (
-    field: any,
+    field: EducationField,
     index: number,
     isDragging?: boolean
   ) => (

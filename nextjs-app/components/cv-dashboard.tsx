@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable */
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -29,7 +28,7 @@ export function CVDashboard() {
     try {
       const apiResumes = await resumeApi.getMyResume();
       const mappedResumes = Array.isArray(apiResumes)
-        ? apiResumes.map((r: any) => mapApiToForm(r))
+        ? apiResumes.map((r) => mapApiToForm(r))
         : apiResumes
         ? [mapApiToForm(apiResumes)]
         : [];
@@ -81,7 +80,7 @@ export function CVDashboard() {
             setCurrentView("builder");
             const getDataResumeById = await resumeApi.getResumeById(idParam);
             const mappedResume = mapApiToForm(getDataResumeById);
-            setEditingResume(mappedResume as any);
+            setEditingResume(mappedResume);
           } catch (error) {
             console.error("Failed to load resume (deeplink edit):", error);
             toast({ description: "Lỗi: Không thể tải CV" });
@@ -252,7 +251,7 @@ export function CVDashboard() {
               {/* Hiển thị ViewCv ở chế độ chỉ xem */}
               <ViewCv
                 data={previewResume}
-                template={(previewResume as any)?.template || "modern"}
+                template={(previewResume)?.template || "modern"}
                 isCompact={false}
               />
             </div>

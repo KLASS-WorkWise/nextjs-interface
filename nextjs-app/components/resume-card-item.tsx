@@ -1,16 +1,16 @@
 "use client";
-/* eslint-disable */
+
 import { Card, CardContent } from "@/components/ui/card";
 
-import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+// import { useToast } from "@/hooks/use-toast";
+// import { useState } from "react";
 import type { ResumeData } from "./resume-builder";
 import type { CustomizationOptions } from "./customization-panel";
 import { ModernTemplate } from "./resume-templates/modern-template";
 import { ClassicTemplate } from "./resume-templates/classic-template";
 
 import styles from "./resume-preview.module.css";
-import { mapFormToApi, resumeApi } from "@/lib/api";
+// import { mapFormToApi, resumeApi } from "@/lib/api";
 
 interface ResumePreviewProps {
   data: ResumeData;
@@ -30,45 +30,45 @@ const defaultCustomization: CustomizationOptions = {
 
 export function ResumeCardItem({
   data,
-  template = (data as any)?.template || "modern",
+  template = (data)?.template || "modern",
   customization = defaultCustomization,
   isCompact = false,
-  onSave, // Nhận callback onSave từ props
-  resumeData, // Nhận resumeData từ props
+  // onSave, // Nhận callback onSave từ props
+  // resumeData, // Nhận resumeData từ props
 }: ResumePreviewProps) {
-  const { toast } = useToast();
-  const [isSaving, setIsSaving] = useState(false);
+  // const { toast } = useToast();
+  // const [isSaving, setIsSaving] = useState(false);
 
-  const handleSaveCV = async () => {
-    if (isSaving) return;
-    setIsSaving(true);
-    try {
-      const dataWithTemplate = { ...data, template: template } as any;
-      const apiData = mapFormToApi(dataWithTemplate);
-      const createResume = await resumeApi.saveMyResume(apiData);
+  // const handleSaveCV = async () => {
+  //   if (isSaving) return;
+  //   setIsSaving(true);
+  //   try {
+  //     const dataWithTemplate = { ...data, template: template } as any;
+  //     const apiData = mapFormToApi(dataWithTemplate);
+  //     const createResume = await resumeApi.saveMyResume(apiData);
 
-      toast({
-        title: "Lưu CV thành công!",
-        description: "CV của bạn đã được lưu lên server.",
-      });
-      if (onSave) {
-        onSave(dataWithTemplate as any); // Truyền dữ liệu CV đã lưu về parent component
-      }
-    } catch (error: any) {
-      console.error("Error saving CV:", error);
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Không thể lưu CV. Vui lòng thử lại.";
-      toast({
-        title: "Lỗi khi lưu CV",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  //     toast({
+  //       title: "Lưu CV thành công!",
+  //       description: "CV của bạn đã được lưu lên server.",
+  //     });
+  //     if (onSave) {
+  //       onSave(dataWithTemplate as any); // Truyền dữ liệu CV đã lưu về parent component
+  //     }
+  //   } catch (error: any) {
+  //     console.error("Error saving CV:", error);
+  //     const errorMessage =
+  //       error.response?.data?.message ||
+  //       error.message ||
+  //       "Không thể lưu CV. Vui lòng thử lại.";
+  //     toast({
+  //       title: "Lỗi khi lưu CV",
+  //       description: errorMessage,
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     setIsSaving(false);
+  //   }
+  // };
 
   // Sửa logic để phân biệt chính xác các template
   const renderTemplate = () => {

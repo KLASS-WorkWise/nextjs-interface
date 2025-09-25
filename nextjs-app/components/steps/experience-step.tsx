@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable */
+
 import { useFormContext, useFieldArray } from "react-hook-form";
 import type { ResumeData } from "../resume-builder";
 import { Plus, Trash2, Briefcase } from "lucide-react";
@@ -57,12 +57,20 @@ export function ExperienceStep() {
     });
   };
 
+  interface ExperienceField {
+    id: string;
+    company: string;
+    position: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+  }
   const handleReorder = (oldIndex: number, newIndex: number) => {
     move(oldIndex, newIndex);
   };
 
   const renderExperienceItem = (
-    field: any,
+    field: ExperienceField,
     index: number,
     isDragging?: boolean
   ) => {

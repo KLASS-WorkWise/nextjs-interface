@@ -1,4 +1,3 @@
-/* eslint-disable */
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -86,6 +85,43 @@ export interface ResumeData {
     date: string;
     description: string;
   }>;
+}
+interface ResumeDataWithTemplate extends ResumeData {
+  template: string
+}
+
+interface DesktopSidebarProps {
+  currentStep: number;
+  completedSteps: number[];
+  stepHasErrors: (stepIndex: number) => boolean;
+  goToStep: (stepIndex: number) => void;
+  selectedTemplate: string;
+  setSelectedTemplate: (template: string) => void;
+  customization: CustomizationOptions;
+  setCustomization: (customization: CustomizationOptions) => void;
+  resumeData: ResumeData;
+}
+
+interface StepButtonProps {
+  step: (typeof steps)[number]; // Điều này sẽ suy luận kiểu từ mảng `steps`
+  index: number;
+  currentStep: number;
+  completedSteps: number[];
+  stepHasErrors: (stepIndex: number) => boolean;
+  goToStep: (stepIndex: number) => void;
+}
+
+interface MobileSidebarProps {
+  currentStep: number;
+  completedSteps: number[];
+  stepHasErrors: (stepIndex: number) => boolean;
+  goToStep: (stepIndex: number) => void;
+  selectedTemplate: string;
+  setSelectedTemplate: (template: string) => void;
+  customization: CustomizationOptions;
+  setCustomization: (customization: CustomizationOptions) => void;
+  resumeData: ResumeData;
+  onMenuClose: () => void;
 }
 
 const steps = [
@@ -197,8 +233,8 @@ export function ResumeUpdate({
             : [],
           awards: Array.isArray(initialData.awards) ? initialData.awards : [],
         });
-        if ((initialData as any)?.template) {
-          setSelectedTemplate((initialData as any).template);
+        if ((initialData as ResumeDataWithTemplate )?.template) {
+          setSelectedTemplate((initialData as ResumeDataWithTemplate).template);
         }
       } else {
         // Create new: always reset to empty
@@ -279,8 +315,8 @@ export function ResumeUpdate({
   }
 
   const validateCurrentStep = async () => {
-    const currentStepFields = steps[currentStep].fields;
-    const isValid = await trigger(currentStepFields as any);
+    const currentStepFields = steps[currentStep].fields as Array<keyof ResumeData>;
+    const isValid = await trigger(currentStepFields);
 
     if (isValid && !completedSteps.includes(currentStep)) {
       setCompletedSteps([...completedSteps, currentStep]);
@@ -348,6 +384,7 @@ export function ResumeUpdate({
         setShowPreview(true);
       }
     } catch (error) {
+      console.error("Lỗi khi lưu CV:", error);
       toast({
         title: "Lỗi khi lưu CV",
         description: "Không thể lưu CV. Vui lòng thử lại.",
@@ -619,7 +656,7 @@ function DesktopSidebar({
   customization,
   setCustomization,
   resumeData,
-}: any) {
+}: DesktopSidebarProps) {
   return (
     <Tabs defaultValue="steps" className="w-full">
       <TabsList className={styles.tabsList}>
@@ -699,7 +736,7 @@ function MobileSidebar({
   setCustomization,
   resumeData,
   onMenuClose,
-}: any) {
+}: MobileSidebarProps) {
   return (
     <Tabs defaultValue="steps" className="w-full">
       <TabsList className={styles.tabsList}>
@@ -763,7 +800,7 @@ function StepButton({
   completedSteps,
   stepHasErrors,
   goToStep,
-}: any) {
+}: StepButtonProps) {
   const isCurrentStep = index === currentStep;
   const isCompleted = completedSteps.includes(index);
   const hasErrors = stepHasErrors(index);

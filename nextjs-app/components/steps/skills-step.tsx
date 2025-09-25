@@ -540,12 +540,13 @@
 // ----- lần 4 -----/
 
 "use client";
-/* eslint-disable */
-import { useFormContext, useFieldArray } from "react-hook-form";
+
+import { useFormContext, useFieldArray, type FieldArrayWithId } from "react-hook-form";
 import type { ResumeData } from "../resume-builder";
 import { Plus, Trash2, Zap, Check } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
 import { useState } from "react";
+
 
 export function SkillsStep() {
   const { register, control, watch, setValue } = useFormContext<ResumeData>();
@@ -592,7 +593,7 @@ export function SkillsStep() {
     "Khác",
   ];
 
-  const renderSkillItem = (field: any, index: number, isDragging?: boolean) => {
+  const renderSkillItem = (field: FieldArrayWithId, index: number, isDragging?: boolean) => {
     const currentValue = watch(`skills.${index}`);
     const allSkills = watch("skills") || [];
 

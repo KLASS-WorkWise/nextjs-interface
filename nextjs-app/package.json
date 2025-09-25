@@ -51,6 +51,7 @@
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
     "event-source-polyfill": "^1.0.31",
+    "firebase": "^12.3.0",
     "framer-motion": "^12.23.12",
     "geist": "latest",
     "html2canvas": "^1.4.1",

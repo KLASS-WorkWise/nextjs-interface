@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable */
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -91,7 +90,7 @@ export function ResumeManager({
       const dataWithTemplate = {
         ...currentData,
         template: currentTemplate,
-      } as any;
+      };
       const apiData = mapFormToApi(dataWithTemplate);
       await resumeApi.saveMyResume(apiData);
 
