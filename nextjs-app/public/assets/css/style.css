@@ -2200,14 +2200,60 @@ label {
   padding-top: 20px;
 }
 
+  /* .card-grid-2 .flash {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    height: 25px;
+    width: 25px;
+    background: url(../imgs/template/icons/flash.svg) no-repeat 0px 0px;
+  } */
+
+  /* Flash icon góc phải card */
 .card-grid-2 .flash {
   position: absolute;
   top: 15px;
   right: 15px;
   height: 25px;
   width: 25px;
-  background: url(../imgs/template/icons/flash.svg) no-repeat 0px 0px;
+  background: url(../imgs/template/icons/flash.svg) no-repeat center/contain;
+  z-index: 2;
 }
+
+/* Nhóm icon bookmark + crown góc trái card */
+.card-grid-2 .action-icons {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  display: flex;
+  align-items: center;
+  gap: 0px; /* khoảng cách giữa crown và bookmark */
+  z-index: 2;
+}
+
+/* Crown VIP */
+.card-grid-2 .icon-crown {
+  font-size: 22px;
+  color: #FFD700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Bookmark button */
+.card-grid-2 .saved-job-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  margin: 17px;
+  /* justify-content: center; */
+}
+
+
+/* // bookmark icon */
 
 .card-grid-2 .card-grid-2-image-left {
   padding: 30px 20px 15px 20px;
