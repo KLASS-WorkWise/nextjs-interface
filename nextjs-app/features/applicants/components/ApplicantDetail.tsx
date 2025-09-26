@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @next/next/no-img-element */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -38,12 +36,12 @@ export default function ApplicantDetail({ id }: Props) {
   useEffect(() => {
     fetchData();
 
-    const unsubscribe = applicantService.subscribeApplicant(id, (data) => {
-      if (data.detail) setApplicant((prev) => ({ ...prev, ...data.detail }));
-      if (data.timeline) setTimeline(data.timeline);
-    });
+    // const unsubscribe = applicantService.subscribeApplicant(id, (data) => {
+    //   if (data.detail) setApplicant((prev) => ({ ...prev, ...data.detail }));
+    //   if (data.timeline) setTimeline(data.timeline);
+    // });
 
-    return () => unsubscribe();
+    // return () => unsubscribe();
   }, [id]);
 
   // useEffect(() => {
