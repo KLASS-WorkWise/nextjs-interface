@@ -13,6 +13,8 @@ declare module "next-auth" {
       username?: string;
       fullName?: string;
       roles?: string[];
+      // Thêm trường balance để lưu số dư tài khoản
+      // balance?: number;
     };
     accessToken?: string;
     refreshToken?: string;

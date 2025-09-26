@@ -8,37 +8,78 @@ import { useEffect, useState } from "react";
 import { ourTeamApi, OurTeamResponseDto } from "@/lib/ourTeam/api";
 
 export default function Contact() {
+  // State cho Our Team
   const [ourTeam, setOurTeam] = useState<OurTeamResponseDto[]>([]);
   const [featuredOurTeam, setFeaturedOurTeam] =
     useState<OurTeamResponseDto | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loadingTeam, setLoadingTeam] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOurTeam = async () => {
       try {
-        setLoading(true);
+        setLoadingTeam(true);
         const ourTeamData = await ourTeamApi.getAllOurTeam();
         setOurTeam(ourTeamData);
 
-        // Lấy ourTeam đầu tiên làm featured ourTeam
         if (ourTeamData.length > 0) {
           setFeaturedOurTeam(ourTeamData[0]);
         }
       } catch (err) {
-        console.error("Error fetching blogs:", err);
-        setError("Không thể tải dữ liệu blog");
+        console.error("Error fetching our team:", err);
+        setError("Không thể tải dữ liệu our team");
       } finally {
-        setLoading(false);
+        setLoadingTeam(false);
       }
     };
 
     fetchOurTeam();
   }, []);
+
+  // State cho form liên hệ
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [loadingForm, setLoadingForm] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoadingForm(true);
+    setResult(null);
+    try {
+      const res = await fetch("http://localhost:8080/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setResult("Gửi thành công 🎉");
+        setForm({ name: "", email: "", phone: "", message: "" });
+      } else {
+        setResult("Có lỗi xảy ra 🚨");
+      }
+    } catch {
+      setResult("Có lỗi xảy ra 🚨");
+    }
+    setLoadingForm(false);
+  };
+
   return (
     <>
       <Layout>
         <div>
+          {/* Breadcrumb */}
           <section className="section-box">
             <div className="breacrumb-cover bg-img-about">
               <div className="container">
@@ -63,6 +104,8 @@ export default function Contact() {
               </div>
             </div>
           </section>
+
+          {/* Thông tin liên hệ */}
           <section className="section-box mt-80">
             <div className="container">
               <div className="box-info-contact">
@@ -71,7 +114,7 @@ export default function Contact() {
                     <a href="#">
                       <img
                         src="assets/imgs/page/contact/logo.svg"
-                        alt="joxBox"
+                        alt="jobBox"
                       />
                     </a>
                     <div className="font-sm color-text-paragraph">
@@ -121,6 +164,8 @@ export default function Contact() {
               </div>
             </div>
           </section>
+
+          {/* Form liên hệ */}
           <section className="section-box mt-70">
             <div className="container">
               <div className="row">
@@ -130,106 +175,110 @@ export default function Contact() {
                   </span>
                   <h2 className="mt-5 mb-10">Get in touch</h2>
                   <p className="font-md color-text-paragraph-2">
-                    The right move at the right time saves your investment. live
-                    <br className="d-none d-lg-block" /> the dream of expanding
-                    your business.
+                    The right move at the right time saves your investment.
+                    <br className="d-none d-lg-block" /> Let’s expand your
+                    business.
                   </p>
+
                   <form
                     className="contact-form-style mt-30"
-                    id="contact-form"
-                    action="#"
-                    method="post"
+                    onSubmit={handleSubmit}
                   >
-                    <div
-                      className="row wow animate__animated animate__fadeInUp"
-                      data-wow-delay=".1s"
-                    >
+                    <div className="row">
                       <div className="col-lg-6 col-md-6">
                         <div className="input-style mb-20">
                           <input
-                            className="font-sm color-text-paragraph-2"
                             name="name"
                             placeholder="Enter your name"
                             type="text"
+                            value={form.name}
+                            onChange={handleChange}
+                            required
                           />
                         </div>
                       </div>
                       <div className="col-lg-6 col-md-6">
                         <div className="input-style mb-20">
                           <input
-                            className="font-sm color-text-paragraph-2"
-                            name="company"
-                            placeholder="Comapy (optioanl)"
-                            type="text"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-lg-6 col-md-6">
-                        <div className="input-style mb-20">
-                          <input
-                            className="font-sm color-text-paragraph-2"
                             name="email"
                             placeholder="Your email"
                             type="email"
+                            value={form.email}
+                            onChange={handleChange}
+                            required
                           />
                         </div>
                       </div>
                       <div className="col-lg-6 col-md-6">
                         <div className="input-style mb-20">
                           <input
-                            className="font-sm color-text-paragraph-2"
                             name="phone"
                             placeholder="Phone number"
                             type="tel"
+                            value={form.phone}
+                            onChange={handleChange}
+                            required
                           />
                         </div>
                       </div>
                       <div className="col-lg-12 col-md-12">
                         <div className="textarea-style mb-30">
                           <textarea
-                            className="font-sm color-text-paragraph-2"
                             name="message"
                             placeholder="Tell us about yourself"
-                            defaultValue={""}
+                            rows={4}
+                            value={form.message}
+                            onChange={handleChange}
+                            required
                           />
                         </div>
                         <button
                           className="submit btn btn-send-message"
                           type="submit"
+                          disabled={loadingForm}
                         >
-                          Send message
+                          {loadingForm ? "Đang gửi..." : "Send message"}
                         </button>
-                        <label className="ml-20">
-                          <input
-                            className="float-start mr-5 mt-6"
-                            type="checkbox"
-                          />{" "}
-                          By clicking contact us button, you agree our terms and
-                          policy,
-                        </label>
                       </div>
                     </div>
                   </form>
-                  <p className="form-messege" />
+
+                  {result && (
+                    <p
+                      style={{
+                        marginTop: 18,
+                        fontSize: 16,
+                        fontWeight: 500,
+                        color: result.includes("thành công")
+                          ? "#43a047"
+                          : "#d32f2f",
+                      }}
+                    >
+                      {result}
+                    </p>
+                  )}
                 </div>
+
                 <div className="col-lg-4 text-center d-none d-lg-block">
-                  <img src="assets/imgs/page/contact/img.png" alt="joxBox" />
+                  <img src="assets/imgs/page/contact/img.png" alt="jobBox" />
                 </div>
               </div>
             </div>
           </section>
+
+          {/* Team section */}
           <section className="section-box mt-80">
             <div className="post-loop-grid">
               <div className="container">
                 <div className="text-center">
                   <h6 className="f-18 color-text-mutted text-uppercase">
-                    {`${featuredOurTeam?.ourTeam}`}
+                    {featuredOurTeam?.ourTeam}
                   </h6>
-                  <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
-                    {`${featuredOurTeam?.ourTeamTitle}`}
+                  <h2 className="section-title mb-10">
+                    {featuredOurTeam?.ourTeamTitle}
                   </h2>
-                  <p className="font-sm color-text-paragraph w-lg-50 mx-auto wow animate__animated animate__fadeInUp">
-                    {`${featuredOurTeam?.ourTeamDescription}`}
+                  <p className="font-sm color-text-paragraph w-lg-50 mx-auto">
+                    {featuredOurTeam?.ourTeamDescription}
                   </p>
                 </div>
                 <div className="row mt-70">
@@ -248,50 +297,21 @@ export default function Contact() {
                                 "assets/imgs/page/about/team1.png"
                               }
                             />
-                            {/* Assuming member.image contains the image path */}
                           </figure>
                         </div>
                         <div className="card-grid-4-info">
                           <h5 className="mt-10">{member.name}</h5>
                           <p className="font-xs color-text-paragraph-2 mt-5 mb-5">
-                            {member.viTri}{" "}
-                            {/* Assuming member.viTri holds the job title */}
+                            {member.viTri}
                           </p>
-                          <div className="rate-reviews-small pt-5">
-                            {[...Array(5)].map((_, i) => (
-                              <span key={i}>
-                                <img
-                                  src="assets/imgs/template/icons/star.svg"
-                                  alt="jobBox"
-                                />
-                              </span>
-                            ))}
-                            <span className="ml-10 color-text-mutted font-xs">
-                              {/* <span>({member.reviewsCount})</span> */}
-                              {/* Assuming member.reviewsCount holds the review count */}
-                            </span>
-                          </div>
                           <span className="card-location">
                             {member.location}
-                          </span>{" "}
-                          {/* Assuming member.location holds location */}
+                          </span>
                           <div className="text-center mt-30">
-                            <a
-                              className="share-facebook social-share-link"
-                              href="#"
-                            />
-                            <a
-                              className="share-twitter social-share-link"
-                              href="#"
-                            />
-                            <a
-                              className="share-instagram social-share-link"
-                              href="#"
-                            />
-                            <a
-                              className="share-linkedin social-share-link"
-                              href="#"
-                            />
+                            <a className="share-facebook social-share-link" />
+                            <a className="share-twitter social-share-link" />
+                            <a className="share-instagram social-share-link" />
+                            <a className="share-linkedin social-share-link" />
                           </div>
                         </div>
                       </div>
@@ -301,13 +321,13 @@ export default function Contact() {
               </div>
             </div>
           </section>
+
+          {/* Blog */}
           <section className="section-box mt-50 mb-50">
             <div className="container">
               <div className="text-start">
-                <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
-                  News and Blog
-                </h2>
-                <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
+                <h2 className="section-title mb-10">News and Blog</h2>
+                <p className="font-lg color-text-paragraph-2">
                   Get the latest news, updates and tips
                 </p>
               </div>
@@ -327,24 +347,8 @@ export default function Contact() {
               </div>
             </div>
           </section>
-          {/* <section className="section-box mt-30 mb-40">
-            <div className="container">
-              <h2 className="text-center mb-15 wow animate__animated animate__fadeInUp">
-                Our Happy Customer
-              </h2>
-              <div className="font-lg color-text-paragraph-2 text-center wow animate__animated animate__fadeInUp">
-                When it comes to choosing the right web hosting provider, we
-                know how easy it
-                <br className="d-none d-lg-block" /> is to get overwhelmed with
-                the number.
-              </div>
-              <div className="row mt-50">
-                <div className="box-swiper">
-                  <TestimonialSlider1 />
-                </div>
-              </div>
-            </div>
-          </section> */}
+
+          {/* Newsletter */}
           <section className="section-box mt-50 mb-20">
             <div className="container">
               <div className="box-newsletter">
@@ -352,13 +356,12 @@ export default function Contact() {
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
                     <img
                       src="assets/imgs/template/newsletter-left.png"
-                      alt="joxBox"
+                      alt="jobBox"
                     />
                   </div>
                   <div className="col-lg-12 col-xl-6 col-12">
                     <h2 className="text-md-newsletter text-center">
-                      New Things Will Always
-                      <br /> Update Regularly
+                      New Things Will Always <br /> Update Regularly
                     </h2>
                     <div className="box-form-newsletter mt-40">
                       <form className="form-newsletter">
@@ -376,7 +379,7 @@ export default function Contact() {
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
                     <img
                       src="assets/imgs/template/newsletter-right.png"
-                      alt="joxBox"
+                      alt="jobBox"
                     />
                   </div>
                 </div>
