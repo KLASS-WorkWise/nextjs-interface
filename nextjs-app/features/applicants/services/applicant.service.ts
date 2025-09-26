@@ -11,15 +11,23 @@ import { getSession } from "next-auth/react";
 export type ApplicantHistory = {
   id: number;
   status: string;
-  note: string;
+  note?: string;
   changedAt: string;
   changedBy?: string;
 };
+export type InterviewSchedule = {
+  id: number;
+  scheduledAt: string;
+  location: string;
+  interviewer: string;
+};
+
+export type TimelineEvent = ApplicantHistory | InterviewSchedule;
 
 export type ApplicantTimeline = {
   stepOrder: number;
   status: string;
-  events: ApplicantHistory[];
+  events: TimelineEvent[];
   currentStep: boolean;
   completed: boolean;
 };

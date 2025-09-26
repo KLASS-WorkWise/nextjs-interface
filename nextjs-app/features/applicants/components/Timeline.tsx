@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { CheckCircle, Clock } from "lucide-react";
-import { ApplicantTimeline } from "../services/applicant.service";
-import styles from '../../../styles/Timeline.module.css';
+import {
+  ApplicantTimeline,
+  TimelineEvent,
+} from "../services/applicant.service";
+import styles from "../../../styles/Timeline.module.css";
 export type ApplicantHistory = {
   status: string;
   note?: string | null;
@@ -17,7 +20,7 @@ export function Timeline({ steps }: Props) {
 
   // Khi steps thay đổi, highlight step mới
   useEffect(() => {
-    const currentStepIndex = steps.findIndex(step => step.currentStep);
+    const currentStepIndex = steps.findIndex((step) => step.currentStep);
     if (currentStepIndex !== -1) {
       setHighlightStep(currentStepIndex);
       const timer = setTimeout(() => setHighlightStep(null), 2000); // nháy 2s
@@ -32,43 +35,75 @@ export function Timeline({ steps }: Props) {
         {steps
           .sort((a, b) => a.stepOrder - b.stepOrder)
           .map((step, idx) => (
-          <li key={idx} className={styles.timelineStep}>
-            {/* Dot */}
-            <span
-              className={`${styles.dot} ${
-                step.completed
-                  ? styles.completed
-                  : step.currentStep
-                  ? highlightStep === idx
-                    ? styles.currentPulse
-                    : styles.current
-                  : styles.pending
-              }`}
-            >
-              {step.completed ? <CheckCircle size={14} /> : <Clock size={14} />}
-            </span>
+            <li key={idx} className={styles.timelineStep}>
+              {/* Dot */}
+              <span
+                className={`${styles.dot} ${
+                  step.completed
+                    ? styles.completed
+                    : step.currentStep
+                    ? highlightStep === idx
+                      ? styles.currentPulse
+                      : styles.current
+                    : styles.pending
+                }`}
+              >
+                {step.completed ? (
+                  <CheckCircle size={14} />
+                ) : (
+                  <Clock size={14} />
+                )}
+              </span>
 
-            {/* Line */}
-            {idx < steps.length - 1 && <span className={styles.line}></span>}
+              {/* Line */}
+              {idx < steps.length - 1 && <span className={styles.line}></span>}
 
-            <div className={styles.content}>
-              <h4 className={`${styles.stepTitle} ${
-                step.completed ? styles.textCompleted :
-                step.currentStep ? styles.textCurrent : styles.textPending
-              }`}>
-                {step.status} {step.currentStep && "(Current)"}
-              </h4>
+              <div className={styles.content}>
+                <h4
+                  className={`${styles.stepTitle} ${
+                    step.completed
+                      ? styles.textCompleted
+                      : step.currentStep
+                      ? styles.textCurrent
+                      : styles.textPending
+                  }`}
+                >
+                  {step.status} {step.currentStep && "(Current)"}
+                </h4>
 
-              <div className={styles.events}>
-                {step.events.map((ev, i) => (
-                  <p key={i} className={styles.event}>
-                    <span className={styles.eventTime}>{new Date(ev.changedAt).toLocaleString()}</span> - {ev.note} <span className={styles.eventBy}>({ev.changedBy})</span>
-                  </p>
-                ))}
+                <div className={styles.events}>
+                  {step.events.map((ev: TimelineEvent, i) => {
+                    if ("changedAt" in ev) {
+                      // ApplicantHistory
+                      return (
+                        <p key={i} className={styles.event}>
+                          <span className={styles.eventTime}>
+                            {new Date(ev.changedAt).toLocaleString()}
+                          </span>{" "}
+                          - {ev.note || "No note"}{" "}
+                          <span className={styles.eventBy}>
+                            ({ev.changedBy})
+                          </span>
+                        </p>
+                      );
+                    }
+                    if ("scheduledAt" in ev) {
+                      // InterviewSchedule
+                      return (
+                        <p key={i} className={styles.event}>
+                          <span className={styles.eventTime}>
+                            {new Date(ev.scheduledAt).toLocaleString()}
+                          </span>{" "}
+                          - Interview at {ev.location} with {ev.interviewer}
+                        </p>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
               </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          ))}
       </ol>
     </div>
   );
