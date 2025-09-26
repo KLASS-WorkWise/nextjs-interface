@@ -1,4 +1,3 @@
-/* eslint-disable */
 "use client";
 
 import { Save } from "lucide-react";
@@ -33,8 +32,8 @@ export function ResumePreview({
   customization = defaultCustomization,
   isCompact = false,
   onSave,
-  resumeData,
-}: ResumePreviewProps) {
+}: // resumeData,
+ResumePreviewProps) {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -42,7 +41,7 @@ export function ResumePreview({
     if (isSaving) return;
     setIsSaving(true);
     try {
-      const dataWithTemplate = { ...data, template: template } as any;
+      const dataWithTemplate = { ...data, template: template };
       const apiData = mapFormToApi(dataWithTemplate);
       let savedResume;
       if (data.id) {
@@ -60,17 +59,17 @@ export function ResumePreview({
       if (onSave) {
         onSave({ ...dataWithTemplate, id: resumeId } as ResumeData);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error saving CV:", error);
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Không thể lưu CV. Vui lòng thử lại.";
-      toast({
-        title: "Lỗi khi lưu CV",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      // const errorMessage =
+      //   error.response?.data?.message ||
+      //   error.message ||
+      //   "Không thể lưu CV. Vui lòng thử lại.";
+      // toast({
+      //   title: "Lỗi khi lưu CV",
+      //   description: errorMessage,
+      //   variant: "destructive",
+      // });
     } finally {
       setIsSaving(false);
     }

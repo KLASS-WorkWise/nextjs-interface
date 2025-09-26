@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable */
 import { useFormContext, useFieldArray } from "react-hook-form";
 import { Plus, Trash2, Users } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
@@ -28,12 +27,21 @@ export function ActivitiesStep() {
     });
   };
 
+  interface ActivityField {
+    id: string;
+    title: string;
+    organization: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+  }
+
   const handleReorder = (oldIndex: number, newIndex: number) => {
     move(oldIndex, newIndex);
   };
 
   const renderActivityItem = (
-    field: any,
+    field: ActivityField,
     index: number,
     isDragging?: boolean
   ) => (

@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable */
 import { useFormContext, useFieldArray } from "react-hook-form";
 import { Plus, Trash2, Award } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
@@ -21,12 +20,19 @@ export function AwardsStep() {
       description: "",
     });
   };
+  type AwardField = {
+    id: string;
+    title: string;
+    issuer: string;
+    date: string;
+    description: string;
+  };
 
   const handleReorder = (oldIndex: number, newIndex: number) => {
     move(oldIndex, newIndex);
   };
 
-  const renderAwardItem = (field: any, index: number, isDragging?: boolean) => (
+  const renderAwardItem = (field: AwardField, index: number, isDragging?: boolean) => (
     <div
       key={field.id}
       className={`card mb-3 ${isDragging ? "shadow-lg border-primary" : ""}`}

@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable */
 interface CVEmptyStateProps {
   onCreateNew: () => void;
 }
@@ -50,6 +49,13 @@ export function CVEmptyState({ onCreateNew }: CVEmptyStateProps) {
           </svg>
         </div>
         <p className="text-muted fs-6">Chưa có CV nào được tạo.</p>
+        <button
+          className="btn btn-primary"
+          onClick={onCreateNew}
+          style={{ display: "none" }}
+        >
+          Create New
+        </button>
       </div>
     </div>
   );
