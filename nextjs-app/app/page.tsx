@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import JobChatBot from "./ChatBotJob/page";
+import JobPostingVip from "@/components/sliders/JobPostingVip";
 // import JobChatBot from "./ChatBotJob/page";
 
 export default function Home() {
@@ -235,169 +236,15 @@ export default function Home() {
           <div className="container">
             <div className="text-center">
               <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
-                Jobs of the day
+                Premium Job Opportunities
               </h2>
               <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
-                Search and connect with the right candidates faster.{" "}
-              </p>
-            </div>
-            <div className="mt-70">
-              <CategoryTab />
-            </div>
-          </div>
-        </section>
-        <section className="section-box overflow-visible mt-100 mb-100">
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-6 col-sm-12">
-                <div className="box-image-job">
-                  <img
-                    className="img-job-1"
-                    alt="jobBox"
-                    src="assets/imgs/page/homepage1/img-chart.png"
-                  />
-                  <img
-                    className="img-job-2"
-                    alt="jobBox"
-                    src="assets/imgs/page/homepage1/controlcard.png"
-                  />
-                  <figure className="wow animate__animated animate__fadeIn">
-                    <img
-                      alt="jobBox"
-                      src="assets/imgs/page/homepage1/img1.png"
-                    />
-                  </figure>
-                </div>
-              </div>
-              <div className="col-lg-6 col-sm-12">
-                <div className="content-job-inner">
-                  <span className="color-text-mutted text-32">
-                    Millions Of Jobs.{" "}
-                  </span>
-                  <h2 className="text-52 wow animate__animated animate__fadeInUp">
-                    Find The One That’s{" "}
-                    <span className="color-brand-2">Right</span> For You
-                  </h2>
-                  <div className="mt-40 pr-50 text-md-lh28 wow animate__animated animate__fadeInUp">
-                    Search all the open positions on the web. Get your own
-                    personalized salary estimate. Read reviews on over 600,000
-                    companies worldwide. The right job is out there.
-                  </div>
-                  <div className="mt-40">
-                    <div className="wow animate__animated animate__fadeInUp">
-                      <Link href="/jobs-grid">
-                        <span className="btn btn-default">Search Jobs</span>
-                      </Link>
-
-                      <Link href="/page-about">
-                        <span className="btn btn-link">Learn More</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        {/* <section className="section-box overflow-visible mt-50 mb-50">
-          <div className="container">
-            <div className="row">
-              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-                <div className="text-center">
-                  <h1 className="color-brand-2">
-                    <span className="count">25</span>
-                    <span> K+</span>
-                  </h1>
-                  <h5>Completed Cases</h5>
-                  <p className="font-sm color-text-paragraph mt-10">
-                    We always provide people a{" "}
-                    <br className="d-none d-lg-block" />
-                    complete solution upon focused of
-                    <br className="d-none d-lg-block" /> any business
-                  </p>
-                </div>
-              </div>
-              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-                <div className="text-center">
-                  <h1 className="color-brand-2">
-                    <span className="count">17</span>
-                    <span> +</span>
-                  </h1>
-                  <h5>Our Office</h5>
-                  <p className="font-sm color-text-paragraph mt-10">
-                    We always provide people a{" "}
-                    <br className="d-none d-lg-block" />
-                    complete solution upon focused of{" "}
-                    <br className="d-none d-lg-block" />
-                    any business
-                  </p>
-                </div>
-              </div>
-              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-                <div className="text-center">
-                  <h1 className="color-brand-2">
-                    <span className="count">86</span>
-                    <span> +</span>
-                  </h1>
-                  <h5>Skilled People</h5>
-                  <p className="font-sm color-text-paragraph mt-10">
-                    We always provide people a{" "}
-                    <br className="d-none d-lg-block" />
-                    complete solution upon focused of{" "}
-                    <br className="d-none d-lg-block" />
-                    any business
-                  </p>
-                </div>
-              </div>
-              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-                <div className="text-center">
-                  <h1 className="color-brand-2">
-                    <span className="count">28</span>
-                    <span> +</span>
-                  </h1>
-                  <h5>CHappy Clients</h5>
-                  <p className="font-sm color-text-paragraph mt-10">
-                    We always provide people a{" "}
-                    <br className="d-none d-lg-block" />
-                    complete solution upon focused of{" "}
-                    <br className="d-none d-lg-block" />
-                    any business
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section> */}
-        <section className="section-box mt-50">
-          <div className="container">
-            <div className="text-center">
-              <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
-                Top Recruiters
-              </h2>
-              <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
-                Discover your next career move, freelance gig, or internship
+                Discover exclusive VIP job postings from top companies. Find your dream career with competitive salaries and amazing benefits.
               </p>
             </div>
           </div>
           <div className="container">
-            <div className="box-swiper mt-50">
-              <TopRekruterSlider />
-            </div>
-          </div>
-        </section>
-        <section className="section-box mt-50">
-          <div className="container">
-            <div className="text-center">
-              <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
-                Jobs by Location
-              </h2>
-              <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
-                Find your favourite jobs and get the benefits of yourself
-              </p>
-            </div>
-          </div>
-          <div className="container">
-            <div className="row mt-50">
+            {/* <div className="row mt-50">
               <div className="col-xl-3 col-lg-3 col-md-5 col-sm-12 col-12">
                 <div className="card-image-top hover-up">
                   <Link href="/jobs-grid">
@@ -596,9 +443,165 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+            </div> */}
+            <JobPostingVip />
+          </div>
+        </section>
+        <section className="section-box mt-50">
+          <div className="container">
+            <div className="text-center">
+              <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
+               New jobs of the day
+              </h2>
+              <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
+                Search and connect with the right candidates faster.{" "}
+              </p>
+            </div>
+            <div className="mt-70">
+              <CategoryTab />
             </div>
           </div>
         </section>
+        <section className="section-box overflow-visible mt-100 mb-100">
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-6 col-sm-12">
+                <div className="box-image-job">
+                  <img
+                    className="img-job-1"
+                    alt="jobBox"
+                    src="assets/imgs/page/homepage1/img-chart.png"
+                  />
+                  <img
+                    className="img-job-2"
+                    alt="jobBox"
+                    src="assets/imgs/page/homepage1/controlcard.png"
+                  />
+                  <figure className="wow animate__animated animate__fadeIn">
+                    <img
+                      alt="jobBox"
+                      src="assets/imgs/page/homepage1/img1.png"
+                    />
+                  </figure>
+                </div>
+              </div>
+              <div className="col-lg-6 col-sm-12">
+                <div className="content-job-inner">
+                  <span className="color-text-mutted text-32">
+                    Millions Of Jobs.{" "}
+                  </span>
+                  <h2 className="text-52 wow animate__animated animate__fadeInUp">
+                    Find The One That’s{" "}
+                    <span className="color-brand-2">Right</span> For You
+                  </h2>
+                  <div className="mt-40 pr-50 text-md-lh28 wow animate__animated animate__fadeInUp">
+                    Search all the open positions on the web. Get your own
+                    personalized salary estimate. Read reviews on over 600,000
+                    companies worldwide. The right job is out there.
+                  </div>
+                  <div className="mt-40">
+                    <div className="wow animate__animated animate__fadeInUp">
+                      <Link href="/jobs-grid">
+                        <span className="btn btn-default">Search Jobs</span>
+                      </Link>
+
+                      <Link href="/page-about">
+                        <span className="btn btn-link">Learn More</span>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* <section className="section-box overflow-visible mt-50 mb-50">
+          <div className="container">
+            <div className="row">
+              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+                <div className="text-center">
+                  <h1 className="color-brand-2">
+                    <span className="count">25</span>
+                    <span> K+</span>
+                  </h1>
+                  <h5>Completed Cases</h5>
+                  <p className="font-sm color-text-paragraph mt-10">
+                    We always provide people a{" "}
+                    <br className="d-none d-lg-block" />
+                    complete solution upon focused of
+                    <br className="d-none d-lg-block" /> any business
+                  </p>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+                <div className="text-center">
+                  <h1 className="color-brand-2">
+                    <span className="count">17</span>
+                    <span> +</span>
+                  </h1>
+                  <h5>Our Office</h5>
+                  <p className="font-sm color-text-paragraph mt-10">
+                    We always provide people a{" "}
+                    <br className="d-none d-lg-block" />
+                    complete solution upon focused of{" "}
+                    <br className="d-none d-lg-block" />
+                    any business
+                  </p>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+                <div className="text-center">
+                  <h1 className="color-brand-2">
+                    <span className="count">86</span>
+                    <span> +</span>
+                  </h1>
+                  <h5>Skilled People</h5>
+                  <p className="font-sm color-text-paragraph mt-10">
+                    We always provide people a{" "}
+                    <br className="d-none d-lg-block" />
+                    complete solution upon focused of{" "}
+                    <br className="d-none d-lg-block" />
+                    any business
+                  </p>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+                <div className="text-center">
+                  <h1 className="color-brand-2">
+                    <span className="count">28</span>
+                    <span> +</span>
+                  </h1>
+                  <h5>CHappy Clients</h5>
+                  <p className="font-sm color-text-paragraph mt-10">
+                    We always provide people a{" "}
+                    <br className="d-none d-lg-block" />
+                    complete solution upon focused of{" "}
+                    <br className="d-none d-lg-block" />
+                    any business
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section> */}
+        <section className="section-box mt-50">
+          <div className="container">
+            <div className="text-center">
+              <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
+                Top Recruiters
+              </h2>
+              <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
+                Discover your next career move, freelance gig, or internship
+              </p>
+            </div>
+          </div>
+          <div className="container">
+            <div className="box-swiper mt-50">
+              <TopRekruterSlider />
+            </div>
+          </div>
+        </section>
+        
         <section className="section-box mt-50 mb-50">
           <div className="container">
             <div className="text-center">
