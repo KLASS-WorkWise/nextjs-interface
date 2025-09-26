@@ -6,12 +6,11 @@ import TopRekruterSlider from "@/components/sliders/TopRekruter";
 import BlogSlider from "@/components/sliders/Blog";
 import CategoryTab from "@/components/elements/CategoryTab";
 import Link from "next/link";
-// import SocialIcons from "./SocialIcon/SocialIcons";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import JobChatBot from "./ChatBotJob/page";
 import JobPostingVip from "@/components/sliders/JobPostingVip";
-// import JobChatBot from "./ChatBotJob/page";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const router = useRouter();
@@ -19,6 +18,23 @@ export default function Home() {
   const [keyword, setKeyword] = useState("");
   const [salary, setSalary] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
+  // Banner VIP active
+  const [vipBanner, setVipBanner] = useState<any>(null);
+
+  useEffect(() => {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    fetch(`${API_URL}/api/banners/active?position=home_hero`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setVipBanner(data[0]);
+        } else {
+          setVipBanner(null);
+        }
+      })
+      .catch(() => setVipBanner(null));
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
@@ -27,6 +43,7 @@ export default function Home() {
     if (salary) params.set("salary", salary);
     router.push(`/jobs-grid?${params.toString()}`);
   };
+
   return (
     <>
       <Layout>
@@ -57,17 +74,6 @@ export default function Home() {
                       data-wow-delay=".2s"
                     >
                       <form onSubmit={handleSearch}>
-                        {/* <div className="box-industry">
-                          <select className="form-input mr-10 select-active input-industry">
-                            <option value={0}>Industry</option>
-                            <option value={1}>Software</option>
-                            <option value={2}>Finance</option>
-                            <option value={3}>Recruting</option>
-                            <option value={4}>Management</option>
-                            <option value={5}>Advertising</option>
-                            <option value={6}>Development</option>
-                          </select>
-                        </div> */}
                         <div className="box-industry">
                           <select
                             className="form-input mr-10 select-active  input-location"
@@ -111,7 +117,6 @@ export default function Home() {
                             <option value="Vĩnh Long">Vĩnh Long</option>
                           </select>
                         </div>
-                        {/* Salary dropdown (labels match jobs-grid checkbox labels) */}
                         <div className="box-industry">
                           <select
                             className="form-input mr-10 select-active input-location"
@@ -138,52 +143,60 @@ export default function Home() {
                         </button>
                       </form>
                     </div>
-                    {/* <div
-                      className="list-tags-banner mt-60 wow animate__animated animate__fadeInUp"
-                      data-wow-delay=".3s"
-                    >
-                      <strong>Popular Searches:</strong>
-                      <Link href="#">Designer,</Link>
-                      <Link href="#">Web,</Link>
-                      <Link href="#">IOS,</Link>
-                      <Link href="#">Developer,</Link>
-                      <Link href="#">PHP,</Link>
-                      <Link href="#">Senior,</Link>
-                      <Link href="#">Engineer,</Link>
-                    </div> */}
                   </div>
                 </div>
                 <div className="col-xl-4 col-lg-12 d-none d-xl-block col-md-6">
-                  <div className="banner-imgs">
-                    <div className="block-1 shape-1">
-                      <img
-                        className="img-responsive"
-                        alt="jobBox"
-                        src="assets/imgs/page/homepage1/banner1.png"
-                      />
+                  {/* Banner VIP logic: nếu có banner active thì thay thế block này */}
+{vipBanner ? (
+  <div className="banner-imgs">
+    <motion.img
+      src={vipBanner.bannerImage}
+      alt={vipBanner.bannerTitle || "Banner"}
+      style={{ width: "100%", borderRadius: "12px" }}
+      initial={{ y: 0, x: 0 }}
+      animate={{ 
+        y: [0, -50, 0, 15, 0],  // lên xuống
+        x: [0, 10, 0, -10, 0]   // trái phải
+      }}
+      transition={{
+        duration: 6,    // thời gian chạy hết 1 vòng
+        repeat: Infinity, // lặp vô hạn
+        ease: "easeInOut"
+      }}
+    />
+  </div>
+) : (
+                    <div className="banner-imgs">
+                      <div className="block-1 shape-1">
+                        <img
+                          className="img-responsive"
+                          alt="jobBox"
+                          src="assets/imgs/page/homepage1/banner1.png"
+                        />
+                      </div>
+                      <div className="block-2 shape-2">
+                        <img
+                          className="img-responsive"
+                          alt="jobBox"
+                          src="assets/imgs/page/homepage1/banner2.png"
+                        />
+                      </div>
+                      <div className="block-3 shape-3">
+                        <img
+                          className="img-responsive"
+                          alt="jobBox"
+                          src="assets/imgs/page/homepage1/icon-top-banner.png"
+                        />
+                      </div>
+                      <div className="block-4 shape-3">
+                        <img
+                          className="img-responsive"
+                          alt="jobBox"
+                          src="assets/imgs/page/homepage1/icon-bottom-banner.png"
+                        />
+                      </div>
                     </div>
-                    <div className="block-2 shape-2">
-                      <img
-                        className="img-responsive"
-                        alt="jobBox"
-                        src="assets/imgs/page/homepage1/banner2.png"
-                      />
-                    </div>
-                    <div className="block-3 shape-3">
-                      <img
-                        className="img-responsive"
-                        alt="jobBox"
-                        src="assets/imgs/page/homepage1/icon-top-banner.png"
-                      />
-                    </div>
-                    <div className="block-4 shape-3">
-                      <img
-                        className="img-responsive"
-                        alt="jobBox"
-                        src="assets/imgs/page/homepage1/icon-bottom-banner.png"
-                      />
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
