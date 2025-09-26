@@ -2,12 +2,26 @@
 import Layout from "@/components/Layout/Layout";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+
+
+interface Job {
+  id: number;
+  employerId: number;
+  title: string;
+  category?: string;
+  location?: string;
+  salaryRange?: string;
+  jobType?: string;
+  status?: string;
+  endAt?: string;
+  requiredDegree?: string;
+  // add other fields as needed
+}
+
 import { useSession } from "next-auth/react";
 
-// ...existing code...
-
 export default function MyJobs() {
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const { data: session } = useSession();
@@ -37,14 +51,14 @@ export default function MyJobs() {
             // Lọc job theo employerId (luôn lọc thủ công phía FE)
             const employerId = session?.user?.id;
             console.log("employerId:", employerId);
-            let jobsArray = Array.isArray(data) ? data : (data.jobs || []);
-            const filteredJobs = jobsArray.filter((job: any) => job.employerId === employerId);
+            const jobsArray: Job[] = Array.isArray(data) ? data : (data.jobs || []);
+            const filteredJobs = jobsArray.filter((job: Job) => String(job.employerId) === String(employerId));
             console.log("filteredJobs:", filteredJobs);
             setJobs(filteredJobs);
         } else {
           setMessage("Lỗi khi lấy danh sách job");
         }
-      } catch (error) {
+      } catch {
         setMessage("Lỗi kết nối API!");
       } finally {
         setLoading(false);
@@ -65,12 +79,12 @@ export default function MyJobs() {
           }, 
         });
       if (res.ok) { 
-        setJobs(jobs.filter((job: any) => job.id !== id));
+        setJobs(jobs.filter((job: Job) => job.id !== id));
         setMessage("Xoá job thành công!");
       } else {
         setMessage("Lỗi khi xoá job");
       }
-    } catch (error) {
+    } catch {
       setMessage("Lỗi kết nối API!");
     } finally {
       setLoading(false);
@@ -117,7 +131,7 @@ export default function MyJobs() {
                     </tr>
                   </thead>
                   <tbody>
-                    {jobs.map((job: any) => (
+                    {jobs.map((job: Job) => (
                       <tr key={job.id}>
                         <td className="fw-semibold" style={{maxWidth:180}}>{job.title}</td>
                         <td>{job.category || <span className="text-muted">-</span>}</td>
@@ -152,6 +166,6 @@ export default function MyJobs() {
           </>
         )}
       </div>
-    </Layout>
+	</Layout>
   );
 }

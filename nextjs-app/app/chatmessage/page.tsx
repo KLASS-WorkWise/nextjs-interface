@@ -1,3 +1,4 @@
+
 "use client";
 import { useEffect, useState } from "react";
 import { db } from "./libraries/firebase/initializaApp"; // Đường dẫn tới file firebase bạn đã khởi tạo
@@ -8,11 +9,12 @@ import {
     orderBy,
     onSnapshot,
     serverTimestamp,
+    Timestamp
 } from "firebase/firestore";
 
 function Chat({ chatId, currentUserId }: { chatId: string; currentUserId: string }) {
     const [messages, setMessages] = useState<
-        { text: string; sender: string; createdAt: any }[]
+        { text: string; sender: string; createdAt: Timestamp | null }[]
     >([]);
     const [input, setInput] = useState("");
 
