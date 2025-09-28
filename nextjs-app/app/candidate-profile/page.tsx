@@ -13,7 +13,7 @@ import { CVDashboard } from "@/components/cv-dashboard";
 import { CVSuccessModal } from "@/components/jobRecommend/cv-success-modal";
 import type { ResumeData } from "@/components/resume-builder";
 import Image from "next/image";
-
+import styles from "../../styles/CandidateProfileTabs.module.css";
 export default function CandidateProfile() {
   const { data: session } = useSession();
   const [resume, setResume] = useState<ResumeData | null>(null);
@@ -179,12 +179,14 @@ export default function CandidateProfile() {
               <div className="row">
                 <div className="col-lg-3 col-md-4 col-sm-12">
                   <div className="box-nav-tabs nav-tavs-profile mb-5">
-                    <ul className="nav" role="tablist">
+                      <ul className={styles.tabList} role="tablist">
                       {tabs.map((tab) => (
-                        <li key={tab.key}>
+                        <li key={tab.key} className={styles.tabItem}>
                           <span
-                            className={`btn btn-sm mb-20 w-full text-left ${
-                              activeTab === tab.key ? "active" : ""
+                            className={`${styles.tabButton} ${
+                              activeTab === tab.key
+                                ? styles.tabButtonActive
+                                : ""
                             }`}
                             onClick={() => handleOnClick(tab.key)}
                           >

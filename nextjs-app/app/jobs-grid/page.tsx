@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 import React, { useEffect, useState } from "react";
 import { getCompanyByEmployerId } from "@/lib/company/api";
@@ -19,7 +17,12 @@ import { savedJobService } from "@/features/applicants/services/savedJobService"
 import { Bookmark } from "lucide-react";
 import { CrownFilled } from "@ant-design/icons";
 // import "@/styles/globals.css";
-
+import {
+  JobPostingResponseDTO,
+  Resume,
+  SavedJobResponseDTO,
+} from "@/types/applicant";
+import axios from "axios";
 export default function JobGrid() {
   // Map employerId -> company info
   const [companyInfoMap, setCompanyInfoMap] = useState<{ [key: string]: any }>(
@@ -56,8 +59,8 @@ export default function JobGrid() {
   const [keyword, setKeyword] = useState("");
 
   // Lấy dữ liệu Applyjob từ API
-  const [modalJob, setModalJob] = useState<any | null>(null);
-  const [resumes, setResumes] = useState<any[]>([]);
+  const [modalJob, setModalJob] = useState<JobPostingResponseDTO | null>(null);
+  const [resumes, setResumes] = useState<Resume[]>([]);
   const router = useRouter();
   const [savingJobId, setSavingJobId] = useState<number | null>(null);
   // savedJobs: lưu cả jobId và savedJobId
@@ -243,14 +246,32 @@ export default function JobGrid() {
   // Sắp xếp VIP lên đầu
   let sortedPagedJobs;
   if (currentPage === 1) {
-  // Trang 1: VIP lên đầu, tất cả đều sắp xếp theo thời gian mới nhất
-  const vipJobs = filteredJobs.filter(j => j.postType === "vip").sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  const normalJobs = filteredJobs.filter(j => j.postType !== "vip").sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  sortedPagedJobs = [...vipJobs, ...normalJobs].slice(0, jobsPerPage);
+    // Trang 1: VIP lên đầu, tất cả đều sắp xếp theo thời gian mới nhất
+    const vipJobs = filteredJobs
+      .filter((j) => j.postType === "vip")
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    const normalJobs = filteredJobs
+      .filter((j) => j.postType !== "vip")
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    sortedPagedJobs = [...vipJobs, ...normalJobs].slice(0, jobsPerPage);
   } else {
-  // Trang khác: chỉ thường, không VIP, sắp xếp theo thời gian mới nhất
-  const normalJobs = filteredJobs.filter(j => j.postType !== "vip").sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  sortedPagedJobs = normalJobs.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
+    // Trang khác: chỉ thường, không VIP, sắp xếp theo thời gian mới nhất
+    const normalJobs = filteredJobs
+      .filter((j) => j.postType !== "vip")
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    sortedPagedJobs = normalJobs.slice(
+      (currentPage - 1) * jobsPerPage,
+      currentPage * jobsPerPage
+    );
   }
 
   // Đã fetch company cùng lúc với jobs, không cần fetch lại theo pagedJobs
@@ -275,9 +296,9 @@ export default function JobGrid() {
         // Unsave dùng savedJobId
         await savedJobService.removeSavedJob(existing.savedJobId);
         setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
-        toast.error("Removed successfully");
+        toast.success("Removed successfully");
         console.log("Removed job:", existing);
-         console.log("Removed job:", existing.savedJobId);
+        console.log("Removed job:", existing.savedJobId);
       } else {
         const res = await savedJobService.saveJob(jobId);
         setSavedJobs((prev) => [
@@ -286,23 +307,28 @@ export default function JobGrid() {
         ]);
         toast.success("Saved successfully");
         console.log("Saved job:", res.data);
-          console.log("Saved jobss:", res.data.savedJobId);
+        console.log("Saved jobss:", res.data.savedJobId);
       }
-    } catch (err: any) {
-      console.error("Error saving job", err);
-      // Nếu 404, vẫn remove khỏi state để UI không treo
-      if (err.response?.status === 404 && existing) {
-        setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
-        toast.error("This job was not saved or already removed");
-      } else {
-        toast.error("Something went wrong");
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error("Error saving job", err.message);
+      }
+
+      // Nếu là lỗi từ Axios
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 404 && existing) {
+          setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
+          toast.error("This job was not saved or already removed");
+        } else {
+          toast.error("Something went wrong");
+        }
       }
     } finally {
       setSavingJobId(null);
     }
   };
 
-  const handleOpenApply = (job: any) => {
+  const handleOpenApply = (job: JobPostingResponseDTO) => {
     if (!session) {
       toast.error("You need to login to apply!");
       router.push("/page-signin"); // 👈 redirect sang trang login của bạn
@@ -328,7 +354,7 @@ export default function JobGrid() {
       try {
         const res = await savedJobService.getMySavedJobs();
         const savedJobsMap =
-          res.data.data.content?.map((job: any) => ({
+          res.data.data.content?.map((job: SavedJobResponseDTO) => ({
             jobId: job.jobPostingResponseDTO?.id, // 👈 lấy id từ DTO
             savedJobId: job.savedJobId,
           })) || [];
@@ -346,7 +372,6 @@ export default function JobGrid() {
     );
     console.log("SavedJobs:", savedJobs);
   }, [jobs, savedJobs]);
-
   return (
     <>
       <Layout>
@@ -568,13 +593,23 @@ export default function JobGrid() {
                             <div className="box-view-type">
                               <Link href="/jobs-list">
                                 <span className="view-type">
-                                  <Image src="/assets/imgs/template/icons/icon-list.svg" alt="jobBox" width={20} height={20} />
+                                  <Image
+                                    src="/assets/imgs/template/icons/icon-list.svg"
+                                    alt="jobBox"
+                                    width={20}
+                                    height={20}
+                                  />
                                 </span>
                               </Link>
 
                               <Link href="/jobs-grid">
                                 <span className="view-type">
-                                  <Image src="/assets/imgs/template/icons/icon-grid-hover.svg" alt="jobBox" width={20} height={20} />
+                                  <Image
+                                    src="/assets/imgs/template/icons/icon-grid-hover.svg"
+                                    alt="jobBox"
+                                    width={20}
+                                    height={20}
+                                  />
                                 </span>
                               </Link>
                             </div>
@@ -600,9 +635,9 @@ export default function JobGrid() {
                         </div>
                       )}
                       {!jobsLoading &&
-                      !jobsError &&
-                      jobs.length > 0 &&
-                      sortedPagedJobs.map((job: any) => {
+                        !jobsError &&
+                        jobs.length > 0 &&
+                        sortedPagedJobs.map((job: any) => {
                           const isSaved = savedJobs.some(
                             (j) => j.jobId === job.id
                           );
@@ -615,159 +650,200 @@ export default function JobGrid() {
                               className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12"
                             >
                               <div className="card-grid-2 hover-up">
-  <div className="card-grid-2-image-left">
-    <span
-  className="flash"
-  style={{ marginRight: "20px", display: "flex", gap: "0px", alignItems: "center", background: job.postType === "vip" ? "none" : undefined,  }}
->
-  {/* Nếu VIP thì hiện vương miện, không hiện sấm sét */}
-            {job.postType === "vip" ? (
-              <CrownFilled style={{ fontSize: 22, color: "#FFD700", verticalAlign: "middle" }} />
-            ) : (
-              // Sấm sét chỉ hiện nếu không phải VIP
-              <></>
-            )}
+                                <div className="card-grid-2-image-left">
+                                  <span
+                                    className="flash"
+                                    style={{
+                                      marginRight: "20px",
+                                      display: "flex",
+                                      gap: "0px",
+                                      alignItems: "center",
+                                      background:
+                                        job.postType === "vip"
+                                          ? "none"
+                                          : undefined,
+                                    }}
+                                  >
+                                    {/* Nếu VIP thì hiện vương miện, không hiện sấm sét */}
+                                    {job.postType === "vip" ? (
+                                      <CrownFilled
+                                        style={{
+                                          fontSize: 22,
+                                          color: "#FFD700",
+                                          verticalAlign: "middle",
+                                        }}
+                                      />
+                                    ) : (
+                                      // Sấm sét chỉ hiện nếu không phải VIP
+                                      <></>
+                                    )}
 
-  {/* Bookmark luôn hiển thị */}
-  <button
-    onClick={() => toggleSaveJob(job.id)}
-    disabled={savingJobId === job.id}
-    className="saved-job-button"
-    style={{
-      background: "transparent",
-      border: "none",
-      cursor: "pointer",
-      padding: 0,
-    }}
-  >
-    {savingJobId === job.id ? (
-      <span className="loading-dots"> ... </span>
-    ) : (
-      <Bookmark
-        size={22}
-        color={isSaved ? "red" : "gray"}
-        fill={isSaved ? "red" : "none"}
-      />
-    )}
-  </button>
-</span>
+                                    {/* Bookmark luôn hiển thị */}
+                                    <button
+                                      onClick={() => toggleSaveJob(job.id)}
+                                      disabled={savingJobId === job.id}
+                                      className="saved-job-button"
+                                      style={{
+                                        background: "transparent",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        padding: 0,
+                                      }}
+                                    >
+                                      {savingJobId === job.id ? (
+                                        <span className="loading-dots">
+                                          {" "}
+                                          ...{" "}
+                                        </span>
+                                      ) : (
+                                        <Bookmark
+                                          size={22}
+                                          color={isSaved ? "red" : "gray"}
+                                          fill={isSaved ? "red" : "none"}
+                                        />
+                                      )}
+                                    </button>
+                                  </span>
 
-    <div
-      className="image-box"
-      style={{
-        width: 48,
-        height: 48,
-        borderRadius: 8,
-        objectFit: "cover",
-      }}
-    >
-      <img
-        src={
-          company?.logoUrl ||
-          job.companyLogo ||
-          "/assets/imgs/brands/brand-1.png"
-        }
-        alt={company?.companyName || job.companyName || "Company"}
-        style={{
-          maxWidth: "100%",
-          maxHeight: "100%",
-          borderRadius: 8,
-          objectFit: "contain",
-          display: "block",
-          margin: "auto",
-        }}
-      />
-    </div>
+                                  <div
+                                    className="image-box"
+                                    style={{
+                                      width: 48,
+                                      height: 48,
+                                      borderRadius: 8,
+                                      objectFit: "cover",
+                                    }}
+                                  >
+                                    <img
+                                      src={
+                                        company?.logoUrl ||
+                                        job.companyLogo ||
+                                        "/assets/imgs/brands/brand-1.png"
+                                      }
+                                      alt={
+                                        company?.companyName ||
+                                        job.companyName ||
+                                        "Company"
+                                      }
+                                      style={{
+                                        maxWidth: "100%",
+                                        maxHeight: "100%",
+                                        borderRadius: 8,
+                                        objectFit: "contain",
+                                        display: "block",
+                                        margin: "auto",
+                                      }}
+                                    />
+                                  </div>
 
-    <div className="right-info">
-      <span className="fw-bold" style={{ fontSize: "1.08rem", color: "#222" }}>
-        {company?.companyName || job.companyName || "Company"}
-      </span>
-      <div className="d-flex align-items-center font-xs color-text-paragraph mt-1">
-        <i className="fi-rr-marker mr-5" />
-        {job.location || "Unknown"}
-      </div>
-    </div>
-  </div>
+                                  <div className="right-info">
+                                    <span
+                                      className="fw-bold"
+                                      style={{
+                                        fontSize: "1.08rem",
+                                        color: "#222",
+                                      }}
+                                    >
+                                      {company?.companyName ||
+                                        job.companyName ||
+                                        "Company"}
+                                    </span>
+                                    <div className="d-flex align-items-center font-xs color-text-paragraph mt-1">
+                                      <i className="fi-rr-marker mr-5" />
+                                      {job.location || "Unknown"}
+                                    </div>
+                                  </div>
+                                </div>
 
-  {/* phần còn lại giữ nguyên */}
-  <div className="card-block-info">
-    <h6>
-      <Link href={`/job-details-2/${job.id}`}>
-        <span>{job.title || "No title"}</span>
-      </Link>
-    </h6>
-    <div className="mt-5">
-      <span className="card-briefcase">{job.jobType || "Fulltime"}</span>
-      <span className="card-time">
-        {job.createdAt
-          ? new Date(job.createdAt).toLocaleDateString()
-          : ""}
-      </span>
-    </div>
-    <p
-      className="font-sm color-text-paragraph mt-15"
-      style={{
-        display: "-webkit-box",
-        WebkitLineClamp: 1,
-        WebkitBoxOrient: "vertical",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "normal",
-        maxWidth: "100%",
-        marginBottom: 0,
-      }}
-      title={job.description || "Không có mô tả"}
-    >
-      {job.description || "Không có mô tả"}
-    </p>
-    <div className="mt-30">
-      {Array.isArray(job.skills) &&
-        job.skills.map((skill, idx) => (
-          <span key={idx} className="btn btn-grey-small mr-5">
-            {skill}
-          </span>
-        ))}
-    </div>
-    <div className="card-2-bottom mt-30">
-      <div className="row">
-        <div className="col-lg-7 col-7">
-          <span
-            className="card-text-price"
-            style={{
-              fontSize: "1rem",
-              color: "#2A6DF5",
-              fontWeight: 700,
-              letterSpacing: "0.5px",
-              lineHeight: 1,
-            }}
-          >
-            {job.salaryRange && job.salaryRange.trim() !== ""
-              ? job.salaryRange
-              : job.salary && job.salary.trim() !== ""
-              ? job.salary
-              : "N/A"}
-          </span>
-          <span
-            className="text-muted"
-            style={{ fontSize: "0.85rem", marginLeft: 2 }}
-          >
-            /Tháng
-          </span>
-        </div>
-        <div className="col-lg-5 col-5 text-end">
-          <button
-            onClick={() => handleOpenApply(job)}
-            className="btn btn-apply-now"
-          >
-            Apply
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
+                                {/* phần còn lại giữ nguyên */}
+                                <div className="card-block-info">
+                                  <h6>
+                                    <Link href={`/job-details-2/${job.id}`}>
+                                      <span>{job.title || "No title"}</span>
+                                    </Link>
+                                  </h6>
+                                  <div className="mt-5">
+                                    <span className="card-briefcase">
+                                      {job.jobType || "Fulltime"}
+                                    </span>
+                                    <span className="card-time">
+                                      {job.createdAt
+                                        ? new Date(
+                                            job.createdAt
+                                          ).toLocaleDateString()
+                                        : ""}
+                                    </span>
+                                  </div>
+                                  <p
+                                    className="font-sm color-text-paragraph mt-15"
+                                    style={{
+                                      display: "-webkit-box",
+                                      WebkitLineClamp: 1,
+                                      WebkitBoxOrient: "vertical",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      whiteSpace: "normal",
+                                      maxWidth: "100%",
+                                      marginBottom: 0,
+                                    }}
+                                    title={job.description || "Không có mô tả"}
+                                  >
+                                    {job.description || "Không có mô tả"}
+                                  </p>
+                                  <div className="mt-30">
+                                    {Array.isArray(job.skills) &&
+                                      job.skills.map((skill, idx) => (
+                                        <span
+                                          key={idx}
+                                          className="btn btn-grey-small mr-5"
+                                        >
+                                          {skill}
+                                        </span>
+                                      ))}
+                                  </div>
+                                  <div className="card-2-bottom mt-30">
+                                    <div className="row">
+                                      <div className="col-lg-7 col-7">
+                                        <span
+                                          className="card-text-price"
+                                          style={{
+                                            fontSize: "1rem",
+                                            color: "#2A6DF5",
+                                            fontWeight: 700,
+                                            letterSpacing: "0.5px",
+                                            lineHeight: 1,
+                                          }}
+                                        >
+                                          {job.salaryRange &&
+                                          job.salaryRange.trim() !== ""
+                                            ? job.salaryRange
+                                            : job.salary &&
+                                              job.salary.trim() !== ""
+                                            ? job.salary
+                                            : "N/A"}
+                                        </span>
+                                        <span
+                                          className="text-muted"
+                                          style={{
+                                            fontSize: "0.85rem",
+                                            marginLeft: 2,
+                                          }}
+                                        >
+                                          /Tháng
+                                        </span>
+                                      </div>
+                                      <div className="col-lg-5 col-5 text-end">
+                                        <button
+                                          onClick={() => handleOpenApply(job)}
+                                          className="btn btn-apply-now"
+                                        >
+                                          Apply
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           );
                         })}
@@ -1134,7 +1210,12 @@ export default function JobGrid() {
               <div className="box-newsletter">
                 <div className="row">
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <Image src="/assets/imgs/template/newsletter-left.png" alt="joxBox" width={120} height={120} />
+                    <Image
+                      src="/assets/imgs/template/newsletter-left.png"
+                      alt="joxBox"
+                      width={120}
+                      height={120}
+                    />
                   </div>
                   <div className="col-lg-12 col-xl-6 col-12">
                     <h2 className="text-md-newsletter text-center">
@@ -1155,7 +1236,12 @@ export default function JobGrid() {
                     </div>
                   </div>
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <Image src="/assets/imgs/template/newsletter-right.png" alt="joxBox" width={120} height={120} />
+                    <Image
+                      src="/assets/imgs/template/newsletter-right.png"
+                      alt="joxBox"
+                      width={120}
+                      height={120}
+                    />
                   </div>
                 </div>
               </div>

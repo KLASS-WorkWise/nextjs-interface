@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @next/next/no-img-element */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -27,7 +25,7 @@ export default function ApplicantDetail({ id }: Props) {
       const res = await applicantService.getApplicantTracking(id);
       setApplicant(res.data.detail ?? null);
       console.log("Applicant detail:", res.data.detail);
-      setTimeline(res.data.timeline ?? []);
+      setTimeline(res.data.timeline?.map((stepOrder: ApplicantTimeline) => ({ ...stepOrder })) ?? []);
     } catch (err) {
       console.error("Error fetching applicant data:", err);
     } finally {
@@ -38,12 +36,12 @@ export default function ApplicantDetail({ id }: Props) {
   useEffect(() => {
     fetchData();
 
-    const unsubscribe = applicantService.subscribeApplicant(id, (data) => {
-      if (data.detail) setApplicant((prev) => ({ ...prev, ...data.detail }));
-      if (data.timeline) setTimeline(data.timeline);
-    });
+    // const unsubscribe = applicantService.subscribeApplicant(id, (data) => {
+    //   if (data.detail) setApplicant((prev) => ({ ...prev, ...data.detail }));
+    //   if (data.timeline) setTimeline(data.timeline);
+    // });
 
-    return () => unsubscribe();
+    // return () => unsubscribe();
   }, [id]);
 
   // useEffect(() => {
@@ -225,7 +223,7 @@ export default function ApplicantDetail({ id }: Props) {
         <h4 className={styles.subtitle}>Timeline</h4>
         <Timeline steps={timeline} />
 
-        {applicant.history && applicant.history.length > 0 && (
+        {/* {applicant.history && applicant.history.length > 0 && (
           <div className="mt-6">
             <h5 className={styles.subtitle}>History</h5>
             <ul className={styles.historyList}>
@@ -239,7 +237,7 @@ export default function ApplicantDetail({ id }: Props) {
               ))}
             </ul>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
