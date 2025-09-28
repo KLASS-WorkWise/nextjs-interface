@@ -18,25 +18,25 @@ export function EducationStep() {
   });
 
   const degreeOptions = [
-    "Tiến sĩ (Ph.D)",
-    "Thạc sĩ (Master)",
-    "Cử nhân (Bachelor)",
-    "Kỹ sư (Engineer)",
-    "Cao đẳng (Associate)",
-    "Trung cấp (Diploma)",
-    "Chứng chỉ (Certificate)",
-    "Khác",
+    "Ph.D",
+    "Master",
+    "Bachelor",
+    "Engineer",
+    "Associate",
+    "Diploma",
+    "Certificate",
+    "Other",
   ];
 
   const majorOptions = [
-    "Công nghệ thông tin",
-    "Khoa học máy tính",
-    "Kỹ thuật phần mềm",
-    "Hệ thống thông tin",
-    "An ninh mạng",
-    "Trí tuệ nhân tạo",
-    "Khoa học dữ liệu",
-    "Khác",
+    "Information Technology",
+    "Computer Science",
+    "Software Engineering",
+    "Information Systems",
+    "Cyber ​​Security",
+    "Artificial Intelligence",
+    "Data Science",
+    "Others",
   ];
 
   const addEducation = () => {
@@ -74,7 +74,7 @@ export function EducationStep() {
       className={`card mb-4 ${isDragging ? "shadow-lg" : ""}`}
     >
       <div className="card-header d-flex justify-content-between align-items-center">
-        <h6 className="mb-0">Học vấn {index + 1}</h6>
+        <h6 className="mb-0">Education {index + 1}</h6>
         <button
           type="button"
           className="btn btn-link text-danger p-0"
@@ -88,26 +88,33 @@ export function EducationStep() {
         <div className="row g-3">
           <div className="col-md-6">
             <label className="form-label" htmlFor={`institution-${index}`}>
-              Trường học *
+              School *
             </label>
             <input
               id={`institution-${index}`}
               className="form-control"
               {...register(`education.${index}.institution`, {
-                required: true,
+                required: "Please enter school name",
               })}
-              placeholder="Tên trường học"
+              placeholder="School name"
             />
+            {errors?.education?.[index]?.institution && (
+              <div className="text-danger small">
+                {errors.education[index].institution.message}
+              </div>
+            )}
           </div>
 
           <div className="col-md-6">
             <label className="form-label" htmlFor={`degree-${index}`}>
-              Bằng cấp *
+              Degree *
             </label>
             <select
               id={`degree-${index}`}
               className="form-select"
-              {...register(`education.${index}.degree`, { required: true })}
+              {...register(`education.${index}.degree`, {
+                required: "Please select a degree",
+              })}
               value={watch(`education.${index}.degree`) || ""}
               onChange={(e) =>
                 setValue(`education.${index}.degree`, e.target.value)
@@ -121,23 +128,30 @@ export function EducationStep() {
                 border: "1px solid #ced4da",
               }}
             >
-              <option value="">Chọn bằng cấp</option>
+              <option value="">Select a degree</option>
               {degreeOptions.map((degree) => (
                 <option key={degree} value={degree}>
                   {degree}
                 </option>
               ))}
             </select>
+            {errors?.education?.[index]?.degree && (
+              <div className="text-danger small">
+                {errors.education[index].degree.message}
+              </div>
+            )}
           </div>
 
           <div className="col-md-6">
             <label className="form-label" htmlFor={`field-${index}`}>
-              Chuyên ngành *
+              Major *
             </label>
             <select
               id={`field-${index}`}
               className="form-select"
-              {...register(`education.${index}.field`, { required: true })}
+              {...register(`education.${index}.field`, {
+                required: "Please select a major",
+              })}
               value={watch(`education.${index}.field`) || ""}
               onChange={(e) =>
                 setValue(`education.${index}.field`, e.target.value)
@@ -151,13 +165,18 @@ export function EducationStep() {
                 border: "1px solid #ced4da",
               }}
             >
-              <option value="">Chọn chuyên ngành</option>
+              <option value="">Select a major</option>
               {majorOptions.map((major) => (
                 <option key={major} value={major}>
                   {major}
                 </option>
               ))}
             </select>
+            {errors?.education?.[index]?.field && (
+              <div className="text-danger small">
+                {errors.education[index].field.message}
+              </div>
+            )}
           </div>
 
           <div className="col-md-6">
@@ -168,18 +187,19 @@ export function EducationStep() {
               id={`gpa-${index}`}
               className="form-control"
               {...register(`education.${index}.gpa`, {
+                required: "Please enter GPA",
                 validate: (value) => {
                   if (value === "" || value === undefined) return true;
                   const num = parseFloat(value);
-                  if (isNaN(num)) return "GPA không hợp lệ";
-                  if (num < 0 || num > 4) return "GPA 0-4";
+                  if (isNaN(num)) return "Invalid GPA";
+                  if (num < 0 || num > 4) return "GPA must be between 0 and 4";
                   return true;
                 },
               })}
               placeholder="3.5/4.0"
             />
             {errors?.education?.[index]?.gpa && (
-              <div className="text-danger small mt-1">
+              <div className="text-danger small">
                 {errors.education[index].gpa.message}
               </div>
             )}
@@ -187,20 +207,23 @@ export function EducationStep() {
 
           <div className="col-md-6">
             <label className="form-label" htmlFor={`startDate-${index}`}>
-              Ngày bắt đầu *
+              Start Date *
             </label>
             <input
               type="date"
               id={`startDate-${index}`}
               className="form-control"
               {...register(`education.${index}.startDate`, {
-                required: true,
+                required: "Please enter a start date",
                 validate: (startDate) => {
                   const endDate = watch(`education.${index}.endDate`);
                   const today = new Date().toISOString().slice(0, 10);
-                  if (startDate > today) return "Không quá hiện tại";
-                  if (endDate && startDate > endDate)
-                    return "Bắt đầu <= kết thúc";
+                  if (endDate && startDate && startDate > endDate) {
+                    return "Start date must be before end date";
+                  }
+                  if (startDate && startDate > today) {
+                    return "Start date must not be after today";
+                  }
                   return true;
                 },
               })}
@@ -214,18 +237,23 @@ export function EducationStep() {
 
           <div className="col-md-6">
             <label className="form-label" htmlFor={`endDate-${index}`}>
-              Ngày tốt nghiệp *
+              End Date *
             </label>
             <input
               type="date"
               id={`endDate-${index}`}
               className="form-control"
               {...register(`education.${index}.endDate`, {
-                required: true,
+                required: "Please enter an end date",
                 validate: (endDate) => {
                   if (!endDate) return true;
+                  const startDate = watch(`education.${index}.startDate`);
                   const today = new Date().toISOString().slice(0, 10);
-                  if (endDate > today) return "Không quá hiện tại";
+                  if (endDate < startDate)
+                    return "End date must be after start date";
+                  if (endDate > today) {
+                    setValue(`education.${index}.endDate`, today);
+                  }
                   return true;
                 },
               })}
@@ -247,7 +275,7 @@ export function EducationStep() {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="d-flex align-items-center gap-2">
           <GraduationCap size={20} />
-          <h5 className="mb-0">Học vấn</h5>
+          <h5 className="mb-0">Education</h5>
         </div>
         <button
           type="button"
@@ -255,7 +283,7 @@ export function EducationStep() {
           className="btn btn-primary btn-sm d-inline-flex align-items-center"
         >
           <Plus size={16} className="me-1" />
-          Thêm học vấn
+          Add Education
         </button>
       </div>
 
@@ -270,7 +298,8 @@ export function EducationStep() {
               <GraduationCap size={40} />
             </div>
             <p>
-              Chưa có thông tin học vấn nào. Hãy thêm trình độ học vấn của bạn!
+              No education information available. Please add your educational
+              background!
             </p>
           </div>
         </div>
@@ -280,7 +309,7 @@ export function EducationStep() {
       {fields.length > 0 && (
         <div>
           <div className="mb-3 p-3 rounded border border-dashed text-center text-muted small">
-            💡 Kéo và thả để sắp xếp lại thứ tự học vấn
+            💡Drag and drop to rearrange the order of education
           </div>
 
           <DragDropList

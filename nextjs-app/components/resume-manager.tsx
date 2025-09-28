@@ -164,7 +164,7 @@ export function ResumeManager({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FolderOpen className="h-5 w-5" />
-            Quản lý Resume
+            Resume Management
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -196,12 +196,12 @@ export function ResumeManager({
                   className="flex items-center gap-2 bg-transparent"
                 >
                   <Save className="h-4 w-4" />
-                  Lưu Local
+                  Save Locally
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Lưu Resume</DialogTitle>
+                  <DialogTitle>Save Resume</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
@@ -218,7 +218,7 @@ export function ResumeManager({
                       variant="outline"
                       onClick={() => setSaveDialogOpen(false)}
                     >
-                      Hủy
+                      Cancel
                     </Button>
                     <Button
                       onClick={saveResume}
@@ -235,9 +235,9 @@ export function ResumeManager({
           {savedResumes.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Chưa có resume nào được lưu</p>
+              <p>No resumes saved</p>
               <p className="text-sm">
-                Lưu resume hiện tại để quản lý và tái sử dụng
+                Save the current resume for management and reuse
               </p>
             </div>
           ) : (

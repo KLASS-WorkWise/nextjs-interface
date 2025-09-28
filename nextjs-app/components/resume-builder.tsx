@@ -464,11 +464,9 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
                         className={`${styles.actionButton} ${styles.primaryButton}`}
                       >
                         <span className={styles.hiddenOnMobile}>
-                          Xem trước Resume
+                          Preview Resume
                         </span>
-                        <span className={styles.hiddenOnDesktop}>
-                          Xem trước
-                        </span>
+                        <span className={styles.hiddenOnDesktop}>Preview</span>
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     ) : (
@@ -493,7 +491,7 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
             <CardHeader className={styles.cardHeader}>
               <CardTitle className="text-base flex items-center gap-2">
                 <Eye className="h-4 w-4" />
-                Xem trước
+                Preview
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4">
@@ -526,7 +524,7 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
           className={styles.floatingButton}
         >
           <Eye className="h-4 w-4" />
-          <span className={styles.hiddenOnMobile}>Xem trước</span>
+          <span className={styles.hiddenOnMobile}>Preview</span>
         </Button>
       </div>
     </div>
