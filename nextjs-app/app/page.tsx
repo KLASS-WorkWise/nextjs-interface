@@ -19,10 +19,16 @@ export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   // Banner VIP active
   const [vipBanner, setVipBanner] = useState<any>(null);
+  // Banner Featured active
+  const [featuredBanner, setFeaturedBanner] = useState<any>(null);
+
+  // Banner Standard active
+  const [standardBanner, setStandardBanner] = useState<any>(null);
 
   useEffect(() => {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    fetch(`${API_URL}/api/banners/active?position=home_hero`)
+    // VIP Banner
+    fetch(`${API_URL}/api/banners/active?bannerType=Vip`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
@@ -32,6 +38,30 @@ export default function Home() {
         }
       })
       .catch(() => setVipBanner(null));
+
+    // Featured Banner
+    fetch(`${API_URL}/api/banners/active?bannerType=Featured`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setFeaturedBanner(data[0]);
+        } else {
+          setFeaturedBanner(null);
+        }
+      })
+      .catch(() => setFeaturedBanner(null));
+
+    // Standard Banner
+    fetch(`${API_URL}/api/banners/active?bannerType=Standard`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setStandardBanner(data[0]);
+        } else {
+          setStandardBanner(null);
+        }
+      })
+      .catch(() => setStandardBanner(null));
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -146,25 +176,35 @@ export default function Home() {
                 </div>
                 <div className="col-xl-4 col-lg-12 d-none d-xl-block col-md-6">
                   {/* Banner VIP logic: nếu có banner active thì thay thế block này */}
-{vipBanner ? (
-  <div className="banner-imgs">
-    <motion.img
-      src={vipBanner.bannerImage}
-      alt={vipBanner.bannerTitle || "Banner"}
-      style={{ width: "100%", borderRadius: "12px" }}
-      initial={{ y: 0, x: 0 }}
-      animate={{ 
-        y: [0, -50, 0, 15, 0],  // lên xuống
-        x: [0, 10, 0, -10, 0]   // trái phải
-      }}
-      transition={{
-        duration: 6,    // thời gian chạy hết 1 vòng
-        repeat: Infinity, // lặp vô hạn
-        ease: "easeInOut"
-      }}
-    />
-  </div>
-) : (
+                  {vipBanner ? (
+
+                    <div className="banner-imgs">
+                      <motion.div
+                        className="gradient-frame"
+                        initial={{ y: 0, x: 0 }}
+                        animate={{
+                          y: [0, -10, 0, 20, 0],
+                          x: [0, 10, 0, -10, 0]
+                        }}
+                        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        <div className="gradient-frame-inner">
+                          <motion.img
+                            src={vipBanner.bannerImage}
+                            alt={vipBanner.bannerTitle || "Banner"}
+                            style={{ width: "100%", borderRadius: "12px", maxHeight: "320px", objectFit: "contain" }}
+                            initial={{ y: 0, x: 0 }}
+                            animate={{
+                              y: [0, -20, 0, 30, 0],
+                              x: [0, 15, 0, -20, 0]
+                            }}
+                            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                          />
+                        </div>
+                      </motion.div>
+                    </div>
+
+                  ) : (
                     <div className="banner-imgs">
                       <div className="block-1 shape-1">
                         <img
@@ -222,26 +262,77 @@ export default function Home() {
         </section>
         <div className="section-box mb-30">
           <div className="container">
-            <div className="box-we-hiring">
-              <div className="text-1">
-                <span className="text-we-are">We are</span>
-                <span className="text-hiring">Hiring</span>
-              </div>
-              <div className="text-2">
-                Let’s <span className="color-brand-1">Work</span> Together
-                <br /> &amp; <span className="color-brand-1">Explore</span>{" "}
-                Opportunities
-              </div>
-              <div className="text-3">
-                <div
-                  className="btn btn-apply btn-apply-icon"
-                  data-bs-toggle="modal"
-                  data-bs-target="#ModalApplyJobForm"
+            {featuredBanner ? (
+              <div className="featured-banner" style={{
+                position: 'relative',
+                width: '100%',
+                backgroundImage: `url(${featuredBanner.bannerImage})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                borderRadius: 16,
+                color: '#fff',
+                display: 'flex',
+                // flexDirection: 'row',
+                justifyContent: 'center',
+                padding: '41px 0px',
+                boxSizing: 'border-box',
+              }}>
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', maxWidth: 500 }}>
+
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 4 }}>WE ARE</div>
+                    <div style={{ fontWeight: 900, fontSize: 36, marginBottom: 4 }}>HIRING</div>
+                  </div>
+
+                  <div style={{ fontSize: 18, marginBottom: 4, marginLeft: 16 }}>
+                    Let’s <span style={{ color: '#ffd600', fontWeight: 700 }}>Work</span> Together<br />
+                    &amp; <span style={{ color: '#ffd600', fontWeight: 700 }}>Explore</span> Opportunities
+                  </div>
+                </div>
+                <a
+                  href={featuredBanner.bannerLink || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    position: 'absolute',
+                    right: 48,
+                    bottom: 43,
+                    fontSize: 20,
+                    padding: '14px 32px',
+                    background: '#2563eb',
+                    color: '#fff',
+                    borderRadius: 12,
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+                  }}
                 >
                   Apply now
+                </a>
+              </div>
+
+            ) : (
+              <div className="box-we-hiring">
+                <div className="text-1">
+                  <span className="text-we-are">We are</span>
+                  <span className="text-hiring">Hiring</span>
+                </div>
+                <div className="text-2">
+                  Let’s <span className="color-brand-1">Work</span> Together
+                  <br /> &amp; <span className="color-brand-1">Explore</span>{" "}
+                  Opportunities
+                </div>
+                <div className="text-3">
+                  <div
+                    className="btn btn-apply btn-apply-icon"
+                    data-bs-toggle="modal"
+                    data-bs-target="#ModalApplyJobForm"
+                  >
+                    Apply now
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
         <section className="section-box mt-50">
@@ -263,124 +354,88 @@ export default function Home() {
           <div className="container">
             <div className="row">
               <div className="col-lg-6 col-sm-12">
-                <div className="box-image-job">
-                  <img
-                    className="img-job-1"
-                    alt="jobBox"
-                    src="assets/imgs/page/homepage1/img-chart.png"
-                  />
-                  <img
-                    className="img-job-2"
-                    alt="jobBox"
-                    src="assets/imgs/page/homepage1/controlcard.png"
-                  />
-                  <figure className="wow animate__animated animate__fadeIn">
+                {/* Banner Standard logic: nếu có banner active thì thay thế block này */}
+                {standardBanner ? (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '77%',
+                    minHeight: '320px',
+                    maxHeight: '320px',
+                    background: '#fff',
+                    borderRadius: '16px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                    padding: 0,
+                    overflow: 'hidden',
+                    border: '6px solid #7c3aed',
+                    marginTop: '48px',  
+                  }}>
                     <img
-                      alt="jobBox"
-                      src="assets/imgs/page/homepage1/img1.png"
+                      src={standardBanner.bannerImage}
+                      alt={standardBanner.bannerTitle || "Banner"}
+                      style={{
+                        width: '100%',
+                        height: '320px',
+                        objectFit: 'cover',
+                        margin: 0,
+                        display: 'block',
+                        borderRadius: 0,
+                      }}
                     />
-                  </figure>
-                </div>
-              </div>
-              <div className="col-lg-6 col-sm-12">
-                <div className="content-job-inner">
-                  <span className="color-text-mutted text-32">
-                    Millions Of Jobs.{" "}
-                  </span>
-                  <h2 className="text-52 wow animate__animated animate__fadeInUp">
-                    Find The One That’s{" "}
-                    <span className="color-brand-2">Right</span> For You
-                  </h2>
-                  <div className="mt-40 pr-50 text-md-lh28 wow animate__animated animate__fadeInUp">
-                    Search all the open positions on the web. Get your own
-                    personalized salary estimate. Read reviews on over 600,000
-                    companies worldwide. The right job is out there.
                   </div>
-                  <div className="mt-40">
-                    <div className="wow animate__animated animate__fadeInUp">
-                      <Link href="/jobs-grid">
-                        <span className="btn btn-default">Search Jobs</span>
-                      </Link>
+                ) : (
+                  <div className="box-image-job">
+                    <img
+                      className="img-job-1"
+                      alt="jobBox"
+                      src="assets/imgs/page/homepage1/img-chart.png"
+                    />
+                    <img
+                      className="img-job-2"
+                      alt="jobBox"
+                      src="assets/imgs/page/homepage1/controlcard.png"
+                    />
+                    <figure className="wow animate__animated animate__fadeIn">
+                      <img
+                        alt="jobBox"
+                        src="assets/imgs/page/homepage1/img1.png"
+                      />
+                    </figure>
+                  </div>
+                )}
+              </div>
+<div className="col-lg-6 col-sm-12">
+  <div className="content-job-inner">
+    <span className="color-text-mutted text-32">
+      Your Career, Your Future
+    </span>
+    <h2 className="text-52 wow animate__animated animate__fadeInUp">
+      Discover <span className="color-brand-2">Opportunities</span> That
+      Matter
+    </h2>
+    <div className="mt-40 pr-50 text-md-lh28 wow animate__animated animate__fadeInUp">
+      Thousands of companies are hiring right now. Explore open positions,
+      compare offers, and take the next step in your career journey — all in
+      one place.
+    </div>
+    <div className="mt-40">
+      <div className="wow animate__animated animate__fadeInUp">
+        <Link href="/jobs-grid">
+          <span className="btn btn-default">Search Jobs</span>
+        </Link>
 
-                      <Link href="/page-about">
-                        <span className="btn btn-link">Learn More</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        <Link href="/page-about">
+          <span className="btn btn-link">Learn More</span>
+        </Link>
+      </div>
+    </div>
+  </div>
+</div>
+
             </div>
           </div>
         </section>
-        {/* <section className="section-box overflow-visible mt-50 mb-50">
-          <div className="container">
-            <div className="row">
-              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-                <div className="text-center">
-                  <h1 className="color-brand-2">
-                    <span className="count">25</span>
-                    <span> K+</span>
-                  </h1>
-                  <h5>Completed Cases</h5>
-                  <p className="font-sm color-text-paragraph mt-10">
-                    We always provide people a{" "}
-                    <br className="d-none d-lg-block" />
-                    complete solution upon focused of
-                    <br className="d-none d-lg-block" /> any business
-                  </p>
-                </div>
-              </div>
-              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-                <div className="text-center">
-                  <h1 className="color-brand-2">
-                    <span className="count">17</span>
-                    <span> +</span>
-                  </h1>
-                  <h5>Our Office</h5>
-                  <p className="font-sm color-text-paragraph mt-10">
-                    We always provide people a{" "}
-                    <br className="d-none d-lg-block" />
-                    complete solution upon focused of{" "}
-                    <br className="d-none d-lg-block" />
-                    any business
-                  </p>
-                </div>
-              </div>
-              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-                <div className="text-center">
-                  <h1 className="color-brand-2">
-                    <span className="count">86</span>
-                    <span> +</span>
-                  </h1>
-                  <h5>Skilled People</h5>
-                  <p className="font-sm color-text-paragraph mt-10">
-                    We always provide people a{" "}
-                    <br className="d-none d-lg-block" />
-                    complete solution upon focused of{" "}
-                    <br className="d-none d-lg-block" />
-                    any business
-                  </p>
-                </div>
-              </div>
-              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
-                <div className="text-center">
-                  <h1 className="color-brand-2">
-                    <span className="count">28</span>
-                    <span> +</span>
-                  </h1>
-                  <h5>CHappy Clients</h5>
-                  <p className="font-sm color-text-paragraph mt-10">
-                    We always provide people a{" "}
-                    <br className="d-none d-lg-block" />
-                    complete solution upon focused of{" "}
-                    <br className="d-none d-lg-block" />
-                    any business
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section> */}
         <section className="section-box mt-50">
           <div className="container">
             <div className="text-center">
@@ -679,7 +734,6 @@ export default function Home() {
         </section>
       </Layout>
       <JobChatBot isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
-      {/* <SocialIcons isChatOpen={isChatOpen} /> */}
     </>
   );
 }

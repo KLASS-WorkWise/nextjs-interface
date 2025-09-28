@@ -85,7 +85,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
         );
         setAvatarReady(true);
         setBalance(user?.balance || "0");
-      } catch {}
+      } catch { }
     };
     window.addEventListener("avatar-updated", handleCustom as any);
     return () => {
@@ -169,7 +169,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                         </Link>
                         <ul className="sub-menu">
                           {/* <li><Link href="/page-resume"><span>Create Cv</span></Link></li> */}
-                          {/* <li>
+                      {/* <li>
                             <Link href="/candidate-profile">
                               <span>Candidate Profile</span>
                             </Link>
@@ -228,12 +228,12 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                               <span>Create Cv</span>
                             </Link>
                           </li> */}
-                          {/* <li>
+                        {/* <li>
                             <Link href="/candidate-profile">
                               <span>Candidate Profile</span>
                             </Link>
                           </li>
-                        </ul> */} 
+                        </ul> */}
                       </li>
 
                       <li>
@@ -433,52 +433,53 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                     )}
 
                     {/* Hiển thị tên nếu là Employers */}
-{session?.user && role?.includes("Employers") && (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      minWidth: 180,
-      padding: "8px 16px",
-      background: "rgba(245,248,255,0.7)",
-      borderRadius: 16,
-      boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-    }}
-  >
-    <span
-      style={{
-        fontSize: 18,
-        fontWeight: 700,
-        color: "#1976d2",
-        marginBottom: 2,
-      }}
-    >
-      Hi, {session.user.username}
-    </span>
-    <span
-      style={{
-        fontSize: 15,
-        color: "#888",
-        fontWeight: 500,
-        marginBottom: 2,
-      }}
-    >
-      Số dư tài khoản:
-    </span>
-    <span
-      style={{
-        fontSize: 17,
-        color: "#43a047",
-        fontWeight: 600,
-        letterSpacing: 1,
-      }}
-    >
-      {balance} VNĐ
-    </span>
-  </div>
-)}
+                    {session?.user && role?.includes("Employers") && (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minWidth: 180,
+                          padding: "8px 16px",
+                          background: "rgba(245,248,255,0.7)",
+                          borderRadius: 16,
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 18,
+                            fontWeight: 700,
+                            color: "#1976d2",
+                            marginBottom: 2,
+                          }}
+                        >
+                          Hi, {session.user.username}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 15,
+                            color: "#888",
+                            fontWeight: 500,
+                            marginBottom: 2,
+                          }}
+                        >
+                          Số dư tài khoản:
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 17,
+                            color: "#43a047",
+                            fontWeight: 600,
+                            letterSpacing: 1,
+                          }}
+                        >
+                          {Number(balance).toLocaleString("vi-VN")} VNĐ
+                        </span>
+
+                      </div>
+                    )}
 
                     {/* Modal đăng ký */}
                     <CompanyRegistrationModal
