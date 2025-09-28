@@ -7,6 +7,7 @@ import Layout from "@/components/Layout/Layout";
 import BlogSlider from "@/components/sliders/Blog";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
 
 import { useSearchParams } from "next/navigation";
 
@@ -84,7 +85,7 @@ export default function JobGrid() {
         // 3. Lấy thông tin công ty cho từng employerId
         const companyPromises = employerIds.map(async (employerId) => {
           try {
-            const company = await getCompanyByEmployerId(employerId);
+            const company = await getCompanyByEmployerId(String(employerId));
             return { employerId, company };
           } catch {
             return { employerId, company: null };
@@ -93,7 +94,7 @@ export default function JobGrid() {
         const companyResults = await Promise.all(companyPromises);
         const companyMap: { [key: string]: any } = {};
         companyResults.forEach(({ employerId, company }) => {
-          companyMap[employerId] = company;
+          companyMap[String(employerId)] = company;
         });
         setCompanyInfoMap(companyMap);
       } catch (err: any) {
@@ -567,19 +568,13 @@ export default function JobGrid() {
                             <div className="box-view-type">
                               <Link href="/jobs-list">
                                 <span className="view-type">
-                                  <img
-                                    src="assets/imgs/template/icons/icon-list.svg"
-                                    alt="jobBox"
-                                  />
+                                  <Image src="/assets/imgs/template/icons/icon-list.svg" alt="jobBox" width={20} height={20} />
                                 </span>
                               </Link>
 
                               <Link href="/jobs-grid">
                                 <span className="view-type">
-                                  <img
-                                    src="assets/imgs/template/icons/icon-grid-hover.svg"
-                                    alt="jobBox"
-                                  />
+                                  <Image src="/assets/imgs/template/icons/icon-grid-hover.svg" alt="jobBox" width={20} height={20} />
                                 </span>
                               </Link>
                             </div>
@@ -1139,10 +1134,7 @@ export default function JobGrid() {
               <div className="box-newsletter">
                 <div className="row">
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img
-                      src="assets/imgs/template/newsletter-left.png"
-                      alt="joxBox"
-                    />
+                    <Image src="/assets/imgs/template/newsletter-left.png" alt="joxBox" width={120} height={120} />
                   </div>
                   <div className="col-lg-12 col-xl-6 col-12">
                     <h2 className="text-md-newsletter text-center">
@@ -1163,10 +1155,7 @@ export default function JobGrid() {
                     </div>
                   </div>
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img
-                      src="assets/imgs/template/newsletter-right.png"
-                      alt="joxBox"
-                    />
+                    <Image src="/assets/imgs/template/newsletter-right.png" alt="joxBox" width={120} height={120} />
                   </div>
                 </div>
               </div>

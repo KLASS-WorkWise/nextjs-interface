@@ -1,12 +1,16 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
+
 import Link from "next/link";
+import Image from "next/image";
 import Layout from "@/components/Layout/Layout";
 
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 
 type Company = {
+  id?: string | number;
+  employer?: { id?: string | number } | null;
   bannerUrl?: string;
   logoUrl?: string;
   companyName?: string;
@@ -19,31 +23,124 @@ type Company = {
   email?: string;
   // Add other properties as needed
 };
+type Job = {
+  id: string | number;
+  title?: string;
+  jobType?: string;
+  createdAt?: string;
+  location?: string;
+  salaryRange?: string;
+  category?: string;
+  requiredSkills?: string[];
+  minExperience?: number;
+  requiredDegree?: string;
+  endAt?: string;
+  employerId?: string | number;
+  employerName?: string;
+  employer?: { id?: string | number; name?: string };
+  description?: string;
+  companyName?: string;
+};
 
 export default function CompanyDetails() {
   const params = useParams();
+  const [job, setJob] = useState<Job | null>(null);
   const [activeIndex, setActiveIndex] = useState<number>(1);
   const companyId = params?.id as string; // id lấy từ URL
 
   const [company, setCompany] = useState<Company | null>(null);
 
+  // Jobs state for Latest Jobs list (filter by this company)
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobsLoading, setJobsLoading] = useState(false);
+  const [jobsError, setJobsError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const jobsPerPage = 3;
+
   React.useEffect(() => {
     async function fetchCompany() {
       try {
         // Gọi API với id lấy từ URL
+        // add lightweight logging to help debug when running locally
+        // eslint-disable-next-line no-console
+        console.log('[CompanyDetails] fetching company for id=', companyId);
         const data = await import("@/lib/company/api").then(m => m.getCompanyById(companyId));
+        // eslint-disable-next-line no-console
+        console.log('[CompanyDetails] company data:', data);
         setCompany(data);
       } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('[CompanyDetails] fetchCompany error', err);
         setCompany(null);
       }
     }
     if (companyId) fetchCompany();
   }, [companyId]);
 
+  // Fetch all jobs once and filter by company later
+  React.useEffect(() => {
+    let mounted = true;
+    const fetchJobs = async () => {
+      setJobsLoading(true);
+      setJobsError(null);
+      try {
+        // eslint-disable-next-line no-console
+        console.log('[CompanyDetails] fetching all jobs');
+        const res = await fetch("http://localhost:8080/api/job-postings/all");
+        // eslint-disable-next-line no-console
+        console.log('[CompanyDetails] jobs response status=', res.status);
+        if (!res.ok) throw new Error("Không thể lấy danh sách công việc");
+        const data = await res.json();
+        // eslint-disable-next-line no-console
+        console.log('[CompanyDetails] jobs loaded count=', Array.isArray(data) ? data.length : 'not-array');
+        if (!mounted) return;
+        setJobs(Array.isArray(data) ? data : []);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('[CompanyDetails] fetchJobs error', err);
+        setJobsError((err as Error).message || "Lỗi khi lấy công việc");
+      } finally {
+        if (mounted) setJobsLoading(false);
+      }
+    };
+    fetchJobs();
+    return () => { mounted = false };
+  }, []);
+
+  // Helpers to parse/format createdAt similar to job-details-2
+  const parseToDate = (val: string | number | Date | null | undefined): Date | null => {
+    if (val === null || val === undefined || val === '') return null;
+    if (typeof val === 'number') {
+      return new Date(val > 1e12 ? val : val * 1000);
+    }
+    if (val instanceof Date) return val;
+    if (typeof val === 'string') {
+      const num = Number(val);
+      if (!isNaN(num)) return new Date(num > 1e12 ? num : num * 1000);
+      const d = new Date(val);
+      if (!isNaN(d.getTime())) return d;
+    }
+    return null;
+  };
+
+  const formatCreatedAt = (date: Date) => {
+    const diff = Date.now() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 60) return `${minutes} mins ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hrs ago`;
+    return date.toLocaleDateString();
+  };
+
 
   const handleOnClick = (index: number) => {
     setActiveIndex(index);
   };
+
+  // reset pagination when company changes or jobs reload
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [companyId, company?.id, company?.companyName, jobs.length]);
 
   return (
     <>
@@ -135,230 +232,142 @@ export default function CompanyDetails() {
                   </div>
                   <div className="box-related-job content-page">
                     <h5 className="mb-30">Latest Jobs</h5>
-                    <div className="box-list-jobs display-list">
-                      <div className="col-xl-12 col-12">
-                        <div className="card-grid-2 hover-up">
-                          <span className="flash" />
-                          <div className="row">
-                            <div className="col-lg-6 col-md-6 col-sm-12">
-                              <div className="card-grid-2-image-left">
-                                <div className="image-box">
-                                  <img src="/assets/imgs/brands/brand-6.png" alt="jobBox" />
-                                </div>
-                                <div className="right-info">
-                                  <Link href="#">
-                                    <span className="name-job">Quora JSC</span>
-                                  </Link>
-                                  <span className="location-small">New York, US</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-6 text-start text-md-end pr-60 col-md-6 col-sm-12">
-                              <div className="pl-15 mb-15 mt-30">
-                                <Link href="#">
-                                  <span className="btn btn-grey-small mr-5">Adobe XD</span>
-                                </Link>
+                      <div className="box-list-jobs display-list">
+                        {jobsLoading && <div>Đang tải công việc...</div>}
+                        {jobsError && <div className="text-danger">{jobsError}</div>}
+                        {!jobsLoading && !jobsError && (
+                          (() => {
+                            // determine the company/employer key: prefer employer.id from company API, then company id, then company name
+                            const companyEmployerId = company?.employer?.id ?? null;
+                            const companyKey = companyEmployerId ?? company?.id ?? companyId ?? company?.companyName ?? null;
+                            const filtered = jobs
+                              .slice()
+                              .filter((j: Job) => {
+                                if (!companyKey) return false;
+                                // compare against several possible employer identifiers (job may contain employer.id, employerId or employerName)
+                                const jobEmployerKey = j.employer?.id ?? (j as any).employer?._id ?? j.employerId ?? j.employerName ?? j.employer?.name ?? '';
 
-                                <Link href="#">
-                                  <span className="btn btn-grey-small mr-5">Figma</span>
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="card-block-info">
-                            <h4>
-                              <Link href="job-details">
-                                <span>Senior System Engineer</span>
-                              </Link>
-                            </h4>
-                            <div className="mt-5">
-                              <span className="card-briefcase">Part time</span>
-                              <span className="card-time">
-                                <span>5</span>
-                                <span> mins ago</span>
-                              </span>
-                            </div>
-                            <p className="font-sm color-text-paragraph mt-10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
-                            <div className="card-2-bottom mt-20">
-                              <div className="row">
-                                <div className="col-lg-7 col-7">
-                                  <span className="card-text-price">$800</span>
-                                  <span className="text-muted">/Hour</span>
-                                </div>
-                                <div className="col-lg-5 col-5 text-end">
-                                  <div className="btn btn-apply-now" data-bs-toggle="modal" data-bs-target="#ModalApplyJobForm">
-                                    Apply now
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-12 col-12">
-                        <div className="card-grid-2 hover-up">
-                          <span className="flash" />
-                          <div className="row">
-                            <div className="col-lg-6 col-md-6 col-sm-12">
-                              <div className="card-grid-2-image-left">
-                                <div className="image-box">
-                                  <img src="/assets/imgs/brands/brand-5.png" alt="jobBox" />
-                                </div>
-                                <div className="right-info">
-                                  <Link href="#">
-                                    <span className="name-job">Nintendo</span>
-                                  </Link>
-                                  <span className="location-small">New York, US</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-6 text-start text-md-end pr-60 col-md-6 col-sm-12">
-                              <div className="pl-15 mb-15 mt-30">
-                                <Link href="#">
-                                  <span className="btn btn-grey-small mr-5">Adobe XD</span>
-                                </Link>
+                                // First try matching by employer id (most reliable). If companyKey looks like an id and matches job's employer id, include it.
+                                if (companyEmployerId && (String(jobEmployerKey) === String(companyEmployerId))) return true;
 
-                                <Link href="#">
-                                  <span className="btn btn-grey-small mr-5">Figma</span>
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="card-block-info">
-                            <h4>
-                              <Link href="job-details">
-                                <span>Products Manager</span>
-                              </Link>
-                            </h4>
-                            <div className="mt-5">
-                              <span className="card-briefcase">Full time</span>
-                              <span className="card-time">
-                                <span>6</span>
-                                <span> mins ago</span>
-                              </span>
-                            </div>
-                            <p className="font-sm color-text-paragraph mt-10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
-                            <div className="card-2-bottom mt-20">
-                              <div className="row">
-                                <div className="col-lg-7 col-7">
-                                  <span className="card-text-price">$250</span>
-                                  <span className="text-muted">/Hour</span>
-                                </div>
-                                <div className="col-lg-5 col-5 text-end">
-                                  <div className="btn btn-apply-now" data-bs-toggle="modal" data-bs-target="#ModalApplyJobForm">
-                                    Apply now
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-12 col-12">
-                        <div className="card-grid-2 hover-up">
-                          <span className="flash" />
-                          <div className="row">
-                            <div className="col-lg-6 col-md-6 col-sm-12">
-                              <div className="card-grid-2-image-left">
-                                <div className="image-box">
-                                  <img src="/assets/imgs/brands/brand-8.png" alt="jobBox" />
-                                </div>
-                                <div className="right-info">
-                                  <Link href="#">
-                                    <span className="name-job">Periscope</span>
-                                  </Link>
-                                  <span className="location-small">New York, US</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-lg-6 text-start text-md-end pr-60 col-md-6 col-sm-12">
-                              <div className="pl-15 mb-15 mt-30">
-                                <Link href="#">
-                                  <span className="btn btn-grey-small mr-5">Adobe XD</span>
-                                </Link>
+                                // Fallbacks: compare job.employerId / job.employerName / job.companyName against companyKey/companyName
+                                if (String(jobEmployerKey) === String(companyKey)) return true;
+                                if (String(j.companyName ?? '') === String(company?.companyName ?? '')) return true;
+                                // case-insensitive name match
+                                if (typeof j.companyName === 'string' && typeof company?.companyName === 'string' && j.companyName.toLowerCase() === company.companyName.toLowerCase()) return true;
 
-                                <Link href="#">
-                                  <span className="btn btn-grey-small mr-5">Figma</span>
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="card-block-info">
-                            <h4>
-                              <Link href="job-details">
-                                <span>Lead Quality Control QA</span>
-                              </Link>
-                            </h4>
-                            <div className="mt-5">
-                              <span className="card-briefcase">Full time</span>
-                              <span className="card-time">
-                                <span>6</span>
-                                <span> mins ago</span>
-                              </span>
-                            </div>
-                            <p className="font-sm color-text-paragraph mt-10">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto eveniet, dolor quo repellendus pariatur.</p>
-                            <div className="card-2-bottom mt-20">
-                              <div className="row">
-                                <div className="col-lg-7 col-7">
-                                  <span className="card-text-price">$250</span>
-                                  <span className="text-muted">/Hour</span>
-                                </div>
-                                <div className="col-lg-5 col-5 text-end">
-                                  <div className="btn btn-apply-now" data-bs-toggle="modal" data-bs-target="#ModalApplyJobForm">
-                                    Apply now
+                                return false;
+                              })
+                              .sort((a: Job, b: Job) => new Date(b.createdAt ?? '').getTime() - new Date(a.createdAt ?? '').getTime());
+
+                            const total = filtered.length;
+                            const totalPages = Math.max(1, Math.ceil(total / jobsPerPage));
+                            const start = (currentPage - 1) * jobsPerPage;
+                            const pageItems = filtered.slice(start, start + jobsPerPage);
+
+                            return (
+                              <>
+                                {pageItems.length === 0 ? (
+                                  <div>Không có công việc nào cho công ty này.</div>
+                                ) : (
+                                  <div className="row">
+                                    {pageItems.map((j) => {
+                                      const createdDate = parseToDate(j.createdAt);
+                                      const timeText = createdDate ? formatCreatedAt(createdDate) : '';
+                                      return (
+                                        <div className="col-xl-12 col-12" key={j.id}>
+                                          <div className="card-grid-2 hover-up">
+                                            <span className="flash" />
+                                            <div className="row">
+                                              <div className="col-lg-6 col-md-6 col-sm-12">
+                                                <div className="card-grid-2-image-left">
+                                                  <div className="image-box">
+                                                    <Image
+                                                      src={company?.logoUrl || '/assets/imgs/brands/brand-6.png'}
+                                                      alt={j.companyName || 'jobBox'}
+                                                      width={56}
+                                                      height={56}
+                                                      className="img-fluid rounded-2"
+                                                      style={{ objectFit: 'contain', background: '#fff' }}
+                                                      priority={false}
+                                                    />
+                                                  </div>
+                                                  <div className="right-info">
+                                                    <Link href={`/company-details/${companyId ?? company?.id ?? ''}`}>
+                                                      <span className="name-job">{company?.companyName || j.companyName || 'Company'}</span>
+                                                    </Link>
+                                                    <span className="location-small">{j.location || company?.location || 'Unknown'}</span>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div className="col-lg-6 text-start text-md-end pr-60 col-md-6 col-sm-12">
+                                                <div className="pl-15 mb-15 mt-30">
+                                                  {j.requiredSkills && j.requiredSkills.slice(0,2).map((s, idx) => (
+                                                    <Link key={idx} href="#">
+                                                      <span className="btn btn-grey-small mr-5">{s}</span>
+                                                    </Link>
+                                                  ))}
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div className="card-block-info">
+                                              <h4>
+                                                <Link href={`/job-details-2/${j.id}`}>
+                                                  <span>{j.title || 'No title'}</span>
+                                                </Link>
+                                              </h4>
+                                              <div className="mt-5">
+                                                <span className="card-briefcase">{j.jobType || 'Full time'}</span>
+                                                <span className="card-time">
+                                                  <span>{timeText}</span>
+                                                </span>
+                                              </div>
+                                              <p className="font-sm color-text-paragraph mt-10">{j.description ? (typeof j.description === 'string' ? j.description.slice(0,150) + (j.description.length>150 ? '...' : '') : '') : '—'}</p>
+                                              <div className="card-2-bottom mt-20">
+                                                <div className="row">
+                                                  <div className="col-lg-7 col-7">
+                                                    <span className="card-text-price">{j.salaryRange || '$0'}</span>
+                                                    <span className="text-muted">/Tháng</span>
+                                                  </div>
+                                                  <div className="col-lg-5 col-5 text-end">
+                                                    <div className="btn btn-apply-now" data-bs-toggle="modal" data-bs-target="#ModalApplyJobForm">
+                                                      Apply now
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
                                   </div>
+                                )}
+
+                                {/* Pagination controls */}
+                                <div className="paginations mt-20">
+                                  <ul className="pager">
+                                    <li>
+                                      <a className="pager-prev" href="#" onClick={(e) => { e.preventDefault(); setCurrentPage((p) => Math.max(1, p-1)); }} />
+                                    </li>
+                                    {Array.from({ length: totalPages }).map((_, i) => (
+                                      <li key={i}>
+                                        <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(i+1); }}>
+                                          <span className={`pager-number ${currentPage === i+1 ? 'active' : ''}`}>{i+1}</span>
+                                        </a>
+                                      </li>
+                                    ))}
+                                    <li>
+                                      <a className="pager-next" href="#" onClick={(e) => { e.preventDefault(); setCurrentPage((p) => Math.min(totalPages, p+1)); }} />
+                                    </li>
+                                  </ul>
                                 </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                              </>
+                            );
+                          })()
+                        )}
                       </div>
-                    </div>
-                    <div className="paginations">
-                      <ul className="pager">
-                        <li>
-                          <a className="pager-prev" href="#" />
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number">1</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number">2</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number">3</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number">4</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number">5</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number active">6</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number">7</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <a className="pager-next" href="#" />
-                        </li>
-                      </ul>
-                    </div>
+                    
                   </div>
                 </div>
                 <div className="col-lg-4 col-md-12 col-sm-12 col-12 pl-40 pl-lg-15 mt-lg-30">

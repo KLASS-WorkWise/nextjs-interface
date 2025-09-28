@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, setDoc } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, setDoc, type Timestamp } from "firebase/firestore";
 import { db } from "../lib/firebaseConfig";
 
 interface ChatWithEmployerProps {
@@ -14,8 +14,16 @@ interface Message {
   id: string;
   senderId: string;
   text: string;
-  timestamp?: any;
+  timestamp?: Timestamp | null;
 }
+
+type ChatSummary = {
+  employerId: string;
+  applicantId: string;
+  lastMessage: string;
+  lastTimestamp: Timestamp | unknown;
+  applicantName?: string;
+};
 
 const ChatWithEmployer: React.FC<ChatWithEmployerProps> = ({ employerId, applicantId, applicantName, embedded }) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -58,7 +66,7 @@ const ChatWithEmployer: React.FC<ChatWithEmployerProps> = ({ employerId, applica
     });
     // Tạo/ghi document chat chính với id = chatId (để employer thấy ứng viên ở sidebar)
     // Only include applicantName when we actually have one (avoid writing placeholder defaults)
-    const summaryPayload: any = {
+    const summaryPayload: ChatSummary = {
       employerId,
       applicantId,
       lastMessage: input,
@@ -67,7 +75,8 @@ const ChatWithEmployer: React.FC<ChatWithEmployerProps> = ({ employerId, applica
   // Use the logged-in applicant's id as the applicantName so admin immediately sees an identifier.
   // applicantId is passed from the session (session.user.id) when the chat is created.
   summaryPayload.applicantName = applicantName || String(applicantId);
-    await setDoc(doc(db, "chats", chatId), summaryPayload, { merge: true });
+    // mark unread for employer when applicant sends a message so employer UI can highlight it
+    await setDoc(doc(db, "chats", chatId), { ...summaryPayload, unreadForEmployer: true }, { merge: true });
     setInput("");
   };
 
