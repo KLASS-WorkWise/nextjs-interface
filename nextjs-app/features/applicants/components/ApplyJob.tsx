@@ -185,19 +185,16 @@
 //   );
 // }
 
-
-
-
-//* ------- mới ------- *//
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import ReactDOM from "react-dom";
 import { applicantService } from "../services/applicant.service";
 import { toast } from "react-toastify";
 import styles from "../../../styles/ApplyJob.module.css";
 
 import { FileText, Upload, Pencil, X } from "lucide-react";
 import { Applicant, JobPostingResponseDTO, Resume } from "@/types/applicant";
+
 import { AxiosProgressEvent } from "axios";
 import { ApiResponse } from "@/types/api";
 
@@ -286,7 +283,7 @@ export default function ApplyJob({
       console.log("Apply job response:", data);
 
       if (data?.data?.missingSkills?.length) {
-        toast.warning("Thiếu kỹ năng: " + data.data.missingSkills.join(", "));
+        toast.warning("Lack of skills: " + data.data.missingSkills.join(", "));
       }
       if (data?.data?.skillMatchMessage) {
         toast.warning(data?.data?.skillMatchMessage || "");
@@ -307,7 +304,7 @@ export default function ApplyJob({
     }
   };
 
-  return (
+  const modalContent = (
     <div className="modal-overlay">
       <div className="modal-box">
         <button className="modal-close" onClick={onClose}>
@@ -475,4 +472,7 @@ export default function ApplyJob({
       </div>
     </div>
   );
+
+  return ReactDOM.createPortal(modalContent, document.body);
 }
+

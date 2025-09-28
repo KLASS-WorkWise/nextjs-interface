@@ -9,23 +9,44 @@ import {
 import { Applicant } from "@/types/applicant";
 import styles from "../../../styles/ApplicantDetail.module.css"; // css riêng cho component
 import { Timeline } from "./Timeline";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type Props = { id: number };
 
 export default function ApplicantDetail({ id }: Props) {
+
+    const { data: session, status } = useSession();
+  const router = useRouter();
+  //  const searchParams = useSearchParams();
+
+  // //  // Lấy ID ứng viên từ query param
+  // // const idParam = searchParams.get("id");
+  // // const id = idParam ? parseInt(idParam) : null;
+
   const [applicant, setApplicant] = useState<Applicant | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeline, setTimeline] = useState<ApplicantTimeline[]>([]);
 
+
+    // ---------- Redirect nếu chưa login ----------
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/page-signin");
+    }
+  }, [status, router]);
+
+
   // Fetch applicant detail + timeline
   // Fetch detail + timeline
   const fetchData = async () => {
+      if (!session || !id) return; // Chờ login + có ID
     try {
       setLoading(true);
       const res = await applicantService.getApplicantTracking(id);
       setApplicant(res.data.detail ?? null);
       console.log("Applicant detail:", res.data.detail);
-      setTimeline(res.data.timeline ?? []);
+      setTimeline(res.data.timeline?.map((stepOrder: ApplicantTimeline) => ({ ...stepOrder })) ?? []);
     } catch (err) {
       console.error("Error fetching applicant data:", err);
     } finally {
@@ -42,7 +63,7 @@ export default function ApplicantDetail({ id }: Props) {
     // });
 
     // return () => unsubscribe();
-  }, [id]);
+  }, [session, id]);
 
   // useEffect(() => {
   //   const fetchDetail = async () => {
@@ -131,9 +152,13 @@ export default function ApplicantDetail({ id }: Props) {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (!applicant) return <p>Applicant not found.</p>;
+   // ---------- Fallback UI ----------
+  if (status === "loading" || !session)
+    return <p className="text-center py-20">Loading / Redirecting...</p>;
 
+  if (!id) return <p>No applicant ID provided in URL.</p>;
+  if (loading) return <p>Loading applicant data...</p>;
+  if (!applicant) return <p>Applicant not found.</p>;
   return (
     <div className={styles.card}>
      {/* Cột trái - Chi tiết đơn */}
@@ -223,7 +248,7 @@ export default function ApplicantDetail({ id }: Props) {
         <h4 className={styles.subtitle}>Timeline</h4>
         <Timeline steps={timeline} />
 
-        {applicant.history && applicant.history.length > 0 && (
+        {/* {applicant.history && applicant.history.length > 0 && (
           <div className="mt-6">
             <h5 className={styles.subtitle}>History</h5>
             <ul className={styles.historyList}>
@@ -237,7 +262,7 @@ export default function ApplicantDetail({ id }: Props) {
               ))}
             </ul>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
