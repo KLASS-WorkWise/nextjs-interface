@@ -88,7 +88,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
         );
         setAvatarReady(true);
         setBalance(user?.balance || "0");
-      } catch {}
+      } catch { }
     };
     window.addEventListener("avatar-updated", handleCustom as any);
     return () => {
@@ -478,8 +478,9 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                             letterSpacing: 1,
                           }}
                         >
-                          {balance} VNĐ
+                          {Number(balance).toLocaleString("vi-VN")} VNĐ
                         </span>
+
                       </div>
                     )}
 

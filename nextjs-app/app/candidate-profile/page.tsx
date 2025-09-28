@@ -13,19 +13,28 @@ import { CVDashboard } from "@/components/cv-dashboard";
 import { CVSuccessModal } from "@/components/jobRecommend/cv-success-modal";
 import type { ResumeData } from "@/components/resume-builder";
 import Image from "next/image";
-
+import styles from "../../styles/CandidateProfileTabs.module.css";
 export default function CandidateProfile() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [resume, setResume] = useState<ResumeData | null>(null);
   const [avatarSrc, setAvatarSrc] = useState<string>(
     "/assets/imgs/avatar/logoLogin.jpg"
   );
-  const router = useRouter();
+
   const searchParams = useSearchParams();
   const resumeId = searchParams.get("resume_id");
 
   // Modal hiển thị sau khi lưu CV
   const [showModal, setShowModal] = useState(false);
+
+   // ---------- redirect nếu chưa login ----------
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/page-signin");
+    }
+  }, [status, router]);
+
   // Lấy resume từ URL nếu có
   useEffect(() => {
     if (!resumeId) return;
@@ -82,6 +91,7 @@ export default function CandidateProfile() {
 
   // Lấy avatar trực tiếp từ backend khi session thay đổi
   useEffect(() => {
+      if (!session) return; 
     const loadAvatar = async () => {
       const userId = (session as any)?.user?.id;
       const token = (session as any)?.accessToken;
@@ -118,6 +128,17 @@ export default function CandidateProfile() {
     return () =>
       window.removeEventListener("avatar-updated", handleCustom as any);
   }, [session]);
+
+  
+  // ---------- fallback UI khi loading hoặc chưa login ----------
+  if (status === "loading") {
+    return <Layout><div className="text-center py-20">Loading...</div></Layout>;
+  }
+
+  if (!session) {
+    // session chưa có nhưng hook vẫn đã gọi ở trên
+    return <Layout><div className="text-center py-20">Redirecting to login...</div></Layout>;
+  }
 
   return (
     <>
@@ -184,12 +205,14 @@ export default function CandidateProfile() {
               <div className="row">
                 <div className="col-lg-3 col-md-4 col-sm-12">
                   <div className="box-nav-tabs nav-tavs-profile mb-5">
-                    <ul className="nav" role="tablist">
+                      <ul className={styles.tabList} role="tablist">
                       {tabs.map((tab) => (
-                        <li key={tab.key}>
+                        <li key={tab.key} className={styles.tabItem}>
                           <span
-                            className={`btn btn-sm mb-20 w-full text-left ${
-                              activeTab === tab.key ? "active" : ""
+                            className={`${styles.tabButton} ${
+                              activeTab === tab.key
+                                ? styles.tabButtonActive
+                                : ""
                             }`}
                             onClick={() => handleOnClick(tab.key)}
                           >

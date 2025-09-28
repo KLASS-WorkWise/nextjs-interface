@@ -1,12 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useEffect, useState } from "react";
 import { savedJobService } from "@/features/applicants/services/savedJobService";
 import Link from "next/link";
 import Image from "next/image";
 import styles from "../../../styles/SavedJobsList.module.css";
+import { SavedJobResponseDTO } from "@/types/applicant";
 
 export default function SavedJobsList() {
-  const [savedJobs, setSavedJobs] = useState<any[]>([]);
+  const [savedJobs, setSavedJobs] = useState<SavedJobResponseDTO[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -24,9 +25,9 @@ export default function SavedJobsList() {
       setCurrentPage(paginated.data.pageNumber || 0);
       console.log("Saved jobs:", paginated.content);
       console.log("Saved jobs1:", paginated);
-    } catch (err: any) {
-      console.error("Error fetching saved jobs", err);
-      setMessage({ type: "error", text: "Failed to load saved jobs" });
+    } catch (err: unknown) {
+  console.error("Error fetching saved jobs", err);
+  setMessage({ type: "error", text: "Failed to load saved jobs" });
     } finally {
       setLoading(false);
     }
@@ -40,11 +41,11 @@ export default function SavedJobsList() {
       setSavedJobs(savedJobs.filter((job) => job.savedJobId !== savedJobId));
       setMessage({ type: "success", text: "Deleted successfully!" });
       setTimeout(() => setMessage(null), 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error removing saved job:", err);
       setMessage({
         type: "error",
-        text: "Xóa thất bại: " + (err.response?.data?.message || err.message),
+        text: "Xóa thất bại: " + (err instanceof Error ? err.message : "Unknown error"),
       });
       setTimeout(() => setMessage(null), 5000);
     } finally {

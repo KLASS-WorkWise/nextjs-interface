@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 import React, { useEffect, useState } from "react";
 import { getCompanyByEmployerId } from "@/lib/company/api";
@@ -19,7 +17,12 @@ import { savedJobService } from "@/features/applicants/services/savedJobService"
 import { Bookmark } from "lucide-react";
 import { CrownFilled } from "@ant-design/icons";
 // import "@/styles/globals.css";
-
+import {
+  JobPostingResponseDTO,
+  Resume,
+  SavedJobResponseDTO,
+} from "@/types/applicant";
+import axios from "axios";
 export default function JobGrid() {
   // Map employerId -> company info
   const [companyInfoMap, setCompanyInfoMap] = useState<{ [key: string]: any }>(
@@ -56,8 +59,8 @@ export default function JobGrid() {
   const [keyword, setKeyword] = useState("");
 
   // Lấy dữ liệu Applyjob từ API
-  const [modalJob, setModalJob] = useState<any | null>(null);
-  const [resumes, setResumes] = useState<any[]>([]);
+  const [modalJob, setModalJob] = useState<JobPostingResponseDTO | null>(null);
+  const [resumes, setResumes] = useState<Resume[]>([]);
   const router = useRouter();
   const [savingJobId, setSavingJobId] = useState<number | null>(null);
   // savedJobs: lưu cả jobId và savedJobId
@@ -293,7 +296,7 @@ export default function JobGrid() {
         // Unsave dùng savedJobId
         await savedJobService.removeSavedJob(existing.savedJobId);
         setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
-        toast.error("Removed successfully");
+        toast.success("Removed successfully");
         console.log("Removed job:", existing);
         console.log("Removed job:", existing.savedJobId);
       } else {
@@ -306,21 +309,26 @@ export default function JobGrid() {
         console.log("Saved job:", res.data);
         console.log("Saved jobss:", res.data.savedJobId);
       }
-    } catch (err: any) {
-      console.error("Error saving job", err);
-      // Nếu 404, vẫn remove khỏi state để UI không treo
-      if (err.response?.status === 404 && existing) {
-        setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
-        toast.error("This job was not saved or already removed");
-      } else {
-        toast.error("Something went wrong");
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error("Error saving job", err.message);
+      }
+
+      // Nếu là lỗi từ Axios
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 404 && existing) {
+          setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
+          toast.error("This job was not saved or already removed");
+        } else {
+          toast.error("Something went wrong");
+        }
       }
     } finally {
       setSavingJobId(null);
     }
   };
 
-  const handleOpenApply = (job: any) => {
+  const handleOpenApply = (job: JobPostingResponseDTO) => {
     if (!session) {
       toast.error("You need to login to apply!");
       router.push("/page-signin"); // 👈 redirect sang trang login của bạn
@@ -346,7 +354,7 @@ export default function JobGrid() {
       try {
         const res = await savedJobService.getMySavedJobs();
         const savedJobsMap =
-          res.data.data.content?.map((job: any) => ({
+          res.data.data.content?.map((job: SavedJobResponseDTO) => ({
             jobId: job.jobPostingResponseDTO?.id, // 👈 lấy id từ DTO
             savedJobId: job.savedJobId,
           })) || [];
@@ -364,7 +372,6 @@ export default function JobGrid() {
     );
     console.log("SavedJobs:", savedJobs);
   }, [jobs, savedJobs]);
-
   return (
     <>
       <Layout>
@@ -827,7 +834,7 @@ export default function JobGrid() {
                                       </div>
                                       <div className="col-lg-5 col-5 text-end">
                                         <button
-                                          onClick={() => handleOpenApply(job)}
+                                          onClick={() => handleOpenApply(job as JobPostingResponseDTO)} // 👈 Fix: open modal by setting modalJob
                                           className="btn btn-apply-now"
                                         >
                                           Apply

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CheckCircle, Clock } from "lucide-react";
-import { ApplicantTimeline, ApplicantHistory } from "../services/applicant.service";
+import { ApplicantTimeline, TimelineEvent } from "../services/applicant.service";
 
 type Props = { steps: ApplicantTimeline[] };
 
@@ -52,11 +52,25 @@ export function HorizontalTimeline({ steps }: Props) {
       {/* Optional: events under each step */}
       {steps.map((step, idx) => (
         <div key={idx} className="mt-2 text-xs text-gray-500">
-          {step.events?.map((ev: ApplicantHistory, i: number) => (
-            <p key={i}>
-              {new Date(ev.changedAt).toLocaleString()} - {ev.note} ({ev.changedBy})
-            </p>
-          ))}
+          {step.events?.map((ev: TimelineEvent, i: number) => {
+            if ("changedAt" in ev) {
+              // ApplicantHistory
+              return (
+                <p key={i}>
+                  {new Date(ev.changedAt).toLocaleString()} - {ev.note || "No note"} ({ev.changedBy})
+                </p>
+              );
+            }
+            if ("scheduledAt" in ev) {
+              // InterviewSchedule
+              return (
+                <p key={i}>
+                  {new Date(ev.scheduledAt).toLocaleString()} - Interview at {ev.location} with {ev.interviewer}
+                </p>
+              );
+            }
+            return null;
+          })}
         </div>
       ))}
     </div>

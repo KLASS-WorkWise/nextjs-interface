@@ -3088,7 +3088,7 @@ ul li:last-child .card-list-4 {
 }
 
 .banner-hero .banner-inner .banner-imgs {
-  padding: 17px 0px 0px 0px;
+  padding: 75px 51px 0px 0px;
   position: relative;
   height: 100%;
   min-height: 540px;
@@ -3096,6 +3096,7 @@ ul li:last-child .card-list-4 {
 
 .banner-imgs {
   width: 518px;
+  margin-right: 20px;
 }
 
 .banner-hero .banner-inner .banner-imgs .block-1 {
@@ -9295,4 +9296,31 @@ ul li:last-child .card-list-4 {
   .header-right {
     display: none;
   }
+}
+
+
+/* Khung gradient bao quanh ảnh */
+ .gradient-frame {
+  display: inline-block;
+  padding: 10px;
+  background: linear-gradient(90deg, #3B82F6 0%, #A855F7 100%);
+  border-radius: 32px;
+  transform: rotate(3deg);
+  overflow: visible;
+}
+ .gradient-frame-inner {
+  background: #fff;
+  border-radius: 24px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+ .gradient-frame img {
+  display: block;
+  border-radius: 16px;
+  max-width: 100%;
+  max-height: 320px;
+  object-fit: contain;
 }

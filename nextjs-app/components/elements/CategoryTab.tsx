@@ -5,6 +5,18 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { getCompanyByEmployerId } from "@/lib/company/api";
 
+import { useRouter } from "next/navigation";
+import { savedJobService } from "@/features/applicants/services/savedJobService";
+import {
+  // Resume,
+  SavedJobResponseDTO,
+} from "@/types/applicant";
+import { toast } from "react-toastify";
+import { Bookmark } from "lucide-react";
+import axios from "axios";
+// import { applicantService } from "@/features/applicants/services/applicant.service";
+// import ApplyJob from "@/features/applicants/components/ApplyJob";
+
 // Minimal typed shapes used in this component to avoid `any` and keep logic unchanged
 interface Job {
   id: string;
@@ -82,6 +94,112 @@ const CategoryTab = () => {
       };
       fetchJobs();
     }, []);
+
+
+     // Lấy dữ liệu Applyjob từ API  save job
+      const { data: session } = useSession();
+      // const [modalJob, setModalJob] = useState<Job | null>(null);
+      // const [resumes, setResumes] = useState<Resume[]>([]);
+      const router = useRouter();
+      const [savingJobId, setSavingJobId] = useState<number | null>(null);
+      // savedJobs: lưu cả jobId và savedJobId
+      const [savedJobs, setSavedJobs] = useState<
+        { jobId: number; savedJobId: number }[]
+      >([]);
+
+
+       // Xử lý mở  apply job
+        const toggleSaveJob = async (jobId: number) => {
+          if (!session) {
+            toast.error("You need to login to saved job!");
+            router.push("/page-signin"); // 👈 redirect sang trang login của bạn
+            return;
+          }
+          const existing = savedJobs.find((j) => j.jobId === jobId);
+          setSavingJobId(jobId);
+          try {
+            if (existing) {
+              // Unsave dùng savedJobId
+              await savedJobService.removeSavedJob(existing.savedJobId);
+              setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
+              toast.success("Removed successfully");
+              console.log("Removed job:", existing);
+              console.log("Removed job:", existing.savedJobId);
+            } else {
+              const res = await savedJobService.saveJob(jobId);
+              setSavedJobs((prev) => [
+                ...prev,
+                { jobId, savedJobId: res.data.savedJobId },
+              ]);
+              toast.success("Saved successfully");
+              console.log("Saved job:", res.data);
+              console.log("Saved jobss:", res.data.savedJobId);
+            }
+          } catch (err) {
+            if (err instanceof Error) {
+              console.error("Error saving job", err.message);
+            }
+      
+            // Nếu là lỗi từ Axios
+            if (axios.isAxiosError(err)) {
+              if (err.response?.status === 404 && existing) {
+                setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
+                toast.error("This job was not saved or already removed");
+              } else {
+                toast.error("Something went wrong");
+              }
+            }
+          } finally {
+            setSavingJobId(null);
+          }
+        };
+      
+        // const handleOpenApply = (job: Job) => {
+        //   if (!session) {
+        //     toast.error("You need to login to apply!");
+        //     router.push("/page-signin"); // 👈 redirect sang trang login của bạn
+        //     return;
+        //   }
+        //   setModalJob(job);
+        // };
+        // useEffect(() => {
+        //   const fetchResumes = async () => {
+        //     try {
+        //       const res = await applicantService.getMyResumes();
+        //       setResumes(res.data || []);
+        //     } catch (err) {
+        //       console.error("Error fetching resumes:", err);
+        //     }
+        //   };
+        //   fetchResumes();
+        // }, []);
+        // Lấy danh sách saved jobs của user
+        useEffect(() => {
+          const fetchSavedJobs = async () => {
+            if (!session) return;
+            try {
+              const res = await savedJobService.getMySavedJobs();
+              const savedJobsMap =
+                res.data.data.content?.map((job: SavedJobResponseDTO) => ({
+                  jobId: job.jobPostingResponseDTO?.id, // 👈 lấy id từ DTO
+                  savedJobId: job.savedJobId,
+                })) || [];
+              setSavedJobs(savedJobsMap);
+            } catch (err) {
+              console.error("Error fetching saved jobs", err);
+            }
+          };
+          fetchSavedJobs();
+        }, [session]);
+        useEffect(() => {
+          console.log(
+            "Jobs:",
+            jobs.map((j) => j.id)
+          );
+          console.log("SavedJobs:", savedJobs);
+        }, [jobs, savedJobs]);
+      
+    
   return (
     <>
       <div className="mt-40 text-center">
@@ -100,12 +218,42 @@ const CategoryTab = () => {
                 .sort((a, b) => (Date.parse(String(b.createdAt || '0')) || 0) - (Date.parse(String(a.createdAt || '0')) || 0))
                 .slice(0, 6)
                 .map((job: Job) => {
+                    const isSaved = savedJobs.some(
+                            (j) => j.jobId === Number(job.id)
+                          );
                   const company = job.employerId ? companyInfoMap[String(job.employerId)] : null;
                   return (
                     <div key={job.id} className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
                       <div className="card-grid-2 hover-up">
                         <div className="card-grid-2-image-left">
-                          <span className="flash" />
+                            <span
+                                    className="flash"
+                                    style={{ marginRight: "20px" }}
+                                  >
+                                    <button
+                                      onClick={() => toggleSaveJob(Number(job.id))}
+                                      disabled={savingJobId === Number(job.id)}
+                                      className="saved-job-button"
+                                      style={{
+                                        background: "transparent",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        padding: 0,
+                                      }}
+                                    >
+                                      {savingJobId === Number(job.id) ? (
+                                        <span className="loading-dots">
+                                          ...
+                                        </span>
+                                      ) : (
+                                        <Bookmark
+                                          size={22}
+                                          color={isSaved ? "red" : "gray"}
+                                          fill={isSaved ? "red" : "none"}
+                                        />
+                                      )}
+                                    </button>
+                                  </span>
                           <div className="image-box" style={{ width: 48, height: 48 }}>
                                   <img
                                     src={company?.logoUrl || job.companyLogo || "/assets/imgs/brands/brand-1.png"}
@@ -167,7 +315,12 @@ const CategoryTab = () => {
                                 <span className="text-muted" style={{ fontSize: '0.85rem', marginLeft: 2 }}>/Tháng</span>
                               </div>
                               <div className="col-lg-5 col-5 text-end">
-                                <button className="btn btn-apply-now">Apply</button>
+                                 <button
+                                          // onClick={() => handleOpenApply(job)}
+                                          className="btn btn-apply-now"
+                                        >
+                                          Apply
+                                        </button>
                               </div>
                             </div>
                           </div>
@@ -178,6 +331,15 @@ const CategoryTab = () => {
                 })}
 
           </div>
+               {/* Modal ApplyJob */}
+                              {/* {modalJob && (
+                                <ApplyJob
+                                  job={modalJob}
+                                  resumes={resumes}
+                                  onClose={() => setModalJob(null)}
+                                  onSuccess={() => toast.success("Applied successfully!")}
+                                />
+                              )} */}
         </div>
         <div className={`tab-pane fade ${active == 2 && "show active"}`}>
           <div className="row">
