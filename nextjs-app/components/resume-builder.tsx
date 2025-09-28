@@ -1,11 +1,9 @@
-/* eslint-disable */
 "use client";
 import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Sheet,
@@ -54,7 +52,7 @@ export interface ResumeData {
     jobTitle: string; // Changed from address to jobTitle
     summary: string;
     // profileImage?: string;
-    profilePicture?:string
+    profilePicture?: string;
   };
   experience: Array<{
     id: string;
@@ -90,7 +88,26 @@ export interface ResumeData {
     description: string;
   }>;
 }
-
+interface MobileSidebarProps {
+  currentStep: number;
+  completedSteps: number[];
+  stepHasErrors: (stepIndex: number) => boolean;
+  goToStep: (stepIndex: number) => void;
+  selectedTemplate: string;
+  setSelectedTemplate: (template: string) => void;
+  customization: CustomizationOptions;
+  setCustomization: (customization: CustomizationOptions) => void;
+  resumeData: ResumeData;
+  onMenuClose: () => void;
+}
+interface StepButtonProps {
+  step: (typeof steps)[number]; // Điều này sẽ suy luận kiểu từ mảng `steps`
+  index: number;
+  currentStep: number;
+  completedSteps: number[];
+  stepHasErrors: (stepIndex: number) => boolean;
+  goToStep: (stepIndex: number) => void;
+}
 const steps = [
   {
     id: "personal",
@@ -134,7 +151,7 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [isAutoSaving] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("modern");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -217,7 +234,7 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
 
   const validateCurrentStep = async () => {
     const currentStepFields = steps[currentStep].fields;
-    const isValid = await trigger(currentStepFields as any);
+    const isValid = await trigger(currentStepFields as Array<keyof ResumeData>);
 
     if (isValid && !completedSteps.includes(currentStep)) {
       setCompletedSteps([...completedSteps, currentStep]);
@@ -239,11 +256,11 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
     }
   };
 
-  const prevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
+  // const prevStep = () => {
+  //   if (currentStep > 0) {
+  //     setCurrentStep(currentStep - 1);
+  //   }
+  // };
 
   const goToStep = async (stepIndex: number) => {
     if (stepIndex < currentStep || completedSteps.includes(stepIndex)) {
@@ -273,6 +290,7 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
       setShowPreview(true);
       if (onSave) onSave(dataWithTemplate);
     } catch (error) {
+      console.error("Error saving CV:", error);
       toast({
         title: "Lỗi khi lưu CV",
         description: "Vui lòng thử lại.",
@@ -446,11 +464,9 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
                         className={`${styles.actionButton} ${styles.primaryButton}`}
                       >
                         <span className={styles.hiddenOnMobile}>
-                          Xem trước Resume
+                          Preview Resume
                         </span>
-                        <span className={styles.hiddenOnDesktop}>
-                          Xem trước
-                        </span>
+                        <span className={styles.hiddenOnDesktop}>Preview</span>
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     ) : (
@@ -475,7 +491,7 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
             <CardHeader className={styles.cardHeader}>
               <CardTitle className="text-base flex items-center gap-2">
                 <Eye className="h-4 w-4" />
-                Xem trước
+                Preview
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4">
@@ -508,11 +524,22 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
           className={styles.floatingButton}
         >
           <Eye className="h-4 w-4" />
-          <span className={styles.hiddenOnMobile}>Xem trước</span>
+          <span className={styles.hiddenOnMobile}>Preview</span>
         </Button>
       </div>
     </div>
   );
+}
+interface DesktopSidebarProps {
+  currentStep: number;
+  completedSteps: number[];
+  stepHasErrors: (stepIndex: number) => boolean;
+  goToStep: (stepIndex: number) => void;
+  selectedTemplate: string;
+  setSelectedTemplate: (template: string) => void;
+  customization: CustomizationOptions;
+  setCustomization: (customization: CustomizationOptions) => void;
+  resumeData: ResumeData;
 }
 
 function DesktopSidebar({
@@ -525,7 +552,7 @@ function DesktopSidebar({
   customization,
   setCustomization,
   resumeData,
-}: any) {
+}: DesktopSidebarProps) {
   return (
     <Tabs defaultValue="steps" className="w-full">
       <TabsList className={styles.tabsList}>
@@ -605,7 +632,7 @@ function MobileSidebar({
   setCustomization,
   resumeData,
   onMenuClose,
-}: any) {
+}: MobileSidebarProps) {
   return (
     <Tabs defaultValue="steps" className="w-full">
       <TabsList className={styles.tabsList}>
@@ -669,7 +696,7 @@ function StepButton({
   completedSteps,
   stepHasErrors,
   goToStep,
-}: any) {
+}: StepButtonProps) {
   const isCurrentStep = index === currentStep;
   const isCompleted = completedSteps.includes(index);
   const hasErrors = stepHasErrors(index);

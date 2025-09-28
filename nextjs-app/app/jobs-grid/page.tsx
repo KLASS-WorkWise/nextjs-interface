@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 import React, { useEffect, useState } from "react";
 import { getCompanyByEmployerId } from "@/lib/company/api";
@@ -17,8 +15,13 @@ import ApplyJob from "@/features/applicants/components/ApplyJob";
 import { useRouter } from "next/navigation";
 import { savedJobService } from "@/features/applicants/services/savedJobService";
 import { Bookmark } from "lucide-react";
-import "@/styles/globals.css";
-
+import { CrownFilled } from "@ant-design/icons";
+import {
+  JobPostingResponseDTO,
+  Resume,
+  SavedJobResponseDTO,
+} from "@/types/applicant";
+import axios from "axios";
 export default function JobGrid() {
   // Map employerId -> company info
   const [companyInfoMap, setCompanyInfoMap] = useState<{ [key: string]: any }>(
@@ -55,8 +58,8 @@ export default function JobGrid() {
   const [keyword, setKeyword] = useState("");
 
   // Lấy dữ liệu Applyjob từ API
-  const [modalJob, setModalJob] = useState<any | null>(null);
-  const [resumes, setResumes] = useState<any[]>([]);
+  const [modalJob, setModalJob] = useState<JobPostingResponseDTO | null>(null);
+  const [resumes, setResumes] = useState<Resume[]>([]);
   const router = useRouter();
   const [savingJobId, setSavingJobId] = useState<number | null>(null);
   // savedJobs: lưu cả jobId và savedJobId
@@ -122,6 +125,17 @@ export default function JobGrid() {
     if (single) return [parseInt(single[1]), parseInt(single[1])];
     return null;
   }
+  // Precompute whether any job title exactly matches the search phrase
+  const normalizedPhrase = removeVietnameseTones(keyword.toLowerCase()).trim();
+  // Consider a title-phrase match if any job's title contains the normalized phrase
+  const hasTitlePhraseMatch =
+    normalizedPhrase.length > 0 &&
+    jobs.some((j) =>
+      removeVietnameseTones((j.title || "").toLowerCase()).includes(
+        normalizedPhrase
+      )
+    );
+
   // Filter jobs theo location, category, salary
   const filteredJobs = jobs.filter((job) => {
     // Filter location
@@ -142,22 +156,24 @@ export default function JobGrid() {
       );
       const jobSalary = parseSalaryRange(jobSalaryStr);
       if (!jobSalary) return false;
-      const salaryRanges = [
-        { label: "Duới 20 triệu", min: 0, max: 20 },
-        { label: "20 - 50 triệu", min: 20, max: 50 },
-        { label: "50 - 70 triệu", min: 50, max: 70 },
-        { label: "70 - 100 triệu", min: 70, max: 100 },
-        { label: "Trên 100 triệu", min: 100, max: 9999 },
-      ];
-      // Nếu job lương giao với bất kỳ khoảng nào được chọn thì hiện
       const match = salaryChecked.some((label) => {
-        const range = salaryRanges.find((r) => r.label === label);
-        if (!range) return false;
-        if (label === "Duới 20 triệu") {
-          // Chỉ lấy job có max < 20
-          return jobSalary[1] < 20;
+        if (!label || label === "All") return true;
+        // Extract first number we find in the label
+        const m = label.match(/(\d+)/);
+        if (!m) return false;
+        const threshold = parseInt(m[1], 10);
+        // If label indicates 'below'
+        if (/D[uư]ới|Duo?i/i.test(label)) {
+          // take jobs whose max salary is strictly less than threshold
+          return jobSalary[1] < threshold;
         }
-        return jobSalary[1] >= range.min && jobSalary[0] <= range.max;
+        // If label indicates 'from X and up' or 'above'
+        if (/Từ|trở lên|Trên|>|>/i.test(label)) {
+          // take jobs whose minimum salary is at least threshold
+          return jobSalary[0] >= threshold;
+        }
+        // Fallback: require job min >= threshold (conservative)
+        return jobSalary[0] >= threshold;
       });
       if (!match) return false;
     }
@@ -212,10 +228,18 @@ export default function JobGrid() {
       ]
         .map((x) => removeVietnameseTones((x || "").toLowerCase()))
         .join(" ");
-      // Nếu có từ khóa text, phải match ít nhất 1 từ
+      // Nếu có từ khóa text
       if (kwTexts.length > 0) {
-        const matchText = kwTexts.some((kw) => jobText.includes(kw));
-        if (!matchText) return false;
+        // Nếu có ít nhất 1 job title chính xác bằng cụm tìm kiếm,
+        // => người dùng muốn tìm theo tiêu đề, do đó chỉ lấy job có title chứa cụm đó
+        if (hasTitlePhraseMatch) {
+          const title = removeVietnameseTones((job.title || "").toLowerCase());
+          if (!title.includes(normalizedPhrase)) return false;
+        } else {
+          // bình thường: match trên nhiều trường (title/desc/company/skills)
+          const matchText = kwTexts.some((kw) => jobText.includes(kw));
+          if (!matchText) return false;
+        }
       }
       // Nếu có từ khóa số (lương), chỉ hiện job có lương giao với khoảng nhập
       if (kwNumbers.length > 0) {
@@ -239,6 +263,118 @@ export default function JobGrid() {
     currentPage * jobsPerPage
   );
 
+  // Sắp xếp VIP lên đầu
+  let sortedPagedJobs;
+  // Helper: compute relevance score for keyword search so exact/closer matches appear first
+  function computeRelevance(job: any): number {
+    if (!keyword || keyword.trim() === "") return 0;
+    const kwArr = removeVietnameseTones(keyword.toLowerCase())
+      .split(/\s|,|\./)
+      .filter(Boolean);
+    const kwNumbers = kwArr.filter((k) => /^\d+$/.test(k)).map(Number);
+    const kwTexts = kwArr.filter((k) => !/^\d+$/.test(k));
+
+    let score = 0;
+    const title = removeVietnameseTones((job.title || "").toLowerCase());
+    const companyName = removeVietnameseTones(
+      (job.companyName || job.employerName || "").toLowerCase()
+    );
+    const description = removeVietnameseTones(
+      (job.description || "").toLowerCase()
+    );
+    const skills = Array.isArray(job.skills)
+      ? removeVietnameseTones(job.skills.join(" ").toLowerCase())
+      : "";
+
+    const phrase = removeVietnameseTones(keyword.toLowerCase());
+    // Exact title match (highest)
+    if (title === phrase) return 1000;
+    // Title contains full phrase
+    if (title.includes(phrase)) score += 600;
+    // Title token matches: +80 per token
+    for (const t of kwTexts) {
+      if (title.includes(t)) score += 80;
+    }
+    // Company name matches get +40 per token
+    for (const t of kwTexts) {
+      if (companyName.includes(t)) score += 40;
+    }
+    // Description matches get +15 per token
+    for (const t of kwTexts) {
+      if (description.includes(t)) score += 15;
+    }
+    // Skills matches get +50 per token
+    for (const t of kwTexts) {
+      if (skills.includes(t)) score += 50;
+    }
+    // Numeric keyword: if provided, reward jobs whose salary intersects
+    if (kwNumbers.length > 0) {
+      const minKw = Math.min(...kwNumbers);
+      const maxKw = Math.max(...kwNumbers);
+      const jobSalaryStr = (job.salaryRange || job.salary || "").replace(
+        /[^\d\- ]/g,
+        ""
+      );
+      const jobSalary = parseSalaryRange(jobSalaryStr);
+      if (jobSalary) {
+        // overlap detection
+        if (!(jobSalary[1] < minKw || jobSalary[0] > maxKw)) score += 200;
+      }
+    }
+    return score;
+  }
+
+  if (currentPage === 1) {
+    // Trang 1: first show exact title matches (highest priority), then VIP then normal.
+    const phrase = removeVietnameseTones(keyword.toLowerCase()).trim();
+    const exactMatches = phrase
+      ? filteredJobs.filter(
+          (j) => removeVietnameseTones((j.title || "").toLowerCase()).trim() === phrase
+        )
+      : [];
+    // Build remaining pool without exact matches
+    const exactIds = new Set(exactMatches.map((j) => j.id));
+    const remaining = filteredJobs.filter((j) => !exactIds.has(j.id));
+
+    const vipJobs = remaining
+      .filter((j) => j.postType === "vip")
+      .sort((a, b) => {
+        const ra = computeRelevance(a);
+        const rb = computeRelevance(b);
+        if (rb !== ra) return rb - ra;
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
+    const normalJobs = remaining
+      .filter((j) => j.postType !== "vip")
+      .sort((a, b) => {
+        const ra = computeRelevance(a);
+        const rb = computeRelevance(b);
+        if (rb !== ra) return rb - ra;
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
+    sortedPagedJobs = [...exactMatches, ...vipJobs, ...normalJobs].slice(0, jobsPerPage);
+  } else {
+    // Trang khác: chỉ thường, sắp xếp theo relevance rồi thời gian
+    const normalJobs = filteredJobs
+      .filter((j) => j.postType !== "vip")
+      .sort((a, b) => {
+        const ra = computeRelevance(a);
+        const rb = computeRelevance(b);
+        if (rb !== ra) return rb - ra;
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
+    sortedPagedJobs = normalJobs.slice(
+      (currentPage - 1) * jobsPerPage,
+      currentPage * jobsPerPage
+    );
+  }
+
   // Đã fetch company cùng lúc với jobs, không cần fetch lại theo pagedJobs
 
   // Xử lý submit filter
@@ -261,7 +397,9 @@ export default function JobGrid() {
         // Unsave dùng savedJobId
         await savedJobService.removeSavedJob(existing.savedJobId);
         setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
-        toast.error("Removed successfully");
+        toast.success("Removed successfully");
+        console.log("Removed job:", existing);
+        console.log("Removed job:", existing.savedJobId);
       } else {
         const res = await savedJobService.saveJob(jobId);
         setSavedJobs((prev) => [
@@ -269,22 +407,29 @@ export default function JobGrid() {
           { jobId, savedJobId: res.data.savedJobId },
         ]);
         toast.success("Saved successfully");
+        console.log("Saved job:", res.data);
+        console.log("Saved jobss:", res.data.savedJobId);
       }
-    } catch (err: any) {
-      console.error("Error saving job", err);
-      // Nếu 404, vẫn remove khỏi state để UI không treo
-      if (err.response?.status === 404 && existing) {
-        setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
-        toast.error("This job was not saved or already removed");
-      } else {
-        toast.error("Something went wrong");
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error("Error saving job", err.message);
+      }
+
+      // Nếu là lỗi từ Axios
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 404 && existing) {
+          setSavedJobs((prev) => prev.filter((j) => j.jobId !== jobId));
+          toast.error("This job was not saved or already removed");
+        } else {
+          toast.error("Something went wrong");
+        }
       }
     } finally {
       setSavingJobId(null);
     }
   };
 
-  const handleOpenApply = (job: any) => {
+  const handleOpenApply = (job: JobPostingResponseDTO) => {
     if (!session) {
       toast.error("You need to login to apply!");
       router.push("/page-signin"); // 👈 redirect sang trang login của bạn
@@ -310,7 +455,7 @@ export default function JobGrid() {
       try {
         const res = await savedJobService.getMySavedJobs();
         const savedJobsMap =
-          res.data?.map((job: any) => ({
+          res.data.data.content?.map((job: SavedJobResponseDTO) => ({
             jobId: job.jobPostingResponseDTO?.id, // 👈 lấy id từ DTO
             savedJobId: job.savedJobId,
           })) || [];
@@ -328,7 +473,6 @@ export default function JobGrid() {
     );
     console.log("SavedJobs:", savedJobs);
   }, [jobs, savedJobs]);
-
   return (
     <>
       <Layout>
@@ -437,7 +581,7 @@ export default function JobGrid() {
                         <div className="col-xl-6 col-lg-5">
                           <span className="text-small text-showing">
                             Showing <strong>10-15 </strong>of{" "}
-                            <strong>30 </strong>jobs
+                            <strong>{filteredJobs.length} </strong>jobs
                           </span>
                         </div>
 
@@ -466,100 +610,6 @@ export default function JobGrid() {
                                 </Link>
                               </div>
                             )}
-
-                            <div className="box-border mr-10">
-                              <span className="text-sortby">Show:</span>
-                              <div className="dropdown dropdown-sort">
-                                <button
-                                  className="btn dropdown-toggle"
-                                  id="dropdownSort"
-                                  type="button"
-                                  data-bs-toggle="dropdown"
-                                  aria-expanded="false"
-                                  data-bs-display="static"
-                                >
-                                  <span>15</span>
-                                  <i className="fi-rr-angle-small-down" />
-                                </button>
-                                <ul
-                                  className="dropdown-menu dropdown-menu-light"
-                                  aria-labelledby="dropdownSort"
-                                >
-                                  <li>
-                                    <Link href="#">
-                                      <span className="dropdown-item active">
-                                        10
-                                      </span>
-                                    </Link>
-                                  </li>
-                                  <li>
-                                    <Link href="#">
-                                      <span className="dropdown-item">12</span>
-                                    </Link>
-                                  </li>
-                                  <li>
-                                    <Link href="#">
-                                      <span className="dropdown-item">20</span>
-                                    </Link>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                            <div className="box-border">
-                              <span className="text-sortby">Sort by:</span>
-                              <div className="dropdown dropdown-sort">
-                                <button
-                                  className="btn dropdown-toggle"
-                                  id="dropdownSort2"
-                                  type="button"
-                                  data-bs-toggle="dropdown"
-                                  aria-expanded="false"
-                                  data-bs-display="static"
-                                >
-                                  <span>Newest Post</span>
-                                  <i className="fi-rr-angle-small-down" />
-                                </button>
-                                <ul
-                                  className="dropdown-menu dropdown-menu-light"
-                                  aria-labelledby="dropdownSort2"
-                                >
-                                  <li>
-                                    <Link href="#">
-                                      <span className="dropdown-item active">
-                                        Newest Post
-                                      </span>
-                                    </Link>
-                                  </li>
-                                  <li>
-                                    <Link href="#">
-                                      <span className="dropdown-item">
-                                        Oldest Post
-                                      </span>
-                                    </Link>
-                                  </li>
-                                  <li>
-                                    <Link href="#">
-                                      <span className="dropdown-item">
-                                        Rating Post
-                                      </span>
-                                    </Link>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                            <div className="box-view-type">
-                              <Link href="/jobs-list">
-                                <span className="view-type">
-                                  <Image src="/assets/imgs/template/icons/icon-list.svg" alt="jobBox" width={20} height={20} />
-                                </span>
-                              </Link>
-
-                              <Link href="/jobs-grid">
-                                <span className="view-type">
-                                  <Image src="/assets/imgs/template/icons/icon-grid-hover.svg" alt="jobBox" width={20} height={20} />
-                                </span>
-                              </Link>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -584,7 +634,7 @@ export default function JobGrid() {
                       {!jobsLoading &&
                         !jobsError &&
                         jobs.length > 0 &&
-                        pagedJobs.map((job: any) => {
+                        sortedPagedJobs.map((job: any) => {
                           const isSaved = savedJobs.some(
                             (j) => j.jobId === job.id
                           );
@@ -600,8 +650,32 @@ export default function JobGrid() {
                                 <div className="card-grid-2-image-left">
                                   <span
                                     className="flash"
-                                    style={{ marginRight: "20px" }}
+                                    style={{
+                                      marginRight: "20px",
+                                      display: "flex",
+                                      gap: "0px",
+                                      alignItems: "center",
+                                      background:
+                                        job.postType === "vip"
+                                          ? "none"
+                                          : undefined,
+                                    }}
                                   >
+                                    {/* Nếu VIP thì hiện vương miện, không hiện sấm sét */}
+                                    {job.postType === "vip" ? (
+                                      <CrownFilled
+                                        style={{
+                                          fontSize: 22,
+                                          color: "#FFD700",
+                                          verticalAlign: "middle",
+                                        }}
+                                      />
+                                    ) : (
+                                      // Sấm sét chỉ hiện nếu không phải VIP
+                                      <></>
+                                    )}
+
+                                    {/* Bookmark luôn hiển thị */}
                                     <button
                                       onClick={() => toggleSaveJob(job.id)}
                                       disabled={savingJobId === job.id}
@@ -615,7 +689,8 @@ export default function JobGrid() {
                                     >
                                       {savingJobId === job.id ? (
                                         <span className="loading-dots">
-                                          ...
+                                          {" "}
+                                          ...{" "}
                                         </span>
                                       ) : (
                                         <Bookmark
@@ -626,6 +701,7 @@ export default function JobGrid() {
                                       )}
                                     </button>
                                   </span>
+
                                   <div
                                     className="image-box"
                                     style={{
@@ -635,12 +711,20 @@ export default function JobGrid() {
                                       objectFit: "cover",
                                     }}
                                   >
-                                    <Image
-                                      src={company?.logoUrl || job.companyLogo || "/assets/imgs/brands/brand-1.png"}
-                                      alt={company?.companyName || job.companyName || "Company"}
-                                      width={48}
-                                      height={48}
+                                    <img
+                                      src={
+                                        company?.logoUrl ||
+                                        job.companyLogo ||
+                                        "/assets/imgs/brands/brand-1.png"
+                                      }
+                                      alt={
+                                        company?.companyName ||
+                                        job.companyName ||
+                                        "Company"
+                                      }
                                       style={{
+                                        maxWidth: "100%",
+                                        maxHeight: "100%",
                                         borderRadius: 8,
                                         objectFit: "contain",
                                         display: "block",
@@ -649,60 +733,105 @@ export default function JobGrid() {
                                     />
                                   </div>
 
-                                <div className="right-info">
-                                  <span className="fw-bold" style={{ fontSize: '1.08rem', color: '#222'}}>
-                                    {company?.companyName || job.companyName || 'Company'}
-                                  </span>
-                                  <div className="d-flex align-items-center font-xs color-text-paragraph mt-1">
-                                    <i className="fi-rr-marker mr-5" />
-                                    { 
-                                    job.location || 'Unknown'
-                                      }
+                                  <div className="right-info">
+                                    <span
+                                      className="fw-bold"
+                                      style={{
+                                        fontSize: "1.08rem",
+                                        color: "#222",
+                                      }}
+                                    >
+                                      {company?.companyName ||
+                                        job.companyName ||
+                                        "Company"}
+                                    </span>
+                                    <div className="d-flex align-items-center font-xs color-text-paragraph mt-1">
+                                      <i className="fi-rr-marker mr-5" />
+                                      {job.location || "Unknown"}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            <div className="card-block-info">
-                              <h6>
-                                <Link href={`/job-details-2/${job.id}`}>
-                                  <span>{job.title || "No title"}</span>
-                                </Link>
-                              </h6>
-                              <div className="mt-5">
-                                <span className="card-briefcase">{job.jobType || "Fulltime"}</span>
-                                <span className="card-time">{job.createdAt ? new Date(job.createdAt).toLocaleDateString() : ""}</span>
-                              </div>
-                              <p
-                                className="font-sm color-text-paragraph mt-15"
-                                style={{
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 1,
-                                  WebkitBoxOrient: 'vertical',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'normal',
-                                  maxWidth: '100%',
-                                  marginBottom: 0
-                                }}
-                                title={job.description || "Không có mô tả"}
-                              >
-                                {job.description || "Không có mô tả"}
-                              </p>
-                              <div className="mt-30">
-                                {Array.isArray(job.skills) && job.skills.map((skill: string, idx: number) => (
-                                  <span key={idx} className="btn btn-grey-small mr-5">{skill}</span>
-                                ))}
-                              </div>
-                              <div className="card-2-bottom mt-30">
-                                <div className="row">
-                                  <div className="col-lg-7 col-7">
-                                    <span className="card-text-price" style={{ fontSize: '1rem', color: '#2A6DF5', fontWeight: 700, letterSpacing: '0.5px', lineHeight: 1 }}>
-                                      {job.salaryRange && job.salaryRange.trim() !== "" ? job.salaryRange : (job.salary && job.salary.trim() !== "" ? job.salary : "N/A")}
+
+                                {/* phần còn lại giữ nguyên */}
+                                <div className="card-block-info">
+                                  <h6>
+                                    <Link href={`/job-details-2/${job.id}`}>
+                                      <span>{job.title || "No title"}</span>
+                                    </Link>
+                                  </h6>
+                                  <div className="mt-5">
+                                    <span className="card-briefcase">
+                                      {job.jobType || "Fulltime"}
                                     </span>
-                                    <span className="text-muted" style={{ fontSize: '0.85rem', marginLeft: 2 }}>/Tháng</span>
+                                    <span className="card-time">
+                                      {job.createdAt
+                                        ? new Date(
+                                            job.createdAt
+                                          ).toLocaleDateString()
+                                        : ""}
+                                    </span>
                                   </div>
-                                  <div className="col-lg-5 col-5 text-end">
+                                  <p
+                                    className="font-sm color-text-paragraph mt-15"
+                                    style={{
+                                      display: "-webkit-box",
+                                      WebkitLineClamp: 1,
+                                      WebkitBoxOrient: "vertical",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      whiteSpace: "normal",
+                                      maxWidth: "100%",
+                                      marginBottom: 0,
+                                    }}
+                                    title={job.description || "Không có mô tả"}
+                                  >
+                                    {job.description || "Không có mô tả"}
+                                  </p>
+                                  <div className="mt-30">
+                                    {Array.isArray(job.skills) &&
+                                      job.skills.map((skill, idx) => (
+                                        <span
+                                          key={idx}
+                                          className="btn btn-grey-small mr-5"
+                                        >
+                                          {skill}
+                                        </span>
+                                      ))}
+                                  </div>
+                                  <div className="card-2-bottom mt-30">
+                                    <div className="row">
+                                      <div className="col-lg-7 col-7">
+                                        <span
+                                          className="card-text-price"
+                                          style={{
+                                            fontSize: "1rem",
+                                            color: "#2A6DF5",
+                                            fontWeight: 700,
+                                            letterSpacing: "0.5px",
+                                            lineHeight: 1,
+                                          }}
+                                        >
+                                          {job.salaryRange &&
+                                          job.salaryRange.trim() !== ""
+                                            ? job.salaryRange
+                                            : job.salary &&
+                                              job.salary.trim() !== ""
+                                            ? job.salary
+                                            : "N/A"}
+                                        </span>
+                                        <span
+                                          className="text-muted"
+                                          style={{
+                                            fontSize: "0.85rem",
+                                            marginLeft: 2,
+                                          }}
+                                        >
+                                          /Tháng
+                                        </span>
+                                      </div>
+                                      <div className="col-lg-5 col-5 text-end">
                                         <button
-                                          onClick={() => handleOpenApply(job)}
+                                          onClick={() => handleOpenApply(job as JobPostingResponseDTO)} // 👈 Fix: open modal by setting modalJob
                                           className="btn btn-apply-now"
                                         >
                                           Apply
@@ -780,9 +909,6 @@ export default function JobGrid() {
                       <div className="filter-block head-border mb-30">
                         <h5>
                           Advance Filter
-                          <Link href="#">
-                            <span className="link-reset">Reset</span>
-                          </Link>
                         </h5>
                       </div>
                       <div className="filter-block mb-30">
@@ -851,10 +977,10 @@ export default function JobGrid() {
                           <ul className="list-checkbox">
                             {[
                               "All",
-                              "Duới 20 triệu",
-                              "20 - 50 triệu",
-                              "50 - 70 triệu",
-                              "70 - 100 triệu",
+                              "Dưới 20 triệu",
+                              "Từ 20 triệu trở lên",
+                              "Từ 50 triệu trở lên",
+                              "Từ 70 triệu trở lên",
                               "Trên 100 triệu",
                             ].map((label) => (
                               <li key={label}>
@@ -1078,7 +1204,12 @@ export default function JobGrid() {
               <div className="box-newsletter">
                 <div className="row">
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <Image src="/assets/imgs/template/newsletter-left.png" alt="joxBox" width={120} height={120} />
+                    <Image
+                      src="/assets/imgs/template/newsletter-left.png"
+                      alt="joxBox"
+                      width={120}
+                      height={120}
+                    />
                   </div>
                   <div className="col-lg-12 col-xl-6 col-12">
                     <h2 className="text-md-newsletter text-center">
@@ -1099,7 +1230,12 @@ export default function JobGrid() {
                     </div>
                   </div>
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <Image src="/assets/imgs/template/newsletter-right.png" alt="joxBox" width={120} height={120} />
+                    <Image
+                      src="/assets/imgs/template/newsletter-right.png"
+                      alt="joxBox"
+                      width={120}
+                      height={120}
+                    />
                   </div>
                 </div>
               </div>

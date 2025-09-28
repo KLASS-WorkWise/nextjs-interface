@@ -69,6 +69,12 @@ export const blogApi = {
     return response.data;
   },
 
+  // Lấy blog theo slug
+  getBlogBySlug: async (slug: string): Promise<BlogResponseDto> => {
+    const response = await blogApiClient.get(`/api/blogs/slug/${slug}`);
+    return response.data;
+  },
+
   // Tìm kiếm blogs
   searchBlogs: async (query: string): Promise<BlogResponseDto[]> => {
     const response = await blogApiClient.get(

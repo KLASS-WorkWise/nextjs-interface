@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+
 "use client";
 
 import { useParams } from "next/navigation";
@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import Layout from "@/components/Layout/Layout";
 import React from "react";
 import ApplicantDetail from "@/features/applicants/components/ApplicantDetail";
+import Image from "next/image";
 
 export default function ApplicantDetailPage() {
   const { id } = useParams();
@@ -19,7 +20,7 @@ export default function ApplicantDetailPage() {
         <section className="section-box-2">
           <div className="container">
             <div className="banner-hero banner-image-single">
-              <img src="../../assets/imgs/page/candidates/img.png" alt="jobbox" />
+              <Image src="../../assets/imgs/page/candidates/img.png" alt="jobbox" width={1000} height={300} unoptimized />
             </div>
           
             <div className="box-nav-tabs mt-40 mb-5">
@@ -59,7 +60,7 @@ export default function ApplicantDetailPage() {
             <div className="box-newsletter">
               <div className="row">
                 <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                  <img src="assets/imgs/template/newsletter-left.png" alt="joxBox" />
+                  {/* <Image src="assets/imgs/template/newsletter-left.png" alt="joxBox" width={50} height={50} unoptimized /> */}
                 </div>
                 <div className="col-lg-12 col-xl-6 col-12">
                   <h2 className="text-md-newsletter text-center">
@@ -74,7 +75,7 @@ export default function ApplicantDetailPage() {
                   </div>
                 </div>
                 <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                  <img src="assets/imgs/template/newsletter-right.png" alt="joxBox" />
+                  {/* <Image src="assets/imgs/template/newsletter-right.png" alt="joxBox" width={50} height={50} unoptimized /> */}
                 </div>
               </div>
             </div>

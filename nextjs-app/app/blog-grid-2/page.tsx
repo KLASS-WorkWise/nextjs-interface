@@ -1,91 +1,45 @@
 /* eslint-disable react/no-unescaped-entities */
-"use client";
+import Link from "next/link"
+import Layout from "@/components/Layout/Layout"
+import { blogApiServer } from "../../lib/blog/blog-api-server"
+import "./blog-grid.css"
 
-import Link from "next/link";
-import Layout from "@/components/Layout/Layout";
-import { useEffect, useState } from "react";
-import { blogApi } from "@/lib/blog/blog-api";
-import { BlogResponseDto } from "@/lib/blog/blog-api";
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("vi-VN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })
+}
 
-export default function BlogGrid2() {
-  const [blogs, setBlogs] = useState<BlogResponseDto[]>([]);
-  const [featuredBlog, setFeaturedBlog] = useState<BlogResponseDto | null>(
-    null
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const getReadTime = (content: string) => {
+  const wordsPerMinute = 200
+  const wordCount = content.split(" ").length
+  return Math.ceil(wordCount / wordsPerMinute)
+}
 
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        setLoading(true);
-        const blogsData = await blogApi.getAllBlogs();
-        setBlogs(blogsData);
+export default async function BlogGrid2() {
+  try {
+    const blogs = await blogApiServer.getAllBlogs()
+    const featuredBlog = blogs.length > 0 ? blogs[0] : null
 
-        // Lấy blog đầu tiên làm featured blog
-        if (blogsData.length > 0) {
-          setFeaturedBlog(blogsData[0]);
-        }
-      } catch (err) {
-        console.error("Error fetching blogs:", err);
-        setError("Không thể tải dữ liệu blog");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBlogs();
-  }, []);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("vi-VN", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
-
-  const getReadTime = (content: string) => {
-    const wordsPerMinute = 200;
-    const wordCount = content.split(" ").length;
-    return Math.ceil(wordCount / wordsPerMinute);
-  };
-
-  if (loading) {
-    return (
-      <Layout>
-        <div className="section-box">
-          <div className="container">
-            <div className="text-center">
-              <div className="spinner-border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-              <p className="mt-3">Đang tải dữ liệu...</p>
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (error) {
-    return (
-      <Layout>
-        <div className="section-box">
-          <div className="container">
-            <div className="text-center">
-              <div className="alert alert-danger" role="alert">
-                {error}
+    if (!blogs || blogs.length === 0) {
+      return (
+        <Layout>
+          <div className="section-box">
+            <div className="container">
+              <div className="text-center">
+                <div className="alert alert-info" role="alert">
+                  Không có bài viết nào để hiển thị.
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </Layout>
-    );
-  }
+        </Layout>
+      )
+    }
 
-  return (
-    <>
+    return (
       <Layout>
         <div>
           <section className="section-box">
@@ -94,9 +48,7 @@ export default function BlogGrid2() {
                 <div className="row">
                   <div className="col-lg-6">
                     <h2 className="mb-10">Articles / News</h2>
-                    <p className="font-lg color-text-paragraph-2">
-                      Get the latest news, updates and tips
-                    </p>
+                    <p className="font-lg color-text-paragraph-2">Get the latest news, updates and tips</p>
                   </div>
                   <div className="col-lg-6 text-end">
                     <ul className="breadcrumbs mt-40">
@@ -120,12 +72,11 @@ export default function BlogGrid2() {
                 <div className="box-improve">
                   <div className="row">
                     <div className="col-lg-5 col-md-12 col-sm-12">
-                      <Link href={`/blog-details?id=${featuredBlog.id}`}>
+                      <Link href={`/blog/${featuredBlog.slug}`}>
                         <span>
                           <img
                             src={
-                              featuredBlog.imageUrl ||
-                              "assets/imgs/page/job-single-2/img2.png"
+                              featuredBlog.imageUrl || "assets/imgs/page/job-single-2/img2.png" || "/placeholder.svg"
                             }
                             alt={featuredBlog.title}
                           />
@@ -135,25 +86,20 @@ export default function BlogGrid2() {
                     <div className="col-lg-7 col-md-12 col-sm-12">
                       <div className="pt-40 pb-30 pl-30 pr-30">
                         <Link href="blog-grid">
-                          <span className="btn btn-tag">
-                            {featuredBlog.category.name}
-                          </span>
+                          <span className="btn btn-tag">{featuredBlog.category.name}</span>
                         </Link>
 
                         <h2 className="mt-20 mb-20">
-                          <Link href={`/blog-details?id=${featuredBlog.id}`}>
+                          <Link href={`/blog-details?slug=${featuredBlog.slug}`}>
                             <span>{featuredBlog.title}</span>
                           </Link>
                         </h2>
                         <p className="font-md mb-20">
-                          {featuredBlog.summary ||
-                            featuredBlog.content.substring(0, 200) + "..."}
+                          {featuredBlog.summary || featuredBlog.content.substring(0, 200) + "..."}
                         </p>
                         <div>
-                          <Link href={`/blog-details?id=${featuredBlog.id}`}>
-                            <span className="btn btn-arrow-right">
-                              Read More
-                            </span>
+                          <Link href={`/blog-details?slug=${featuredBlog.slug}`}>
+                            <span className="btn btn-arrow-right">Read More</span>
                           </Link>
                         </div>
                       </div>
@@ -168,9 +114,7 @@ export default function BlogGrid2() {
             <div className="post-loop-grid">
               <div className="container">
                 <div className="text-left">
-                  <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
-                    Latest Posts
-                  </h2>
+                  <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">Latest Posts</h2>
                   <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
                     Don't miss the trending news
                   </p>
@@ -182,14 +126,13 @@ export default function BlogGrid2() {
                         <div key={blog.id} className="col-lg-6 mb-30 d-flex">
                           <div className="card-grid-3 hover-up w-100 latest-card">
                             <div className="text-center card-grid-3-image">
-                              <Link href={`/blog-details?id=${blog.id}`}>
+                              <Link href={`/blog-details?slug=${blog.slug}`}>
                                 <span>
                                   <figure>
                                     <img
                                       alt={blog.title}
                                       src={
-                                        blog.imageUrl ||
-                                        "assets/imgs/page/job-single-2/img3.png"
+                                        blog.imageUrl || "assets/imgs/page/job-single-2/img3.png" || "/placeholder.svg"
                                       }
                                     />
                                   </figure>
@@ -199,19 +142,16 @@ export default function BlogGrid2() {
                             <div className="card-block-info">
                               <div className="tags mb-15">
                                 <Link href="blog-grid">
-                                  <span className="btn btn-tag">
-                                    {blog.category.name}
-                                  </span>
+                                  <span className="btn btn-tag">{blog.category.name}</span>
                                 </Link>
                               </div>
                               <h5>
-                                <Link href={`/blog-details?id=${blog.id}`}>
+                                <Link href={`/blog-details?slug=${blog.slug}`}>
                                   <span>{blog.title}</span>
                                 </Link>
                               </h5>
                               <p className="mt-10 color-text-paragraph font-sm lp-line-clamp-4">
-                                {blog.summary ||
-                                  blog.content.substring(0, 150) + "..."}
+                                {blog.summary || blog.content.substring(0, 150) + "..."}
                               </p>
                               <div className="card-2-bottom mt-20">
                                 <div className="row">
@@ -271,26 +211,18 @@ export default function BlogGrid2() {
                       <h5 className="sidebar-title">Trending Now</h5>
                       <div className="post-list-small">
                         {blogs.slice(0, 5).map((blog) => (
-                          <div
-                            key={blog.id}
-                            className="post-list-small-item d-flex align-items-start"
-                          >
+                          <div key={blog.id} className="post-list-small-item d-flex align-items-start">
                             <figure className="thumb mr-15">
-                              <a href={`/blog-details?id=${blog.id}`}>
+                              <a href={`/blog-details?slug=${blog.slug}`}>
                                 <img
-                                  src={
-                                    blog.imageUrl ||
-                                    "assets/imgs/page/blog/img-trending.png"
-                                  }
+                                  src={blog.imageUrl || "assets/imgs/page/blog/img-trending.png" || "/placeholder.svg"}
                                   alt={blog.title}
                                 />
                               </a>
                             </figure>
                             <div className="content">
                               <h5>
-                                <a href={`/blog-details?id=${blog.id}`}>
-                                  {blog.title}
-                                </a>
+                                <a href={`/blog-details?slug=${blog.slug}`}>{blog.title}</a>
                               </h5>
                               <div className="post-meta text-muted d-flex align-items-center mb-15">
                                 <div className="author d-flex align-items-center mr-20"></div>
@@ -308,8 +240,7 @@ export default function BlogGrid2() {
                       <span className="text-grey">WE ARE</span>
                       <span className="text-hiring">HIRING</span>
                       <p className="font-xxs color-text-paragraph mt-5">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit. Recusandae architecto
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto
                       </p>
                       <div className="mt-15">
                         <Link href="#">
@@ -324,13 +255,10 @@ export default function BlogGrid2() {
                         <ul className="gallery-3">
                           {blogs.map((blog) => (
                             <li key={blog.id}>
-                              <Link href={`/blog-details?id=${blog.id}`}>
+                              <Link href={`/blog-details?slug=${blog.slug}`}>
                                 <span>
                                   <img
-                                    src={
-                                      blog.imageUrl ||
-                                      "assets/imgs/page/blog/gallery1.png"
-                                    }
+                                    src={blog.imageUrl || "assets/imgs/page/blog/gallery1.png" || "/placeholder.svg"}
                                     alt={blog.title}
                                   />
                                 </span>
@@ -351,10 +279,7 @@ export default function BlogGrid2() {
               <div className="box-newsletter">
                 <div className="row">
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img
-                      src="assets/imgs/template/newsletter-left.png"
-                      alt="joxBox"
-                    />
+                    <img src="assets/imgs/template/newsletter-left.png" alt="joxBox" />
                   </div>
                   <div className="col-lg-12 col-xl-6 col-12">
                     <h2 className="text-md-newsletter text-center">
@@ -363,22 +288,13 @@ export default function BlogGrid2() {
                     </h2>
                     <div className="box-form-newsletter mt-40">
                       <form className="form-newsletter">
-                        <input
-                          className="input-newsletter"
-                          type="text"
-                          placeholder="Enter your email here"
-                        />
-                        <button className="btn btn-default font-heading icon-send-letter">
-                          Subscribe
-                        </button>
+                        <input className="input-newsletter" type="text" placeholder="Enter your email here" />
+                        <button className="btn btn-default font-heading icon-send-letter">Subscribe</button>
                       </form>
                     </div>
                   </div>
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img
-                      src="assets/imgs/template/newsletter-right.png"
-                      alt="joxBox"
-                    />
+                    <img src="assets/imgs/template/newsletter-right.png" alt="joxBox" />
                   </div>
                 </div>
               </div>
@@ -386,57 +302,21 @@ export default function BlogGrid2() {
           </section>
         </div>
       </Layout>
-      <style jsx>{`
-        /* Only affect Latest Posts grid */
-        .latest-posts > .col-lg-8 .row > [class*="col-"] {
-          display: flex;
-        }
-        .latest-card {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-        }
-        .latest-card .card-grid-3-image img {
-          width: 100%;
-          height: 220px;
-          object-fit: cover;
-        }
-        .latest-card .card-block-info {
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-        }
-        .latest-card .card-2-bottom {
-          margin-top: auto;
-        }
-        .lp-line-clamp-3 {
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 3;
-          overflow: hidden;
-        }
-        .lp-line-clamp-4 {
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 4;
-          overflow: hidden;
-        }
-
-        /* Sidebar Trending Now thumbnails */
-        .sidebar-news-small .post-list-small .thumb {
-          width: 96px;
-          height: 72px;
-          flex: 0 0 96px;
-          overflow: hidden;
-          border-radius: 8px;
-        }
-        .sidebar-news-small .post-list-small .thumb img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
-      `}</style>
-    </>
-  );
+    )
+  } catch (error) {
+    console.error("Error loading blogs:", error)
+    return (
+      <Layout>
+        <div className="section-box">
+          <div className="container">
+            <div className="text-center">
+              <div className="alert alert-danger" role="alert">
+                Có lỗi xảy ra khi tải dữ liệu blog. Vui lòng thử lại sau.
+              </div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
 }

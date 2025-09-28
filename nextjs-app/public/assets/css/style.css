@@ -2200,14 +2200,60 @@ label {
   padding-top: 20px;
 }
 
+  /* .card-grid-2 .flash {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    height: 25px;
+    width: 25px;
+    background: url(../imgs/template/icons/flash.svg) no-repeat 0px 0px;
+  } */
+
+  /* Flash icon góc phải card */
 .card-grid-2 .flash {
   position: absolute;
   top: 15px;
   right: 15px;
   height: 25px;
   width: 25px;
-  background: url(../imgs/template/icons/flash.svg) no-repeat 0px 0px;
+  background: url(../imgs/template/icons/flash.svg) no-repeat center/contain;
+  z-index: 2;
 }
+
+/* Nhóm icon bookmark + crown góc trái card */
+.card-grid-2 .action-icons {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  display: flex;
+  align-items: center;
+  gap: 0px; /* khoảng cách giữa crown và bookmark */
+  z-index: 2;
+}
+
+/* Crown VIP */
+.card-grid-2 .icon-crown {
+  font-size: 22px;
+  color: #FFD700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Bookmark button */
+.card-grid-2 .saved-job-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  margin: 17px;
+  /* justify-content: center; */
+}
+
+
+/* // bookmark icon */
 
 .card-grid-2 .card-grid-2-image-left {
   padding: 30px 20px 15px 20px;
@@ -3042,10 +3088,15 @@ ul li:last-child .card-list-4 {
 }
 
 .banner-hero .banner-inner .banner-imgs {
-  padding: 65px 0px 0px 0px;
+  padding: 75px 51px 0px 0px;
   position: relative;
   height: 100%;
   min-height: 540px;
+}
+
+.banner-imgs {
+  width: 518px;
+  margin-right: 20px;
 }
 
 .banner-hero .banner-inner .banner-imgs .block-1 {
@@ -9245,4 +9296,31 @@ ul li:last-child .card-list-4 {
   .header-right {
     display: none;
   }
+}
+
+
+/* Khung gradient bao quanh ảnh */
+ .gradient-frame {
+  display: inline-block;
+  padding: 10px;
+  background: linear-gradient(90deg, #3B82F6 0%, #A855F7 100%);
+  border-radius: 32px;
+  transform: rotate(3deg);
+  overflow: visible;
+}
+ .gradient-frame-inner {
+  background: #fff;
+  border-radius: 24px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+ .gradient-frame img {
+  display: block;
+  border-radius: 16px;
+  max-width: 100%;
+  max-height: 320px;
+  object-fit: contain;
 }

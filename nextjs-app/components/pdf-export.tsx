@@ -124,22 +124,22 @@ export function PDFExport({ data, template, customization }: PDFExportProps) {
       <div className="card shadow-sm">
         <div className="card-header d-flex align-items-center">
           <i className="bi bi-file-earmark-text me-2"></i>
-          <h5 className="mb-0">Xuất PDF</h5>
+          <h5 className="mb-0">Export PDF</h5>
         </div>
         <div className="card-body">
           {/* Export Section */}
           <div className="d-flex justify-content-between align-items-center p-3 bg-light rounded mb-3">
             <div>
-              <h6 className="fw-semibold">Tải xuống Resume</h6>
+              <h6 className="fw-semibold">Download Resume</h6>
               <p className="text-muted small mb-0">
-                Xuất resume dưới dạng PDF để in hoặc gửi cho nhà tuyển dụng
+                Export resume as PDF for printing or sending to employers
               </p>
             </div>
             <div className="d-flex align-items-center gap-2">
               {exportSuccess ? (
                 <span className="badge bg-success d-flex align-items-center">
                   <i className="bi bi-check-circle me-1"></i>
-                  Đã xuất
+                  Exported
                 </span>
               ) : (
                 <button
@@ -153,12 +153,12 @@ export function PDFExport({ data, template, customization }: PDFExportProps) {
                         className="spinner-border spinner-border-sm me-2"
                         role="status"
                       ></span>
-                      Đang xuất...
+                      Exporting...
                     </>
                   ) : (
                     <>
                       <i className="bi bi-download me-2"></i>
-                      Tải PDF
+                      Download PDF
                     </>
                   )}
                 </button>
@@ -168,12 +168,12 @@ export function PDFExport({ data, template, customization }: PDFExportProps) {
 
           {/* Notes */}
           <div className="text-muted small">
-            <h6 className="fw-semibold text-dark">Lưu ý khi xuất PDF:</h6>
+            <h6 className="fw-semibold text-dark">Notes for PDF Export:</h6>
             <ul className="mb-0 ps-3">
-              <li>Đảm bảo trình duyệt hỗ trợ in nền (background graphics)</li>
-              <li>Chọn khổ giấy A4 để có kết quả tốt nhất</li>
-              <li>Kiểm tra xem trước trước khi in hoặc lưu</li>
-              <li>Màu sắc có thể khác nhau giữa màn hình và bản in</li>
+              <li>Ensure the browser supports printing background graphics</li>
+              <li>Select A4 paper size for best results</li>
+              <li>Check the preview before printing or saving</li>
+              <li>Colors may differ between screen and print</li>
             </ul>
           </div>
         </div>
