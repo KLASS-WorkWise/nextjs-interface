@@ -23,7 +23,6 @@ import {
   Resume,
   SavedJobResponseDTO,
 } from "@/types/applicant";
-import Image from "next/image";
 import axios from "axios";
 // import "@/styles/globals.css";
 

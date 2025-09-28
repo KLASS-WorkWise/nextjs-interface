@@ -31,6 +31,10 @@ export type ApplicantTimeline = {
   currentStep: boolean;
   completed: boolean;
 };
+export type PreviewResponse = {
+  resumesId?: number;
+  skillMatchPercent: number;
+};
 
 export const applicantService = {
   // applyJobWithFile: (jobId: number, formData: FormData, config?: any) =>
@@ -156,4 +160,17 @@ export const applicantService = {
       clearTimeout(reconnectTimer);
     };
   },
+  // ✅ API preview CV
+  previewApplication: (
+    jobId: number,
+    formData: FormData
+  ) =>
+    apiClient.post<ApiResponse<PreviewResponse>>(
+      `/api/applicant/${jobId}/preview`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    ),
 };
+
