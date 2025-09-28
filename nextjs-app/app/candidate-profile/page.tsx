@@ -222,11 +222,7 @@ export default function CandidateProfile() {
                       ))}
                     </ul>
                     <div className="border-bottom pt-10 pb-10" />
-                    <div className="mt-20 mb-20">
-                      <Link href="#">
-                        <span className="link-red">Delete Account</span>
-                      </Link>
-                    </div>
+                    
                   </div>
                 </div>
                 <div className="col-lg-9 col-md-8 col-sm-12 col-12 mb-50">
