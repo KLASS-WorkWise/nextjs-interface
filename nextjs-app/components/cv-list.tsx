@@ -63,7 +63,7 @@ export function CVList({
               return null;
             })
           ) : (
-            <div className="text-center text-muted py-5">Chưa có CV nào</div>
+            <div className="text-center text-muted py-5">No CV yet</div>
           )}
         </div>
       </div>

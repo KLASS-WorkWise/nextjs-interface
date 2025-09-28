@@ -75,7 +75,8 @@ const ChatWithEmployer: React.FC<ChatWithEmployerProps> = ({ employerId, applica
   // Use the logged-in applicant's id as the applicantName so admin immediately sees an identifier.
   // applicantId is passed from the session (session.user.id) when the chat is created.
   summaryPayload.applicantName = applicantName || String(applicantId);
-    await setDoc(doc(db, "chats", chatId), summaryPayload, { merge: true });
+    // mark unread for employer when applicant sends a message so employer UI can highlight it
+    await setDoc(doc(db, "chats", chatId), { ...summaryPayload, unreadForEmployer: true }, { merge: true });
     setInput("");
   };
 

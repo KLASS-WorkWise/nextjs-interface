@@ -32,7 +32,9 @@ export default function CandidateProfile() {
 
     const fetchResume = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/resumes/${resumeId}`);
+        const res = await fetch(
+          `http://localhost:8080/api/resumes/${resumeId}`
+        );
         const data = await res.json();
         setResume(data);
       } catch (err) {
@@ -63,15 +65,15 @@ export default function CandidateProfile() {
   const handleOnClick = (tabKey: string) => {
     const params = new URLSearchParams(window.location.search);
     params.set("tab", tabKey);
-   // 👇 Nếu tab là apply thì reset page = 1
-  if (tabKey === "apply") {
-    params.set("page", "1");
-  } else {
-    params.delete("page"); // tab khác thì bỏ page đi cho sạch URL
-  }
+    // 👇 Nếu tab là apply thì reset page = 1
+    if (tabKey === "apply") {
+      params.set("page", "1");
+    } else {
+      params.delete("page"); // tab khác thì bỏ page đi cho sạch URL
+    }
 
-  router.replace(`?${params.toString()}`);
-};
+    router.replace(`?${params.toString()}`);
+  };
 
   // Xử lý tạo CV: điều hướng sang trang tạo CV trong danh sách CV
   const handleCreateNew = () => {
@@ -120,8 +122,7 @@ export default function CandidateProfile() {
   return (
     <>
       <Layout>
-
-         {/* Modal hiển thị khi cv_saved=true */}
+        {/* Modal hiển thị khi cv_saved=true */}
         <CVSuccessModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
@@ -129,12 +130,17 @@ export default function CandidateProfile() {
           resume={resume}
         />
 
-
         <div>
           <section className="section-box-2">
             <div className="container">
               <div className="banner-hero banner-image-single">
-                <Image src="assets/imgs/page/candidates/img.png" alt="jobbox" width={1000} height={300}  unoptimized />
+                <Image
+                  src="assets/imgs/page/candidates/img.png"
+                  alt="jobbox"
+                  width={1000}
+                  height={300}
+                  unoptimized
+                />
                 <a className="btn-editor" href="#" />
               </div>
               <div className="box-company-profile">
@@ -146,7 +152,6 @@ export default function CandidateProfile() {
                     height={100}
                     unoptimized
                     style={{
-                     
                       marginBottom: 10,
                       objectFit: "cover",
                       borderRadius: 8,
@@ -166,7 +171,7 @@ export default function CandidateProfile() {
                       className="btn btn-preview-icon btn-apply btn-apply-big"
                       onClick={handleCreateNew}
                     >
-                      Tạo CV
+                      Create CV
                     </button>
                   </div>
                 </div>
@@ -219,7 +224,6 @@ export default function CandidateProfile() {
                             Saved Jobs
                           </h3> */}
                           <SavedJobsList />
-                         
                         </div>
                       )}
                     </div>

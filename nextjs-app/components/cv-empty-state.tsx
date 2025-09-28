@@ -48,7 +48,7 @@ export function CVEmptyState({ onCreateNew }: CVEmptyStateProps) {
             />
           </svg>
         </div>
-        <p className="text-muted fs-6">Chưa có CV nào được tạo.</p>
+        <p className="text-muted fs-6">No CV has been created yet.</p>
         <button
           className="btn btn-primary"
           onClick={onCreateNew}

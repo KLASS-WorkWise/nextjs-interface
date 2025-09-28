@@ -87,7 +87,7 @@ export interface ResumeData {
   }>;
 }
 interface ResumeDataWithTemplate extends ResumeData {
-  template: string
+  template: string;
 }
 
 interface DesktopSidebarProps {
@@ -127,32 +127,32 @@ interface MobileSidebarProps {
 const steps = [
   {
     id: "personal",
-    title: "Thông tin cá nhân",
+    title: "Personal information",
     component: PersonalInfoStep,
     fields: ["personalInfo"],
   },
   {
     id: "experience",
-    title: "Kinh nghiệm làm việc",
+    title: "Work experience",
     component: ExperienceStep,
     fields: ["experience"],
   },
   {
     id: "education",
-    title: "Học vấn",
+    title: "Education",
     component: EducationStep,
     fields: ["education"],
   },
-  { id: "skills", title: "Kỹ năng", component: SkillsStep, fields: ["skills"] },
+  { id: "skills", title: "Skills", component: SkillsStep, fields: ["skills"] },
   {
     id: "activities",
-    title: "Hoạt động",
+    title: "Activities",
     component: ActivitiesStep,
     fields: ["activities"],
   },
   {
     id: "awards",
-    title: "Giải thưởng",
+    title: "Awards",
     component: AwardsStep,
     fields: ["awards"],
   },
@@ -233,7 +233,7 @@ export function ResumeUpdate({
             : [],
           awards: Array.isArray(initialData.awards) ? initialData.awards : [],
         });
-        if ((initialData as ResumeDataWithTemplate )?.template) {
+        if ((initialData as ResumeDataWithTemplate)?.template) {
           setSelectedTemplate((initialData as ResumeDataWithTemplate).template);
         }
       } else {
@@ -292,8 +292,8 @@ export function ResumeUpdate({
           setSelectedTemplate(parsedData.template);
         }
         toast({
-          title: "Đã khôi phục bản nháp",
-          description: "Dữ liệu đã lưu trước đó đã được khôi phục.",
+          title: "Draft restored",
+          description: "Previously saved data has been restored.",
         });
       } catch (error) {
         console.error("Error loading draft:", error);
@@ -315,7 +315,9 @@ export function ResumeUpdate({
   }
 
   const validateCurrentStep = async () => {
-    const currentStepFields = steps[currentStep].fields as Array<keyof ResumeData>;
+    const currentStepFields = steps[currentStep].fields as Array<
+      keyof ResumeData
+    >;
     const isValid = await trigger(currentStepFields);
 
     if (isValid && !completedSteps.includes(currentStep)) {
@@ -331,8 +333,8 @@ export function ResumeUpdate({
       setCurrentStep(currentStep + 1);
     } else if (!isValid) {
       toast({
-        title: "Vui lòng kiểm tra lại thông tin",
-        description: "Có một số trường bắt buộc chưa được điền.",
+        title: "Please check your information",
+        description: "Some required fields have not been filled out.",
         variant: "destructive",
       });
     }
@@ -384,10 +386,10 @@ export function ResumeUpdate({
         setShowPreview(true);
       }
     } catch (error) {
-      console.error("Lỗi khi lưu CV:", error);
+      console.error("Error saving CV:", error);
       toast({
-        title: "Lỗi khi lưu CV",
-        description: "Không thể lưu CV. Vui lòng thử lại.",
+        title: "Error saving CV",
+        description: "Unable to save CV. Please try again.",
         variant: "destructive",
       });
     }
@@ -411,8 +413,8 @@ export function ResumeUpdate({
             className={styles.actionButton}
           >
             <ChevronLeft className="h-4 w-4" />
-            <span className={styles.hiddenOnMobile}>Quay lại chỉnh sửa</span>
-            <span className={styles.hiddenOnDesktop}>Quay lại</span>
+            <span className={styles.hiddenOnMobile}>Back to edit</span>
+            <span className={styles.hiddenOnDesktop}>Back</span>
           </Button>
         </div>
         <div className={`${styles.mainGrid} ${styles.previewGrid}`}>
@@ -454,17 +456,17 @@ export function ResumeUpdate({
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <h1 className={styles.title} style={{ marginBottom: 0 }}>
-              Tạo Resume
+              Create Resume
             </h1>
           </div>
           <div className={styles.subtitle}>
             <p className={`${styles.subtitleText} ${styles.hiddenOnMobile}`}>
-              Tạo resume chuyên nghiệp trong vài phút
+              Create a professional resume in minutes
             </p>
             {isAutoSaving && (
               <div className={styles.autoSaveIndicator}>
                 <Save className="h-3 w-3 animate-spin" />
-                <span className={styles.hiddenOnMobile}>Đang lưu...</span>
+                <span className={styles.hiddenOnMobile}>Saving...</span>
               </div>
             )}
           </div>
@@ -566,11 +568,9 @@ export function ResumeUpdate({
                         className={`${styles.actionButton} ${styles.primaryButton}`}
                       >
                         <span className={styles.hiddenOnMobile}>
-                          Xem trước Resume
+                          Preview Resume
                         </span>
-                        <span className={styles.hiddenOnDesktop}>
-                          Xem trước
-                        </span>
+                        <span className={styles.hiddenOnDesktop}>Preview</span>
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     ) : (
@@ -579,7 +579,7 @@ export function ResumeUpdate({
                         onClick={nextStep}
                         className={`${styles.actionButton} ${styles.primaryButton}`}
                       >
-                        Tiếp theo
+                        Next
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     )}
@@ -602,7 +602,7 @@ export function ResumeUpdate({
                 }}
               >
                 <Eye className="h-4 w-4" style={{ verticalAlign: "middle" }} />
-                <span style={{ verticalAlign: "middle" }}>Xem trước</span>
+                <span style={{ verticalAlign: "middle" }}>Preview</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4">
@@ -625,7 +625,7 @@ export function ResumeUpdate({
                   onClick={() => setShowPreview(true)}
                   className="text-sm d-flex justify-content-center align-items-center"
                 >
-                  Xem toàn màn hình
+                  View full screen
                 </Button>
               </div>
             </CardContent>
@@ -639,7 +639,7 @@ export function ResumeUpdate({
           className={styles.floatingButton}
         >
           <Eye className="h-4 w-4" />
-          <span className={styles.hiddenOnMobile}>Xem trước</span>
+          <span className={styles.hiddenOnMobile}>Preview</span>
         </Button>
       </div>
     </div>
@@ -662,15 +662,15 @@ function DesktopSidebar({
       <TabsList className={styles.tabsList}>
         <TabsTrigger value="steps" className={styles.tabsTrigger}>
           <FileText className="h-3 w-3" />
-          Bước
+          Steps
         </TabsTrigger>
         <TabsTrigger value="design" className={styles.tabsTrigger}>
           <Palette className="h-3 w-3" />
-          Thiết kế
+          Design
         </TabsTrigger>
         <TabsTrigger value="export" className={styles.tabsTrigger}>
           <Download className="h-3 w-3" />
-          Xuất
+          Export
         </TabsTrigger>
       </TabsList>
 
@@ -819,7 +819,7 @@ function StepButton({
       <div className={styles.stepButtonContent}>
         <div className={styles.stepButtonText}>
           <div className={styles.stepButtonTitle}>{step.title}</div>
-          <div className={styles.stepButtonSubtitle}>Bước {index + 1}</div>
+          <div className={styles.stepButtonSubtitle}>Steps {index + 1}</div>
         </div>
         <div className={styles.stepButtonIcon}>
           {isCompleted && <Check className="h-4 w-4 text-green-600" />}
