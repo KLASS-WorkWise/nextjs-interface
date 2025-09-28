@@ -1,0 +1,158 @@
+/* =========================
+   Job VIP Wrapper + Slider
+   ========================= */
+.job-vip-wrapper {
+  position: relative;
+}
+
+/* Khi > 6 job -> slider ngang */
+.job-vip-slider {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+}
+.job-vip-slider::-webkit-scrollbar {
+  display: none; /* Chrome */
+}
+
+/* Nút điều khiển */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #2563eb, #5f55e4);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+.nav-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+}
+.nav-btn.left {
+  left: -15px;
+}
+.nav-btn.right {
+  right: -15px;
+}
+
+/* Khi <= 6 job thì grid */
+.job-vip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
+}
+
+/* =========================
+   Job Card Styling
+   ========================= */
+.job-card-vip {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border 0.25s ease;
+  min-width: 300px; /* để tách thẻ khi chạy slider */
+}
+.job-card-vip:hover {
+  transform: translateY(-6px);
+  border: 1px solid #2563eb;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+}
+
+/* Company Header */
+.company {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.company .logo {
+   width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: contain;   /* Giữ nguyên tỷ lệ, co/thu nhỏ vừa khung */
+  border: 1px solid #e5e7eb;
+  background-color: #fff; /* thêm nền trắng để ảnh không bị méo nếu trong suốt */
+}
+.companyName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+}
+.verified {
+  font-size: 0.8rem;
+  color: #10b981;
+  margin-left: 4px;
+}
+.badge-vip {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin-left: auto;
+}
+
+/* Job Title */
+.jobTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 8px 0 12px;
+  color: #1e3a8a;
+  line-height: 1.4;
+}
+
+/* Info rows */
+.info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin-bottom: 8px;
+}
+
+/* Salary */
+.salary {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2563eb;
+  margin: 14px 0;
+}
+.competitive {
+  font-size: 0.8rem;
+  color: #10b981;
+  margin-left: 6px;
+}
+
+/* Apply Button */
+.apply-btn {
+  display: block;
+  text-align: center;
+  background: linear-gradient(135deg, #2563eb, #5f55e4);
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+  margin-top: auto;
+}
+.apply-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+  transform: scale(1.05);
+}
