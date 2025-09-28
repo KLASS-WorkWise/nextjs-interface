@@ -16,12 +16,6 @@ import { useRouter } from "next/navigation";
 import { savedJobService } from "@/features/applicants/services/savedJobService";
 import { Bookmark } from "lucide-react";
 import { CrownFilled } from "@ant-design/icons";
-import {
-  JobPostingResponseDTO,
-  Resume,
-  SavedJobResponseDTO,
-} from "@/types/applicant";
-import axios from "axios";
 // import "@/styles/globals.css";
 import {
   JobPostingResponseDTO,

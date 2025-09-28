@@ -186,7 +186,7 @@
 // }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { applicantService } from "../services/applicant.service";
 import { toast } from "react-toastify";

@@ -347,6 +347,21 @@ export default function Home() {
               </p>
             </div>
             <div className="mt-70">
+              <JobPostingVip />
+            </div>
+          </div>
+        </section>
+        <section className="section-box mt-50">
+          <div className="container">
+            <div className="text-center">
+              <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
+               New jobs of the day
+              </h2>
+              <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
+                Search and connect with the right candidates faster.{" "}
+              </p>
+            </div>
+            <div className="mt-70">
               <CategoryTab />
             </div>
           </div>
@@ -406,6 +421,7 @@ export default function Home() {
                   </div>
                 )}
               </div>
+              
 <div className="col-lg-6 col-sm-12">
   <div className="content-job-inner">
     <span className="color-text-mutted text-32">
@@ -423,7 +439,7 @@ export default function Home() {
     <div className="mt-40">
       <div className="wow animate__animated animate__fadeInUp">
         <Link href="/jobs-grid">
-          <span className="btn btn-default">Search Jobs</span>
+<span className="btn btn-default">Search Jobs</span>
         </Link>
 
         <Link href="/page-about">
@@ -434,290 +450,6 @@ export default function Home() {
   </div>
 </div>
 
-            </div>
-          </div>
-        </section>
-        <section className="section-box mt-50">
-          <div className="container">
-            <div className="text-center">
-              <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
-                Top Recruiters
-              </h2>
-              <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
-                Discover your next career move, freelance gig, or internship
-                Discover exclusive VIP job postings from top companies. Find your dream career with competitive salaries and amazing benefits.
-              </p>
-            </div>
-          </div>
-          <div className="container">
-            {/* <div className="row mt-50">
-              <div className="col-xl-3 col-lg-3 col-md-5 col-sm-12 col-12">
-                <div className="card-image-top hover-up">
-                  <Link href="/jobs-grid">
-                    <div
-                      className="image"
-                      style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/homepage1/location1.png)",
-                      }}
-                    >
-                      <span className="lbl-hot">Hot</span>
-                    </div>
-                  </Link>
-
-                  <div className="informations">
-                    <Link href="/jobs-grid">
-                      <h5>Paris, France</h5>
-                    </Link>
-
-                    <div className="row">
-                      <div className="col-lg-6 col-6">
-                        <span className="text-14 color-text-paragraph-2">
-                          5 Vacancy
-                        </span>
-                      </div>
-                      <div className="col-lg-6 col-6 text-end">
-                        <span className="color-text-paragraph-2 text-14">
-                          120 companies
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-4 col-lg-4 col-md-7 col-sm-12 col-12">
-                <div className="card-image-top hover-up">
-                  <Link href="/jobs-grid">
-                    <div
-                      className="image"
-                      style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/homepage1/location2.png)",
-                      }}
-                    >
-                      <span className="lbl-hot">Trending</span>
-                    </div>
-                  </Link>
-
-                  <div className="informations">
-                    <Link href="/jobs-grid">
-                      <h5>London, England</h5>
-                    </Link>
-
-                    <div className="row">
-                      <div className="col-lg-6 col-6">
-                        <span className="text-14 color-text-paragraph-2">
-                          7 Vacancy
-                        </span>
-                      </div>
-                      <div className="col-lg-6 col-6 text-end">
-                        <span className="color-text-paragraph-2 text-14">
-                          68 companies
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-5 col-lg-5 col-md-7 col-sm-12 col-12">
-                <div className="card-image-top hover-up">
-                  <Link href="/jobs-grid">
-                    <div
-                      className="image"
-                      style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/homepage1/location3.png)",
-                      }}
-                    >
-                      <span className="lbl-hot">Hot</span>
-                    </div>
-                  </Link>
-
-                  <div className="informations">
-                    <Link href="/jobs-grid">
-                      <h5>New York, USA</h5>
-                    </Link>
-
-                    <div className="row">
-                      <div className="col-lg-6 col-6">
-                        <span className="text-14 color-text-paragraph-2">
-                          9 Vacancy
-                        </span>
-                      </div>
-                      <div className="col-lg-6 col-6 text-end">
-                        <span className="color-text-paragraph-2 text-14">
-                          80 companies
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
-                <div className="card-image-top hover-up">
-                  <Link href="/jobs-grid">
-                    <div
-                      className="image"
-                      style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/homepage1/location4.png)",
-                      }}
-                    />
-                  </Link>
-
-                  <div className="informations">
-                    <Link href="/jobs-grid">
-                      <h5>Amsterdam, Holland</h5>
-                    </Link>
-
-                    <div className="row">
-                      <div className="col-lg-6 col-6">
-                        <span className="text-14 color-text-paragraph-2">
-                          16 Vacancy
-                        </span>
-                      </div>
-                      <div className="col-lg-6 col-6 text-end">
-                        <span className="color-text-paragraph-2 text-14">
-                          86 companies
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-5 col-lg-5 col-md-7 col-sm-12 col-12">
-                <div className="card-image-top hover-up">
-                  <Link href="/jobs-grid">
-                    <div
-                      className="image"
-                      style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/homepage1/location5.png)",
-                      }}
-                    />
-                  </Link>
-
-                  <div className="informations">
-                    <Link href="/jobs-grid">
-                      <h5>Copenhagen, Denmark</h5>
-                    </Link>
-
-                    <div className="row">
-                      <div className="col-lg-6 col-6">
-                        <span className="text-14 color-text-paragraph-2">
-                          39 Vacancy
-                        </span>
-                      </div>
-                      <div className="col-lg-6 col-6 text-end">
-                        <span className="color-text-paragraph-2 text-14">
-                          186 companies
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-3 col-lg-3 col-md-5 col-sm-12 col-12">
-                <div className="card-image-top hover-up">
-                  <Link href="/jobs-grid">
-                    <div
-                      className="image"
-                      style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/homepage1/location6.png)",
-                      }}
-                    />
-                  </Link>
-
-                  <div className="informations">
-                    <Link href="/jobs-grid">
-                      <h5>Berlin, Germany</h5>
-                    </Link>
-
-                    <div className="row">
-                      <div className="col-lg-6 col-6">
-                        <span className="text-14 color-text-paragraph-2">
-                          15 Vacancy
-                        </span>
-                      </div>
-                      <div className="col-lg-6 col-6 text-end">
-                        <span className="color-text-paragraph-2 text-14">
-                          632 companies
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div> */}
-            <JobPostingVip />
-          </div>
-        </section>
-        <section className="section-box mt-50">
-          <div className="container">
-            <div className="text-center">
-              <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
-               New jobs of the day
-              </h2>
-              <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
-                Search and connect with the right candidates faster.{" "}
-              </p>
-            </div>
-            <div className="mt-70">
-              <CategoryTab />
-            </div>
-          </div>
-        </section>
-        <section className="section-box overflow-visible mt-100 mb-100">
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-6 col-sm-12">
-                <div className="box-image-job">
-                  <img
-                    className="img-job-1"
-                    alt="jobBox"
-                    src="assets/imgs/page/homepage1/img-chart.png"
-                  />
-                  <img
-                    className="img-job-2"
-                    alt="jobBox"
-                    src="assets/imgs/page/homepage1/controlcard.png"
-                  />
-                  <figure className="wow animate__animated animate__fadeIn">
-                    <img
-                      alt="jobBox"
-                      src="assets/imgs/page/homepage1/img1.png"
-                    />
-                  </figure>
-                </div>
-              </div>
-              <div className="col-lg-6 col-sm-12">
-                <div className="content-job-inner">
-                  <span className="color-text-mutted text-32">
-                    Millions Of Jobs.{" "}
-                  </span>
-                  <h2 className="text-52 wow animate__animated animate__fadeInUp">
-                    Find The One That’s{" "}
-                    <span className="color-brand-2">Right</span> For You
-                  </h2>
-                  <div className="mt-40 pr-50 text-md-lh28 wow animate__animated animate__fadeInUp">
-                    Search all the open positions on the web. Get your own
-                    personalized salary estimate. Read reviews on over 600,000
-                    companies worldwide. The right job is out there.
-                  </div>
-                  <div className="mt-40">
-                    <div className="wow animate__animated animate__fadeInUp">
-                      <Link href="/jobs-grid">
-                        <span className="btn btn-default">Search Jobs</span>
-                      </Link>
-
-                      <Link href="/page-about">
-                        <span className="btn btn-link">Learn More</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </section>
