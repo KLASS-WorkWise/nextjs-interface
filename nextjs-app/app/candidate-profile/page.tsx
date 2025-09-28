@@ -157,7 +157,7 @@ export default function CandidateProfile() {
                       borderRadius: 8,
                       backgroundColor: "#f5f5f5",
                       display: "block",
-                    }}
+                                }}
                   />
                 </div>
                 <div className="row mt-10">

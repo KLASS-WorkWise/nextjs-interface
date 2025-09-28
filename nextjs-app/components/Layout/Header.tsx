@@ -48,7 +48,10 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         });
         const user = await res.json();
-        const url = user?.avatarUrl || user?.avatar || "/assets/imgs/avatar/logoLogin.jpg";
+        const url =
+          user?.avatarUrl ||
+          user?.avatar ||
+          "/assets/imgs/avatar/logoLogin.jpg";
         setAvatarSrc(url);
         setAvatarReady(true);
         setBalance(user?.balance || "0");
@@ -169,7 +172,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                         </Link>
                         <ul className="sub-menu">
                           {/* <li><Link href="/page-resume"><span>Create Cv</span></Link></li> */}
-                          {/* <li>
+                      {/* <li>
                             <Link href="/candidate-profile">
                               <span>Candidate Profile</span>
                             </Link>
@@ -228,12 +231,12 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                               <span>Create Cv</span>
                             </Link>
                           </li> */}
-                          {/* <li>
+                        {/* <li>
                             <Link href="/candidate-profile">
                               <span>Candidate Profile</span>
                             </Link>
                           </li>
-                        </ul> */} 
+                        </ul> */}
                       </li>
 
                       <li>
@@ -417,7 +420,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       >
                         <div style={{ lineHeight: 1.2 }}>
                           <div style={{ fontSize: 13, color: "#888" }}>
-                            Bạn là nhà tuyển dụng?
+                            Are you an employer?
                           </div>
                           <div
                             style={{
@@ -426,59 +429,59 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                               color: "blue",
                             }}
                           >
-                            Đăng tuyển ngay »
+                            Post a job now »
                           </div>
                         </div>
                       </Link>
                     )}
 
                     {/* Hiển thị tên nếu là Employers */}
-{session?.user && role?.includes("Employers") && (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      minWidth: 180,
-      padding: "8px 16px",
-      background: "rgba(245,248,255,0.7)",
-      borderRadius: 16,
-      boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-    }}
-  >
-    <span
-      style={{
-        fontSize: 18,
-        fontWeight: 700,
-        color: "#1976d2",
-        marginBottom: 2,
-      }}
-    >
-      Hi, {session.user.username}
-    </span>
-    <span
-      style={{
-        fontSize: 15,
-        color: "#888",
-        fontWeight: 500,
-        marginBottom: 2,
-      }}
-    >
-      Số dư tài khoản:
-    </span>
-    <span
-      style={{
-        fontSize: 17,
-        color: "#43a047",
-        fontWeight: 600,
-        letterSpacing: 1,
-      }}
-    >
-      {balance} VNĐ
-    </span>
-  </div>
-)}
+                    {session?.user && role?.includes("Employers") && (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minWidth: 180,
+                          padding: "8px 16px",
+                          background: "rgba(245,248,255,0.7)",
+                          borderRadius: 16,
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 18,
+                            fontWeight: 700,
+                            color: "#1976d2",
+                            marginBottom: 2,
+                          }}
+                        >
+                          Hi, {session.user.username}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 15,
+                            color: "#888",
+                            fontWeight: 500,
+                            marginBottom: 2,
+                          }}
+                        >
+                          Số dư tài khoản:
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 17,
+                            color: "#43a047",
+                            fontWeight: 600,
+                            letterSpacing: 1,
+                          }}
+                        >
+                          {balance} VNĐ
+                        </span>
+                      </div>
+                    )}
 
                     {/* Modal đăng ký */}
                     <CompanyRegistrationModal
