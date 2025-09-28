@@ -1,6 +1,6 @@
 "use client";
 type Job = {
-  id: string | number;
+  id:  string | number;
   title?: string;
   jobType?: string;
   createdAt?: string;
@@ -16,6 +16,15 @@ type Job = {
   employer?: { id?: string | number; name?: string };
   description?: string;
   companyName?: string;
+   postPriceUSD: number;
+  postType: string; // NORMAL | VIP
+  postPrice: number;
+  status?: string;
+
+  applicantsCount: number;
+  newApplicantsCount: number;
+  lastAppliedAt: string | null;
+
 };
 type Company = {
   id?: string | number;
@@ -27,10 +36,9 @@ type Company = {
   location?: string;
   openJobs?: number;
 };
-type Resume = { id: string | number; [key: string]: unknown };
 import { useEffect, useState, useRef } from "react";
 import { getCompanyByEmployerId } from "@/lib/company/api";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 
 import Link from "next/link";
@@ -45,6 +53,8 @@ import { toast } from "react-toastify";
 
 import FloatingChatWithEmployer from "@/components/FloatingChatWithEmployer";
 import type { FloatingChatHandle } from "@/components/FloatingChatWithEmployer";
+import { JobPostingResponseDTO, Resume } from "@/types/applicant";
+import { applicantService } from "@/features/applicants/services/applicant.service";
 
 
 export default function JobDetails2() {
@@ -52,10 +62,32 @@ export default function JobDetails2() {
   const id = params.id;
   const [job, setJob] = useState<Job | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
-  const [modalJob, setModalJob] = useState<Job | null>(null); // 👈 Fix: declare modalJob state
-  // 👇 Thêm resumes tạm thời là mảng rỗng để tránh lỗi build, giữ nguyên logic
-  const resumes: Resume[] = [];
+ 
 
+    // Lấy dữ liệu Applyjob từ API 
+    const [modalJob, setModalJob] = useState<JobPostingResponseDTO | null>(null);
+    const [resumes, setResumes] = useState<Resume[]>([]);
+    const router = useRouter();
+      const handleOpenApply = (job: JobPostingResponseDTO) => {
+        if (!session) {
+          toast.error("You need to login to apply!");
+          router.push("/page-signin"); // 👈 redirect sang trang login của bạn
+          return;
+        }
+        setModalJob(job);
+      };
+      useEffect(() => {
+        const fetchResumes = async () => {
+          try {
+            const res = await applicantService.getMyResumes();
+             setResumes(res.data || []);
+          } catch (err) {
+            console.error("Error fetching resumes:", err);
+          }
+        };
+        fetchResumes();
+      }, []);
+    
 
   useEffect(() => {
     if (!id) return;
@@ -149,7 +181,7 @@ const hours = Math.floor(minutes / 60);
                               {job.createdAt && <span className="card-time">{new Date(job.createdAt).toLocaleDateString()}</span>}
                             </div>
                               <button
-                                onClick={() => setModalJob(job)} // 👈 Fix: open modal by setting modalJob
+                                onClick={() => handleOpenApply(job as JobPostingResponseDTO)} // 👈 Fix: open modal by setting modalJob
                                 className="btn-apply"
                               >
                                 Apply 

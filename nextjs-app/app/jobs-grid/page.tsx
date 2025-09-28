@@ -834,7 +834,7 @@ export default function JobGrid() {
                                       </div>
                                       <div className="col-lg-5 col-5 text-end">
                                         <button
-                                          onClick={() => handleOpenApply(job)}
+                                          onClick={() => handleOpenApply(job as JobPostingResponseDTO)} // 👈 Fix: open modal by setting modalJob
                                           className="btn btn-apply-now"
                                         >
                                           Apply
