@@ -748,7 +748,7 @@ export function SkillsStep() {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="d-flex align-items-center gap-2">
           <Zap size={20} />
-          <h5 className="mb-0">Kỹ năng</h5>
+          <h5 className="mb-0">Skill</h5>
         </div>
         <button
           type="button"
@@ -756,7 +756,7 @@ export function SkillsStep() {
           className="btn btn-primary d-flex align-items-center gap-2"
         >
           <Plus size={16} />
-          Thêm kỹ năng
+          Add Skill
         </button>
       </div>
 
@@ -771,7 +771,7 @@ export function SkillsStep() {
               <Zap size={40} className="text-muted" />
             </div>
             <p className="text-muted">
-              Chưa có kỹ năng nào. Hãy thêm những kỹ năng của bạn!
+              No skills added yet. Please add your skills!
             </p>
           </div>
         </div>

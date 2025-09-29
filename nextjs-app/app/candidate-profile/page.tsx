@@ -14,6 +14,7 @@ import { CVSuccessModal } from "@/components/jobRecommend/cv-success-modal";
 import type { ResumeData } from "@/components/resume-builder";
 import Image from "next/image";
 import styles from "../../styles/CandidateProfileTabs.module.css";
+import RecommendedJobsList from "@/features/applicants/components/RecommendedJobsList";
 export default function CandidateProfile() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -65,6 +66,7 @@ export default function CandidateProfile() {
     { id: 1, key: "profile", label: "My CV" },
     { id: 2, key: "apply", label: "My Apply" },
     { id: 3, key: "saved", label: "Saved Jobs" },
+    { id: 4, key: "recommended", label: "Recommended Jobs" },
   ];
 
   // Lấy tab từ URL, mặc định = profile
@@ -178,7 +180,7 @@ export default function CandidateProfile() {
                       borderRadius: 8,
                       backgroundColor: "#f5f5f5",
                       display: "block",
-                    }}
+                                }}
                   />
                 </div>
                 <div className="row mt-10">
@@ -243,6 +245,15 @@ export default function CandidateProfile() {
                             Saved Jobs
                           </h3> */}
                           <SavedJobsList />
+                        </div>
+                      )}
+                      {/* Recommended Jobs */}
+                      {activeTab === "recommended" && (
+                        <div className="tab-pane fade show active">
+                          {/* <h3 className="mt-0 color-brand-1 mb-50">
+                            Saved Jobs
+                          </h3> */}
+                          <RecommendedJobsList />
                         </div>
                       )}
                     </div>

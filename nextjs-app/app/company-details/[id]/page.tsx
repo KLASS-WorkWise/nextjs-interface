@@ -179,11 +179,11 @@ export default function CompanyDetails() {
                     </h5>
                     <p className="mt-5 font-md color-text-paragraph-2 mb-15">{company?.industry || "Our Mission to make working life simple"}</p>
                   </div>
-                  <div className="col-lg-4 col-md-12 text-lg-end">
+                  {/* <div className="col-lg-4 col-md-12 text-lg-end">
                     <Link href="page-contact">
                       <span className="btn btn-call-icon btn-apply btn-apply-big">Contact us</span>
                     </Link>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="box-nav-tabs mt-40 mb-5">
@@ -193,7 +193,7 @@ export default function CompanyDetails() {
                       About us
                     </a>
                   </li>
-                  <li>
+                  {/* <li>
                     <a className={`btn btn-border recruitment-icon mr-15 mb-5${activeIndex === 2 ? " active" : ""}`} onClick={() => handleOnClick(2)}>
                       Recruitments
                     </a>
@@ -202,7 +202,7 @@ export default function CompanyDetails() {
                     <a className={`btn btn-border people-icon mb-5${activeIndex === 3 ? " active" : ""}`} onClick={() => handleOnClick(3)}>
                       People
                     </a>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
               <div className="border-bottom pt-10 pb-10" />

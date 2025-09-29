@@ -48,7 +48,10 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         });
         const user = await res.json();
-        const url = user?.avatarUrl || user?.avatar || "/assets/imgs/avatar/logoLogin.jpg";
+        const url =
+          user?.avatarUrl ||
+          user?.avatar ||
+          "/assets/imgs/avatar/logoLogin.jpg";
         setAvatarSrc(url);
         setAvatarReady(true);
         setBalance(user?.balance || "0");
@@ -417,7 +420,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       >
                         <div style={{ lineHeight: 1.2 }}>
                           <div style={{ fontSize: 13, color: "#888" }}>
-                            Bạn là nhà tuyển dụng?
+                            Are you an employer?
                           </div>
                           <div
                             style={{
@@ -426,7 +429,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                               color: "blue",
                             }}
                           >
-                            Đăng tuyển ngay »
+                            Post a job now »
                           </div>
                         </div>
                       </Link>

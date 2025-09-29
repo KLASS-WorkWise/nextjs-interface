@@ -593,7 +593,12 @@ export default function JobGrid() {
                             <div className="box-view-type">
                               {/* <Link href="/jobs-list">
                                 <span className="view-type">
-                                  <Image src="/assets/imgs/template/icons/icon-list.svg" alt="jobBox" width={20} height={20} />
+                                  <Image
+                                    src="/assets/imgs/template/icons/icon-list.svg"
+                                    alt="jobBox"
+                                    width={20}
+                                    height={20}
+                                  />
                                 </span>
                               </Link> */}
 

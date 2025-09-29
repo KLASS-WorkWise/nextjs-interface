@@ -162,12 +162,14 @@ interface ResumeUpdateProps {
   onBack?: () => void; // Callback để quay lại danh sách CV
   onSave?: (resumeData: ResumeData) => void; // Callback để lưu CV và chuyển về danh sách
   initialData?: ResumeData; // Dữ liệu khởi tạo cho resume
+  userId?: string; // User ID for PDF upload
 }
 import { mapFormToApi, resumeApi } from "@/lib/api";
 export function ResumeUpdate({
   onBack,
   onSave,
   initialData,
+  userId,
 }: ResumeUpdateProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const router = useRouter();
@@ -375,13 +377,28 @@ export function ResumeUpdate({
   const onSubmit = async (data: ResumeData) => {
     console.log("[ResumeUpdate] Submit id:", data.id);
     try {
-      // Đảm bảo id luôn được truyền khi update
+      // 1. Tạo PDF từ dữ liệu CV
+      const { blob } = await (
+        await import("@/lib/pdf-service")
+      ).PDFService.generatePDFBlob(data, selectedTemplate, customization);
+      // 2. Upload PDF lên Firebase Storage
+      const userIdForPath =
+        userId ||
+        data.personalInfo?.email?.replace(/[^a-zA-Z0-9]/g, "_") ||
+        "unknown";
+      const resumeIdForPath = data.id ? String(data.id) : Date.now().toString();
+      const storagePath = `resumes/${userIdForPath}/${resumeIdForPath}.pdf`;
+      const FirebaseStorageService = (await import("@/lib/firebase-storage"))
+        .FirebaseStorageService;
+      const pdfUrl = await FirebaseStorageService.uploadPDF(blob, storagePath);
+      // 3. Gửi link PDF về backend
+      const apiData = { ...mapFormToApi(data), resumeLink: pdfUrl };
       if (data.id) {
-        await resumeApi.updateMyResume(data.id, mapFormToApi(data));
+        await resumeApi.updateMyResume(data.id, apiData);
         if (onSave) onSave({ ...data, id: data.id });
         setShowPreview(true);
       } else {
-        await resumeApi.saveMyResume(mapFormToApi(data));
+        await resumeApi.saveMyResume(apiData);
         if (onSave) onSave({ ...data });
         setShowPreview(true);
       }
@@ -434,6 +451,8 @@ export function ResumeUpdate({
               template={selectedTemplate}
               customization={customization}
               onSave={onSave}
+              userId={userId ?? ""}
+              showPDFUpload={true}
             />
           </div>
         </div>
@@ -613,6 +632,8 @@ export function ResumeUpdate({
                     template={selectedTemplate}
                     customization={customization}
                     isCompact
+                    userId={userId ?? ""}
+                    showPDFUpload={false}
                   />
                 </div>
               </div>

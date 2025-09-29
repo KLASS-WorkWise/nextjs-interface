@@ -6,7 +6,6 @@ import { useApplicants } from "../hooks/useApplicants";
 // import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "../../../styles/ApplicantsTable.module.css";
-import Image from "next/image";
 
 export default function ApplicantsTable() {
   const router = useRouter();
@@ -50,7 +49,7 @@ export default function ApplicantsTable() {
                 {/* <div className={styles.logo}>
                   {app.logoUrl && <img src={app.logoUrl} alt="logo" />}
                 </div> */}
-                <div className={styles.logo}>
+                {/* <div className={styles.logo}>
                   {app.logoUrl ? (
                     <Image
                       src={app.logoUrl}
@@ -58,6 +57,7 @@ export default function ApplicantsTable() {
                       width={58}
                       height={58}
                       className={styles.logoImg}
+                      
                       unoptimized // tránh lỗi domain khi logoUrl là link ngoài
                     />
                   ) : (
@@ -69,6 +69,30 @@ export default function ApplicantsTable() {
                       className={styles.logoImg}
                     />
                   )}
+                </div> */}
+                <div
+                  className="image-box"
+                  style={{
+                    width: 58,
+                    height: 58,
+                    borderRadius: 8,
+                    objectFit: "cover",
+                  }}
+                >
+                  <img
+                    src={
+                      app?.logoUrl ||
+                      "/assets/imgs/brands/brand-1.png"
+                    }    
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                      borderRadius: 8,
+                      objectFit: "contain",
+                      display: "block",
+                      margin: "auto",
+                    }}
+                  />
                 </div>
                 <div className={styles.info}>
                   <span className={styles.companyName}>{app.companyName}</span>
