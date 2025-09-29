@@ -255,9 +255,9 @@ export default function CompanyRegistrationModal({
                   <Building2 />
                 </div>
                 <div>
-                  <h2 className="crm-title">Đăng ký thông tin công ty</h2>
+                  <h2 className="crm-title">Register company information</h2>
                   <p className="crm-sub">
-                    Tạo hồ sơ công ty chuyên nghiệp trên JobBox
+                    Create a professional company profile on JobBox
                   </p>
                 </div>
               </div>
@@ -272,7 +272,7 @@ export default function CompanyRegistrationModal({
           <div className="crm-body">
             <div className="crm-preview">
               <div className="crm-preview-inner">
-                <h3 className="crm-preview-title">Preview hồ sơ</h3>
+                <h3 className="crm-preview-title">Preview profile</h3>
 
                 <div className="crm-banner">
                   {bannerPreview ? (
@@ -285,7 +285,7 @@ export default function CompanyRegistrationModal({
                   ) : (
                     <div className="crm-banner-empty">
                       <ImageIcon />
-                      <span>Banner công ty</span>
+                      <span>Banner company</span>
                     </div>
                   )}
                 </div>
@@ -306,19 +306,19 @@ export default function CompanyRegistrationModal({
                   </div>
                   <div className="crm-meta">
                     <h4 className="crm-company">
-                      {formData.companyName || "Tên công ty"}
+                      {formData.companyName || "Company name"}
                     </h4>
                     <p className="crm-industry">
-                      {formData.industry || "Ngành nghề"}
+                      {formData.industry || "Industry"}
                     </p>
                     <p className="crm-location">
-                      <MapPin /> <span>{formData.location || "Vị trí"}</span>
+                      <MapPin /> <span>{formData.location || "Location"}</span>
                     </p>
                   </div>
                 </div>
 
                 <div className="crm-note">
-                  💡 Hồ sơ công ty sẽ được hiển thị sau khi được duyệt bởi admin
+                  💡 Company profile will be displayed after approval by admin
                 </div>
               </div>
             </div>
@@ -331,10 +331,10 @@ export default function CompanyRegistrationModal({
                       <div className="p-4 sm:p-6 border-b border-gray-100">
                         <h3 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
                           <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
-                          Thông tin công ty
+                          Company Information
                         </h3>
                         <p className="text-gray-600 mt-1 text-sm sm:text-base">
-                          Nhập thông tin công ty và tải lên hình ảnh
+                          Enter company information and upload images
                         </p>
                       </div>
                       <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
@@ -345,7 +345,7 @@ export default function CompanyRegistrationModal({
                               htmlFor="companyName"
                               className="block text-sm font-semibold text-gray-700"
                             >
-                              Tên công ty *
+                              Company name *
                             </label>
                             <input
                               id="companyName"
@@ -354,7 +354,7 @@ export default function CompanyRegistrationModal({
                               onChange={(e) =>
                                 handleInputChange("companyName", e.target.value)
                               }
-                              placeholder="Nhập tên công ty"
+                              placeholder="Enter company name"
                               required
                               className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
                             />
@@ -362,7 +362,7 @@ export default function CompanyRegistrationModal({
                               htmlFor="industry"
                               className="block text-sm font-semibold text-gray-700 mt-3"
                             >
-                              Ngành nghề *
+                              Industry *
                             </label>
                             <input
                               id="industry"
@@ -371,7 +371,7 @@ export default function CompanyRegistrationModal({
                               onChange={(e) =>
                                 handleInputChange("industry", e.target.value)
                               }
-                              placeholder="CNTT, Tài chính, Y tế..."
+                              placeholder="IT, Finance, Healthcare..."
                               required
                               className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
                             />
@@ -379,7 +379,7 @@ export default function CompanyRegistrationModal({
                               htmlFor="description"
                               className="block text-sm font-semibold text-gray-700 mt-3"
                             >
-                              Mô tả ngắn gọn
+                              Description
                             </label>
                             <textarea
                               id="description"
@@ -387,11 +387,11 @@ export default function CompanyRegistrationModal({
                               onChange={(e) =>
                                 handleInputChange("description", e.target.value)
                               }
-                              placeholder="Một vài câu giới thiệu về công ty"
+                              placeholder="A few sentences about the company"
                               className="w-full h-20 sm:h-24 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base resize-none"
                             />
                             <div className="text-xs text-gray-500 text-right">
-                              {descriptionLength} / 200 ký tự
+                              {descriptionLength} / 200 characters
                             </div>
                           </div>
 
@@ -400,7 +400,7 @@ export default function CompanyRegistrationModal({
                               htmlFor="companySize"
                               className="block text-sm font-semibold text-gray-700"
                             >
-                              Quy mô công ty *
+                              Company size *
                             </label>
                             <select
                               id="companySize"
@@ -417,7 +417,7 @@ export default function CompanyRegistrationModal({
                               required
                               className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
                             >
-                              <option value="">Chọn quy mô công ty</option>
+                              <option value="">Choose company size</option>
                               {companySizeOptions.map((o, i) => (
                                 <option key={o.label} value={i}>
                                   {o.label}
@@ -428,7 +428,7 @@ export default function CompanyRegistrationModal({
                               htmlFor="email"
                               className="block text-sm font-semibold text-gray-700 mt-3"
                             >
-                              Email liên hệ *
+                              Email contract *
                             </label>
                             <input
                               id="email"
@@ -445,7 +445,7 @@ export default function CompanyRegistrationModal({
                               htmlFor="phone"
                               className="block text-sm font-semibold text-gray-700 mt-3"
                             >
-                              Số điện thoại *
+                              Phone number *
                             </label>
                             <input
                               id="phone"
@@ -462,7 +462,7 @@ export default function CompanyRegistrationModal({
                               htmlFor="foundedYear"
                               className="block text-sm font-semibold text-gray-700 mt-3"
                             >
-                              Năm thành lập
+                              Year Established
                             </label>
                             <input
                               id="foundedYear"
@@ -471,7 +471,7 @@ export default function CompanyRegistrationModal({
                               onChange={(e) =>
                                 handleInputChange("foundedYear", e.target.value)
                               }
-                              placeholder="Nhập năm thành lập công ty"
+                              placeholder="Enter the year the company was established"
                               className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
                             />
 
@@ -481,7 +481,7 @@ export default function CompanyRegistrationModal({
                                 htmlFor="address"
                                 className="block text-sm font-semibold text-gray-700 mt-3"
                               >
-                                Địa chỉ công ty
+                                Company address
                               </label>
                               <input
                                 id="address"
@@ -490,7 +490,7 @@ export default function CompanyRegistrationModal({
                                 onChange={(e) =>
                                   handleInputChange("address", e.target.value)
                                 }
-                                placeholder="Nhập địa chỉ công ty"
+                                placeholder="Enter company address"
                                 className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
                               />
 
@@ -498,7 +498,7 @@ export default function CompanyRegistrationModal({
                                 htmlFor="location"
                                 className="block text-sm font-semibold text-gray-700 mt-3"
                               >
-                                Tỉnh/Thành phố
+                                City/Province
                               </label>
                               <input
                                 id="location"
@@ -507,7 +507,7 @@ export default function CompanyRegistrationModal({
                                 onChange={(e) =>
                                   handleInputChange("location", e.target.value)
                                 }
-                                placeholder="Nhập tỉnh/thành phố"
+                                placeholder="Enter province/city"
                                 className="w-full h-10 sm:h-12 px-3 sm:px-4 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm sm:text-base"
                               />
 
@@ -515,7 +515,7 @@ export default function CompanyRegistrationModal({
                                 htmlFor="website"
                                 className="block text-sm font-semibold text-gray-700 mt-3"
                               >
-                                Website công ty
+                                Company website
                               </label>
                               <input
                                 id="website"
@@ -564,7 +564,7 @@ export default function CompanyRegistrationModal({
                                     onClick={triggerLogoInput}
                                     className="crm-upload-placeholder"
                                   >
-                                    Thêm logo
+                                    Add logo
                                   </button>
                                 )}
                               </div>
@@ -603,7 +603,7 @@ export default function CompanyRegistrationModal({
                                     onClick={triggerBannerInput}
                                     className="crm-upload-placeholder"
                                   >
-                                    Thêm banner
+                                    Add banner
                                   </button>
                                 )}
                               </div>
@@ -620,7 +620,7 @@ export default function CompanyRegistrationModal({
                       onClick={handleCancel}
                       className="crm-btn"
                     >
-                      Hủy
+                      Cancel
                     </button>
                     <button
                       type="submit"
@@ -629,7 +629,7 @@ export default function CompanyRegistrationModal({
                       }`}
                       disabled={!isValid || isSubmitting}
                     >
-                      {isSubmitting ? "Đang gửi..." : "Gửi đăng ký"}
+                      {isSubmitting ? "Loading..." : "Register company"}
                     </button>
                   </div>
                 </div>

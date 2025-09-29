@@ -174,8 +174,34 @@ const hours = Math.floor(minutes / 60);
                     ) : (
                       <>
                         <div className="row mt-10">
-                          <div className="col-lg-8 col-md-12">
-                            <h3>{job.title}</h3>
+                          <div className="">
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, width: '100%' }}>
+                              <h3 style={{ margin: 0, fontWeight: 800, fontSize: '2rem', color: '#1d3557', letterSpacing: 0.2 }}>{job.title}</h3>
+                              {job.postType === 'vip' && (
+                                <span
+                                  className="badge-vip"
+                                  style={{
+                                    fontSize: '1rem',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4,
+                                    background: 'linear-gradient(90deg, #f59e0b 0%, #facc15 100%)',
+                                    color: '#fff',
+                                    fontWeight: 900,
+                                    padding: '7px 16px',
+                                    borderRadius: 999,
+                                    border: '2px solid #fffbe6',
+                                    boxShadow: '0 4px 16px 0 rgba(251,191,36,0.5), 0 0 8px 2px #fde68a',
+                                    letterSpacing: 1,
+                                    textShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                                    zIndex: 2,
+                                    backdropFilter: 'blur(3px)'
+                                  }}
+                                >
+                                  <span style={{ fontSize: '1.1em', color: '#fff', marginRight: 3 }}>★</span> VIP
+                                </span>
+                              )}
+                            </div>
                             <div className="mt-0 mb-15">
                               {job.jobType && <span className="card-briefcase">{job.jobType}</span>}
                               {job.createdAt && <span className="card-time">{new Date(job.createdAt).toLocaleDateString()}</span>}
@@ -185,9 +211,7 @@ const hours = Math.floor(minutes / 60);
                                 className="btn-apply"
                               >
                                 Apply 
-                              </button>
-                              
-                           
+                              </button>                          
                           </div>
                         </div>
                         <div className="border-bottom pt-10 pb-10" />
@@ -337,42 +361,13 @@ const hours = Math.floor(minutes / 60);
                               onSuccess={() => toast.success("Applied successfully!")}
                             />
                           )}
-                          
+ 
                 <div className="col-lg-4 col-md-12 col-sm-12 col-12 pl-40 pl-lg-15 mt-lg-30">
-                  {/* <div className="sidebar-border">
-                    <div className="sidebar-heading">
-                      <div className="avatar-sidebar">
-                        <figure>
-                          <img alt="jobBox" src={ company?.logoUrl ||"/assets/imgs/page/job-single/avatar.png"} />
-                        </figure>
-                        <div className="sidebar-info">
-                          <span className="sidebar-company">{company?.companyName || "Company"}</span>
-                          <span className="card-location">{company?.location || "Unknown"}</span>
-                          {company?.openJobs && (
-                            <Link href="#">
-                              <span className="link-underline mt-15">{company.openJobs} Open Jobs</span>
-                            </Link>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="sidebar-list-job">
-                      <div className="box-map">
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2970.…Hoa%20K%E1%BB%B3!5e0!3m2!1svi!2s!4v1658551322537!5m2!1svi!2s" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
-                      </div>
-                      <ul className="ul-disc">
-                        <li>205 North Michigan Avenue, Suite 810 Chicago, 60601, USA</li>
-                        <li>Phone: (123) 456-7890</li>
-                        <li>Email: contact@Evara.com</li>
-                      </ul>
-                    </div>
-                  </div> */}
+                  
                   <div className="sidebar-border">
                   <div className="sidebar-heading">
                     <div className="avatar-sidebar">
-                      {/* <figure>
-                        <img alt="jobBox" src={company?.logoUrl || "/assets/imgs/page/job-single/avatar.png"} />
-                      </figure> */}
+                    
                       <figure style={{ width: 60, height: 60, borderRadius: 8, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <Image
                           alt="jobBox"
@@ -387,17 +382,6 @@ const hours = Math.floor(minutes / 60);
                           }}
                         />
                       </figure>
-                      {/* <div className="sidebar-info">
-                        <Link href={`/company-details/${company.id}`}>
-                          <span className="sidebar-company">{company?.companyName || "Company"}</span>
-                        </Link>
-                        <span className="card-location">{company?.location || company?.address || "Unknown"}</span>
-                        {company?.openJobs && (
-                          <Link href="#">
-                            <span className="link-underline mt-15">{company.openJobs} Open Jobs</span>
-                          </Link>
-                        )}
-                      </div> */}
                       <div className="sidebar-info">
                         {company?.id ? (
                           <Link href={`/company-details/${company.id}`}>
@@ -406,7 +390,7 @@ const hours = Math.floor(minutes / 60);
                         ) : (
                           <span className="sidebar-company">{company?.companyName || "Company"}</span>
                         )}
-<span className="card-location">{company?.location || company?.address || "Unknown"}</span>
+                          <span className="card-location">{company?.location || company?.address || "Unknown"}</span>
                         {company?.openJobs && (
                           <Link href="#">
                             <span className="link-underline mt-15">{company.openJobs} Open Jobs</span>

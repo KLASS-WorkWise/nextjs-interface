@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { savedJobService } from "@/features/applicants/services/savedJobService";
 import Link from "next/link";
-import Image from "next/image";
 import styles from "../../../styles/SavedJobsList.module.css";
 import { SavedJobResponseDTO } from "@/types/applicant";
 
@@ -107,14 +106,39 @@ export default function SavedJobsList() {
         {savedJobs.map((job) => (
           <div key={job.savedJobId} className={styles.card}>
             <div className={styles.header}>
-              <div className={styles.logo}>
+              {/* <div className={styles.logo}>
                 <Image
                   src={job.jobPostingResponseDTO.requiredDegree || "/default-logo.png"}
                   alt={job.jobPostingResponseDTO.employerName || "Company logo"}
                   width={40}
                   height={40}
                 />
-              </div>
+              </div> */}
+              <div
+                  className="image-box"
+                  style={{
+                    width: 58,
+                    height: 58,
+                    borderRadius: 8,
+                    objectFit: "cover",
+                  }}
+                >
+                  <img
+                    src={
+                      job.jobPostingResponseDTO.requiredDegree ||
+                      "/assets/imgs/brands/brand-1.png"
+                    }    
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                      borderRadius: 8,
+                      objectFit: "contain",
+                      display: "block",
+                      margin: "auto",
+                    }}
+                  />
+                </div>
+              
               <div className={styles.info}>
                 <span className={styles.company}>{job.jobPostingResponseDTO.employerName}</span>
                 <span className={styles.location}>{job.jobPostingResponseDTO.location}</span>

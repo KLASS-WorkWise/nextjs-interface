@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { savedJobService } from "@/features/applicants/services/savedJobService";
 import { Bookmark } from "lucide-react";
 import { CrownFilled } from "@ant-design/icons";
+// import "@/styles/globals.css";
 import {
   JobPostingResponseDTO,
   Resume,
@@ -608,6 +609,100 @@ export default function JobGrid() {
                                 </Link>
                               </div>
                             )}
+
+                            {/* <div className="box-border mr-10">
+                              <span className="text-sortby">Show:</span>
+                              <div className="dropdown dropdown-sort">
+                                <button
+                                  className="btn dropdown-toggle"
+                                  id="dropdownSort"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  data-bs-display="static"
+                                >
+                                  <span>15</span>
+                                  <i className="fi-rr-angle-small-down" />
+                                </button>
+                                <ul
+                                  className="dropdown-menu dropdown-menu-light"
+                                  aria-labelledby="dropdownSort"
+                                >
+                                  <li>
+                                    <Link href="#">
+                                      <span className="dropdown-item active">
+                                        10
+                                      </span>
+                                    </Link>
+                                  </li>
+                                  <li>
+                                    <Link href="#">
+                                      <span className="dropdown-item">12</span>
+                                    </Link>
+                                  </li>
+                                  <li>
+                                    <Link href="#">
+                                      <span className="dropdown-item">20</span>
+                                    </Link>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div> */}
+                            <div className="box-border">
+                              <span className="text-sortby">Sort by:</span>
+                              <div className="dropdown dropdown-sort">
+                                <button
+                                  className="btn dropdown-toggle"
+                                  id="dropdownSort2"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  data-bs-display="static"
+                                >
+                                  <span>Newest Post</span>
+                                  <i className="fi-rr-angle-small-down" />
+                                </button>
+                                <ul
+                                  className="dropdown-menu dropdown-menu-light"
+                                  aria-labelledby="dropdownSort2"
+                                >
+                                  <li>
+                                    <Link href="#">
+                                      <span className="dropdown-item active">
+                                        Newest Post
+                                      </span>
+                                    </Link>
+                                  </li>
+                                  <li>
+                                    <Link href="#">
+                                      <span className="dropdown-item">
+                                        Oldest Post
+                                      </span>
+                                    </Link>
+                                  </li>
+                                  <li>
+                                    <Link href="#">
+                                      <span className="dropdown-item">
+                                        Rating Post
+                                      </span>
+                                    </Link>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                            <div className="box-view-type">
+                              {/* <Link href="/jobs-list">
+                                <span className="view-type">
+                                  <Image src="/assets/imgs/template/icons/icon-list.svg" alt="jobBox" width={20} height={20} />
+                                </span>
+                              </Link> */}
+
+                              <Link href="/jobs-grid">
+                                <span className="view-type">
+                                  <img src="assets/imgs/template/icons/icon-grid-hover.svg" alt="jobBox" />
+                                </span>
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       </div>

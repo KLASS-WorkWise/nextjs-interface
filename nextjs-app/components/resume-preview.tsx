@@ -17,6 +17,8 @@ interface ResumePreviewProps {
   isCompact?: boolean;
   onSave?: (resumeData: ResumeData) => void;
   resumeData?: ResumeData;
+  userId: string;
+  showPDFUpload?: boolean;
 }
 
 const defaultCustomization: CustomizationOptions = {
@@ -32,7 +34,9 @@ export function ResumePreview({
   customization = defaultCustomization,
   isCompact = false,
   onSave,
-}: // resumeData,
+}: // userId,
+// showPDFUpload = false,
+// resumeData,
 ResumePreviewProps) {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
@@ -41,23 +45,47 @@ ResumePreviewProps) {
     if (isSaving) return;
     setIsSaving(true);
     try {
-      const dataWithTemplate = { ...data, template: template };
-      const apiData = mapFormToApi(dataWithTemplate);
+      const dataWithTemplate = { ...data, template };
+      // 1. Xuất PDF từ dữ liệu preview
+      const pdfService = await import("@/lib/pdf-service");
+      const { blob, fileName } = await pdfService.PDFService.generatePDFBlob(
+        dataWithTemplate,
+        template,
+        customization
+      );
+      // Chuyển blob sang File
+      const pdfFile = pdfService.PDFService.blobToFile(blob, fileName);
+      // 2. Upload PDF lên Firebase
+      const userIdForPath =
+        data.personalInfo?.email?.replace(/[^a-zA-Z0-9]/g, "_") || "unknown";
+      const resumeIdForPath = data.id ? String(data.id) : Date.now().toString();
+      const storagePath = `resumes/${userIdForPath}/${resumeIdForPath}.pdf`;
+      const FirebaseStorageService = (await import("@/lib/firebase-storage"))
+        .FirebaseStorageService;
+      const pdfUrl = await FirebaseStorageService.uploadPDF(
+        pdfFile,
+        storagePath
+      );
+      // 3. Lưu link PDF về backend
+      const apiData = { ...mapFormToApi(dataWithTemplate), resumeLink: pdfUrl };
       let savedResume;
       if (data.id) {
         savedResume = await resumeApi.updateMyResume(data.id, apiData);
       } else {
         savedResume = await resumeApi.saveMyResume(apiData);
       }
-
       const resumeId = savedResume?.id ?? savedResume?.data?.id;
-
       toast({
-        title: "Lưu CV thành công!",
-        description: "CV của bạn đã được lưu lên server.",
+        title: "CV saved successfully!",
+        description:
+          "Your CV has been saved to the server and the PDF file has been uploaded to Firebase.",
       });
       if (onSave) {
-        onSave({ ...dataWithTemplate, id: resumeId } as ResumeData);
+        onSave({
+          ...dataWithTemplate,
+          id: resumeId,
+          resumeLink: pdfUrl,
+        } as ResumeData);
       }
     } catch (error) {
       console.error("Error saving CV:", error);
@@ -133,7 +161,7 @@ ResumePreviewProps) {
                 size={16}
                 className={isSaving ? "spinner-border spinner-border-sm" : ""}
               />
-              {isSaving ? "Đang lưu..." : "Lưu CV"}
+              {isSaving ? "Saving..." : "Save CV"}
             </button>
           </div>
         )}

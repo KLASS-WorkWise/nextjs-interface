@@ -296,7 +296,7 @@ export default function JobCreate() {
               {/* Salary */}
               {/* Salary (min - max) */}
               <div className="col-md-6">
-                <label className="form-label fw-semibold">Salary Range (triệu)</label>
+                <label className="form-label fw-semibold">Salary Range</label>
                 <div className="d-flex align-items-center">
                   <input
                     type="number"

@@ -455,7 +455,7 @@ export function ResumeBuilder({ onBack, onSave }: ResumeBuilderProps) {
                       className={`${styles.actionButton} ${styles.secondaryButton}`}
                     >
                       <ChevronLeft className="h-4 w-4" />
-                      Quay lại
+                      Back
                     </Button>
 
                     {currentStep === steps.length - 1 ? (

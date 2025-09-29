@@ -48,7 +48,10 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         });
         const user = await res.json();
-        const url = user?.avatarUrl || user?.avatar || "/assets/imgs/avatar/logoLogin.jpg";
+        const url =
+          user?.avatarUrl ||
+          user?.avatar ||
+          "/assets/imgs/avatar/logoLogin.jpg";
         setAvatarSrc(url);
         setAvatarReady(true);
         setBalance(user?.balance || "0");
@@ -417,7 +420,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       >
                         <div style={{ lineHeight: 1.2 }}>
                           <div style={{ fontSize: 13, color: "#888" }}>
-                            Bạn là nhà tuyển dụng?
+                            Are you an employer?
                           </div>
                           <div
                             style={{
@@ -426,7 +429,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                               color: "blue",
                             }}
                           >
-                            Đăng tuyển ngay »
+                            Post a job now »
                           </div>
                         </div>
                       </Link>
@@ -449,7 +452,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       >
                         <span
                           style={{
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: 700,
                             color: "#1976d2",
                             marginBottom: 2,
@@ -457,24 +460,23 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                         >
                           Hi, {session.user.username}
                         </span>
-                        <span
-                          style={{
-                            fontSize: 15,
-                            color: "#888",
-                            fontWeight: 500,
-                            marginBottom: 2,
-                          }}
-                        >
-                          Số dư tài khoản:
-                        </span>
-                        <span
-                          style={{
-                            fontSize: 17,
-                            color: "#43a047",
-                            fontWeight: 600,
-                            letterSpacing: 1,
-                          }}
-                        >
+                        {/* <span style={{
+                          fontSize: 11,
+                          color: "#888",
+                          fontWeight: 500,
+                          marginBottom: 2,
+                          marginRight: 6,
+                          display: "inline"
+                        }}>
+                          Balance:
+                        </span> */}
+                        <span style={{
+                          fontSize: 11,
+                          color: "#43a047",
+                          fontWeight: 600,
+                          letterSpacing: 1,
+                          display: "inline"
+                        }}>
                           {Number(balance).toLocaleString("vi-VN")} VNĐ
                         </span>
 
