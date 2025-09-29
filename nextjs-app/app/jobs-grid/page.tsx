@@ -151,10 +151,10 @@ export default function JobGrid() {
     }
     // Filter salary
     if (!salaryChecked.includes("All")) {
-      const jobSalaryStr = (job.salaryRange || job.salary || "").replace(
-        /[^\d\- ]/g,
-        ""
-      );
+      const jobSalaryStr = (job.salaryRange || job.salary || "")
+        // normalize various dash characters (en-dash, em-dash, minus sign, etc.) to ASCII hyphen
+        .replace(/\p{Pd}/gu, "-")
+        .replace(/[^\d\- ]/g, "");
       const jobSalary = parseSalaryRange(jobSalaryStr);
       if (!jobSalary) return false;
       const match = salaryChecked.some((label) => {
@@ -246,10 +246,9 @@ export default function JobGrid() {
       if (kwNumbers.length > 0) {
         const min = Math.min(...kwNumbers);
         const max = Math.max(...kwNumbers);
-        const jobSalaryStr = (job.salaryRange || job.salary || "").replace(
-          /[^\d\- ]/g,
-          ""
-        );
+        const jobSalaryStr = (job.salaryRange || job.salary || "")
+          .replace(/\p{Pd}/gu, "-")
+          .replace(/[^\d\- ]/g, "");
         const jobSalary = parseSalaryRange(jobSalaryStr);
         if (!jobSalary) return false;
         // Lấy job có lương giao với khoảng nhập
@@ -312,10 +311,9 @@ export default function JobGrid() {
     if (kwNumbers.length > 0) {
       const minKw = Math.min(...kwNumbers);
       const maxKw = Math.max(...kwNumbers);
-      const jobSalaryStr = (job.salaryRange || job.salary || "").replace(
-        /[^\d\- ]/g,
-        ""
-      );
+      const jobSalaryStr = (job.salaryRange || job.salary || "")
+        .replace(/\p{Pd}/gu, "-")
+        .replace(/[^\d\- ]/g, "");
       const jobSalary = parseSalaryRange(jobSalaryStr);
       if (jobSalary) {
         // overlap detection
