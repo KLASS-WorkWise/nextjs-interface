@@ -646,7 +646,7 @@ export function SkillsStep() {
             <select
               id={`skill-${index}`}
               {...register(`skills.${index}`, {
-                required: "Please select a skill",
+              //  required: "Please select a skill",
               })}
               className={`form-select ${
                 errorMessages[index] ? "is-invalid" : ""
