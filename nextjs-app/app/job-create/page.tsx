@@ -8,7 +8,8 @@ const initialState = {
   title: "",
   description: "",
   location: "",
-  salaryRange: "",
+  salaryMin: "",
+  salaryMax: "",
   jobType: "",
   category: "",
   requiredSkills: "",
@@ -92,6 +93,24 @@ export default function JobCreate() {
       return;
     }
 
+    // Validate salary inputs: require both or none, and max > min
+    const salaryMinStr = String((form as any).salaryMin || "").trim();
+    const salaryMaxStr = String((form as any).salaryMax || "").trim();
+    if ((salaryMinStr && !salaryMaxStr) || (!salaryMinStr && salaryMaxStr)) {
+      setMessage("Vui lòng nhập cả mức lương .");
+      setLoading(false);
+      return;
+    }
+    if (salaryMinStr && salaryMaxStr) {
+      const min = Number(salaryMinStr);
+      const max = Number(salaryMaxStr);
+      if (isNaN(min) || isNaN(max) || max <= min) {
+        setMessage("Giá trị lương không hợp lệ: Max phải lớn hơn Min.");
+        setLoading(false);
+        return;
+      }
+    }
+
     const payload = {
       ...form,
       requiredSkills: form.requiredSkills
@@ -101,6 +120,8 @@ export default function JobCreate() {
       minExperience: form.minExperience ? Number(form.minExperience) : null,
       employerId,
       endAt: form.endAt ? `${form.endAt}T00:00:00` : "",
+      salaryRange:
+        salaryMinStr && salaryMaxStr ? `${salaryMinStr}-${salaryMaxStr} triệu` : "",
       postType: form.postType,
     };
 
@@ -273,17 +294,33 @@ export default function JobCreate() {
               </div>
 
               {/* Salary */}
+              {/* Salary (min - max) */}
               <div className="col-md-6">
                 <label className="form-label fw-semibold">Salary Range</label>
-                <input
-                  type="text"
-                  className="form-control rounded-3"
-                  name="salaryRange"
-                  value={form.salaryRange}
-                  onChange={handleChange}
-                  maxLength={100}
-                  placeholder="e.g. 15-20 million"
-                />
+                <div className="d-flex align-items-center">
+                  <input
+                    type="number"
+                    className="form-control rounded-3"
+                    name="salaryMin"
+                    value={(form as any).salaryMin}
+                    onChange={handleChange}
+                    min={0}
+                    placeholder="Min"
+                    style={{ maxWidth: 140 }}
+                  />
+                  <div style={{ padding: "0 10px", fontWeight: 700 }}>-</div>
+                  <input
+                    type="number"
+                    className="form-control rounded-3"
+                    name="salaryMax"
+                    value={(form as any).salaryMax}
+                    onChange={handleChange}
+                    min={0}
+                    placeholder="Max"
+                    style={{ maxWidth: 140 }}
+                  />
+                  <div style={{ marginLeft: 10, color: "#6b7280" }}>triệu</div>
+                </div>
               </div>
 
               {/* Job Type */}

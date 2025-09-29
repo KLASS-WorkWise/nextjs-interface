@@ -452,7 +452,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       >
                         <span
                           style={{
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: 700,
                             color: "#1976d2",
                             marginBottom: 2,
@@ -460,24 +460,23 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                         >
                           Hi, {session.user.username}
                         </span>
-                        <span
-                          style={{
-                            fontSize: 15,
-                            color: "#888",
-                            fontWeight: 500,
-                            marginBottom: 2,
-                          }}
-                        >
-                          Số dư tài khoản:
-                        </span>
-                        <span
-                          style={{
-                            fontSize: 17,
-                            color: "#43a047",
-                            fontWeight: 600,
-                            letterSpacing: 1,
-                          }}
-                        >
+                        {/* <span style={{
+                          fontSize: 11,
+                          color: "#888",
+                          fontWeight: 500,
+                          marginBottom: 2,
+                          marginRight: 6,
+                          display: "inline"
+                        }}>
+                          Balance:
+                        </span> */}
+                        <span style={{
+                          fontSize: 11,
+                          color: "#43a047",
+                          fontWeight: 600,
+                          letterSpacing: 1,
+                          display: "inline"
+                        }}>
                           {Number(balance).toLocaleString("vi-VN")} VNĐ
                         </span>
 

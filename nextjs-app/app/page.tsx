@@ -27,7 +27,7 @@ export default function Home() {
   const [standardBanner, setStandardBanner] = useState<any>(null);
 
   useEffect(() => {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const API_URL = process.env.NEXT_PUBLIC_API_URL_BANNER || "http://localhost:8080";
     // VIP Banner
     fetch(`${API_URL}/api/banners/active?bannerType=Vip`)
       .then((res) => res.json())
@@ -154,10 +154,10 @@ export default function Home() {
                             onChange={(e) => setSalary(e.target.value)}
                           >
                             <option value="">Salary</option>
-                            <option value="Duới 20 triệu">Duới 20 triệu</option>
-                            <option value="20 - 50 triệu">20 - 50 triệu</option>
-                            <option value="50 - 70 triệu">50 - 70 triệu</option>
-                            <option value="70 - 100 triệu">70 - 100 triệu</option>
+                            <option value="Dưới 20 triệu">Dưới 20 triệu</option>
+                            <option value="Từ 20 triệu trở lên">Từ 20 triệu trở lên</option>
+                            <option value="Từ 50 triệu trở lên">Từ 50 triệu trở lên</option>
+                            <option value="Từ 70 triệu trở lên">Từ 70 triệu trở lên</option>
                             <option value="Trên 100 triệu">Trên 100 triệu</option>
                           </select>
                         </div>
