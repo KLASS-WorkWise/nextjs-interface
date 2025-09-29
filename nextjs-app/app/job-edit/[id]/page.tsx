@@ -59,7 +59,8 @@ export default function JobEdit() {
         } else {
           setMessage("Lỗi khi lấy dữ liệu job");
         }
-      } catch (error) {
+      } catch (err) {
+        console.error(err);
         setMessage("Lỗi kết nối API!");
       } finally {
         setLoading(false);
@@ -98,7 +99,8 @@ export default function JobEdit() {
         const err = await res.json();
         setMessage("Lỗi: " + (err.message || "Không thể cập nhật việc làm"));
       }
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       setMessage("Lỗi kết nối API!");
     } finally {
       setLoading(false);

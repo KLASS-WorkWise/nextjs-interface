@@ -334,7 +334,6 @@
 //   );
 // }
 
-
 /// ----- lần 3 ----- ///
 
 // "use client";
@@ -540,22 +539,34 @@
 // ----- lần 4 -----/
 
 "use client";
-/* eslint-disable */
-import { useFormContext, useFieldArray } from "react-hook-form";
+
+import {
+  useFormContext,
+  useFieldArray,
+  type FieldArrayWithId,
+} from "react-hook-form";
 import type { ResumeData } from "../resume-builder";
 import { Plus, Trash2, Zap, Check } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
 import { useState } from "react";
 
 export function SkillsStep() {
-  const { register, control, watch, setValue } = useFormContext<ResumeData>();
+  const {
+    register,
+    control,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useFormContext<ResumeData>();
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: "skills",
   });
 
   const [customSkill, setCustomSkill] = useState<Record<number, string>>({});
-  const [errorMessages, setErrorMessages] = useState<Record<number, string>>({});
+  const [errorMessages, setErrorMessages] = useState<Record<number, string>>(
+    {}
+  );
 
   const addSkill = () => {
     append(""); // thêm kỹ năng rỗng
@@ -584,15 +595,14 @@ export function SkillsStep() {
     "PowerPoint",
     "Marketing",
     "SEO",
-    "Quản lý dự án",
-    "Giao tiếp",
-    "Làm việc nhóm",
-    "Lãnh đạo",
-    "Giải quyết vấn đề",
-    "Khác",
+    "Other",
   ];
 
-  const renderSkillItem = (field: any, index: number, isDragging?: boolean) => {
+  const renderSkillItem = (
+    field: FieldArrayWithId,
+    index: number,
+    isDragging?: boolean
+  ) => {
     const currentValue = watch(`skills.${index}`);
     const allSkills = watch("skills") || [];
 
@@ -610,7 +620,7 @@ export function SkillsStep() {
         className={`card mb-3 ${isDragging ? "shadow-lg border-primary" : ""}`}
       >
         <div className="card-header d-flex justify-content-between align-items-center">
-          <h6 className="mb-0">Kỹ năng {index + 1}</h6>
+          <h6 className="mb-0">Skill {index + 1}</h6>
           <button
             type="button"
             className="btn btn-outline-danger btn-sm"
@@ -630,20 +640,24 @@ export function SkillsStep() {
         <div className="card-body">
           <div className="mb-3">
             <label htmlFor={`skill-${index}`} className="form-label">
-              Tên kỹ năng *
+              Skill name *
             </label>
 
             <select
               id={`skill-${index}`}
-              {...register(`skills.${index}`, { required: true })}
-              className={`form-select ${errorMessages[index] ? "is-invalid" : ""}`}
+              {...register(`skills.${index}`, {
+                required: "Please select a skill",
+              })}
+              className={`form-select ${
+                errorMessages[index] ? "is-invalid" : ""
+              }`}
               value={currentValue || ""}
               onChange={(e) => {
                 const value = e.target.value;
                 if (isDuplicate(value)) {
                   setErrorMessages((prev) => ({
                     ...prev,
-                    [index]: "Kỹ năng này đã tồn tại!",
+                    [index]: "This skill already exists!",
                   }));
                 } else {
                   setValue(`skills.${index}`, value, {
@@ -654,7 +668,7 @@ export function SkillsStep() {
                 }
               }}
             >
-              <option value="">Chọn kỹ năng</option>
+              <option value="">Select a skill</option>
               {skillOptions.map((skill) => (
                 <option key={skill} value={skill}>
                   {skill}
@@ -668,6 +682,11 @@ export function SkillsStep() {
                 </option>
               )}
             </select>
+            {errors.skills?.[index] && (
+              <div className="text-danger small">
+                {errors.skills[index].message}
+              </div>
+            )}
 
             {errorMessages[index] && (
               <div className="invalid-feedback">{errorMessages[index]}</div>
@@ -675,14 +694,14 @@ export function SkillsStep() {
           </div>
 
           {/* Nếu chọn "Khác" thì hiện input + nút Thêm */}
-          {currentValue === "Khác" && (
+          {currentValue === "Other" && (
             <div className="mb-3">
-              <label className="form-label">Nhập kỹ năng của bạn</label>
+              <label className="form-label">Enter your skill</label>
               <div className="d-flex gap-2">
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Nhập kỹ năng"
+                  placeholder="Enter skill"
                   value={customSkill[index] || ""}
                   onChange={(e) =>
                     setCustomSkill((prev) => ({
@@ -701,7 +720,7 @@ export function SkillsStep() {
                     if (isDuplicate(value)) {
                       setErrorMessages((prev) => ({
                         ...prev,
-                        [index]: "Kỹ năng này đã tồn tại!",
+                        [index]: "This skill already exists!",
                       }));
                     } else {
                       setValue(`skills.${index}`, value, {
@@ -713,7 +732,7 @@ export function SkillsStep() {
                     }
                   }}
                 >
-                  <Check size={16} /> Thêm
+                  <Check size={16} /> Add
                 </button>
               </div>
             </div>
@@ -729,7 +748,7 @@ export function SkillsStep() {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="d-flex align-items-center gap-2">
           <Zap size={20} />
-          <h5 className="mb-0">Kỹ năng</h5>
+          <h5 className="mb-0">Skill</h5>
         </div>
         <button
           type="button"
@@ -737,7 +756,7 @@ export function SkillsStep() {
           className="btn btn-primary d-flex align-items-center gap-2"
         >
           <Plus size={16} />
-          Thêm kỹ năng
+          Add Skill
         </button>
       </div>
 
@@ -752,7 +771,7 @@ export function SkillsStep() {
               <Zap size={40} className="text-muted" />
             </div>
             <p className="text-muted">
-              Chưa có kỹ năng nào. Hãy thêm những kỹ năng của bạn!
+              No skills added yet. Please add your skills!
             </p>
           </div>
         </div>
@@ -765,7 +784,7 @@ export function SkillsStep() {
             className="alert alert-secondary text-center py-2 mb-3"
             style={{ border: "2px dashed #ccc" }}
           >
-            💡 Kéo và thả để sắp xếp lại thứ tự kỹ năng
+            💡 Drag and drop to rearrange skill order
           </div>
 
           <DragDropList

@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import JobChatBot from "./ChatBotJob/page";
+import JobPostingVip from "@/components/sliders/JobPostingVip";
 import { motion } from "framer-motion";
 
 export default function Home() {
@@ -153,10 +154,10 @@ export default function Home() {
                             onChange={(e) => setSalary(e.target.value)}
                           >
                             <option value="">Salary</option>
-                            <option value="Duới 20 triệu">Duới 20 triệu</option>
-                            <option value="20 - 50 triệu">20 - 50 triệu</option>
-                            <option value="50 - 70 triệu">50 - 70 triệu</option>
-                            <option value="70 - 100 triệu">70 - 100 triệu</option>
+                            <option value="Dưới 20 triệu">Dưới 20 triệu</option>
+                            <option value="Từ 20 triệu trở lên">Từ 20 triệu trở lên</option>
+                            <option value="Từ 50 triệu trở lên">Từ 50 triệu trở lên</option>
+                            <option value="Từ 70 triệu trở lên">Từ 70 triệu trở lên</option>
                             <option value="Trên 100 triệu">Trên 100 triệu</option>
                           </select>
                         </div>
@@ -339,7 +340,22 @@ export default function Home() {
           <div className="container">
             <div className="text-center">
               <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
-                Jobs of the day
+                Premium Job Opportunities
+              </h2>
+              <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
+                Search and connect with the right candidates faster.{" "}
+              </p>
+            </div>
+            <div className="mt-70">
+              <JobPostingVip />
+            </div>
+          </div>
+        </section>
+        <section className="section-box mt-50">
+          <div className="container">
+            <div className="text-center">
+              <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
+               New jobs of the day
               </h2>
               <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
                 Search and connect with the right candidates faster.{" "}
@@ -423,7 +439,7 @@ export default function Home() {
     <div className="mt-40">
       <div className="wow animate__animated animate__fadeInUp">
         <Link href="/jobs-grid">
-          <span className="btn btn-default">Search Jobs</span>
+<span className="btn btn-default">Search Jobs</span>
         </Link>
 
         <Link href="/page-about">
@@ -437,6 +453,75 @@ export default function Home() {
             </div>
           </div>
         </section>
+        {/* <section className="section-box overflow-visible mt-50 mb-50">
+          <div className="container">
+            <div className="row">
+              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+                <div className="text-center">
+                  <h1 className="color-brand-2">
+                    <span className="count">25</span>
+                    <span> K+</span>
+                  </h1>
+                  <h5>Completed Cases</h5>
+                  <p className="font-sm color-text-paragraph mt-10">
+                    We always provide people a{" "}
+                    <br className="d-none d-lg-block" />
+                    complete solution upon focused of
+                    <br className="d-none d-lg-block" /> any business
+                  </p>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+                <div className="text-center">
+                  <h1 className="color-brand-2">
+                    <span className="count">17</span>
+                    <span> +</span>
+                  </h1>
+                  <h5>Our Office</h5>
+                  <p className="font-sm color-text-paragraph mt-10">
+                    We always provide people a{" "}
+                    <br className="d-none d-lg-block" />
+                    complete solution upon focused of{" "}
+                    <br className="d-none d-lg-block" />
+                    any business
+                  </p>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+                <div className="text-center">
+                  <h1 className="color-brand-2">
+                    <span className="count">86</span>
+                    <span> +</span>
+                  </h1>
+                  <h5>Skilled People</h5>
+                  <p className="font-sm color-text-paragraph mt-10">
+                    We always provide people a{" "}
+                    <br className="d-none d-lg-block" />
+                    complete solution upon focused of{" "}
+                    <br className="d-none d-lg-block" />
+                    any business
+                  </p>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+                <div className="text-center">
+                  <h1 className="color-brand-2">
+                    <span className="count">28</span>
+                    <span> +</span>
+                  </h1>
+                  <h5>CHappy Clients</h5>
+                  <p className="font-sm color-text-paragraph mt-10">
+                    We always provide people a{" "}
+                    <br className="d-none d-lg-block" />
+                    complete solution upon focused of{" "}
+                    <br className="d-none d-lg-block" />
+                    any business
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section> */}
         <section className="section-box mt-50">
           <div className="container">
             <div className="text-center">
@@ -454,220 +539,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className="section-box mt-50">
-          <div className="container">
-            <div className="text-center">
-              <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">
-                Jobs by Location
-              </h2>
-              <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
-                Find your favourite jobs and get the benefits of yourself
-              </p>
-            </div>
-          </div>
-          <div className="container">
-            <div className="row mt-50">
-              <div className="col-xl-3 col-lg-3 col-md-5 col-sm-12 col-12">
-                <div className="card-image-top hover-up">
-                  <Link href="/jobs-grid">
-                    <div
-                      className="image"
-                      style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/homepage1/location1.png)",
-                      }}
-                    >
-                      <span className="lbl-hot">Hot</span>
-                    </div>
-                  </Link>
-
-                  <div className="informations">
-                    <Link href="/jobs-grid">
-                      <h5>Paris, France</h5>
-                    </Link>
-
-                    <div className="row">
-                      <div className="col-lg-6 col-6">
-                        <span className="text-14 color-text-paragraph-2">
-                          5 Vacancy
-                        </span>
-                      </div>
-                      <div className="col-lg-6 col-6 text-end">
-                        <span className="color-text-paragraph-2 text-14">
-                          120 companies
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-4 col-lg-4 col-md-7 col-sm-12 col-12">
-                <div className="card-image-top hover-up">
-                  <Link href="/jobs-grid">
-                    <div
-                      className="image"
-                      style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/homepage1/location2.png)",
-                      }}
-                    >
-                      <span className="lbl-hot">Trending</span>
-                    </div>
-                  </Link>
-
-                  <div className="informations">
-                    <Link href="/jobs-grid">
-                      <h5>London, England</h5>
-                    </Link>
-
-                    <div className="row">
-                      <div className="col-lg-6 col-6">
-                        <span className="text-14 color-text-paragraph-2">
-                          7 Vacancy
-                        </span>
-                      </div>
-                      <div className="col-lg-6 col-6 text-end">
-                        <span className="color-text-paragraph-2 text-14">
-                          68 companies
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-5 col-lg-5 col-md-7 col-sm-12 col-12">
-                <div className="card-image-top hover-up">
-                  <Link href="/jobs-grid">
-                    <div
-                      className="image"
-                      style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/homepage1/location3.png)",
-                      }}
-                    >
-                      <span className="lbl-hot">Hot</span>
-                    </div>
-                  </Link>
-
-                  <div className="informations">
-                    <Link href="/jobs-grid">
-                      <h5>New York, USA</h5>
-                    </Link>
-
-                    <div className="row">
-                      <div className="col-lg-6 col-6">
-                        <span className="text-14 color-text-paragraph-2">
-                          9 Vacancy
-                        </span>
-                      </div>
-                      <div className="col-lg-6 col-6 text-end">
-                        <span className="color-text-paragraph-2 text-14">
-                          80 companies
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
-                <div className="card-image-top hover-up">
-                  <Link href="/jobs-grid">
-                    <div
-                      className="image"
-                      style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/homepage1/location4.png)",
-                      }}
-                    />
-                  </Link>
-
-                  <div className="informations">
-                    <Link href="/jobs-grid">
-                      <h5>Amsterdam, Holland</h5>
-                    </Link>
-
-                    <div className="row">
-                      <div className="col-lg-6 col-6">
-                        <span className="text-14 color-text-paragraph-2">
-                          16 Vacancy
-                        </span>
-                      </div>
-                      <div className="col-lg-6 col-6 text-end">
-                        <span className="color-text-paragraph-2 text-14">
-                          86 companies
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-5 col-lg-5 col-md-7 col-sm-12 col-12">
-                <div className="card-image-top hover-up">
-                  <Link href="/jobs-grid">
-                    <div
-                      className="image"
-                      style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/homepage1/location5.png)",
-                      }}
-                    />
-                  </Link>
-
-                  <div className="informations">
-                    <Link href="/jobs-grid">
-                      <h5>Copenhagen, Denmark</h5>
-                    </Link>
-
-                    <div className="row">
-                      <div className="col-lg-6 col-6">
-                        <span className="text-14 color-text-paragraph-2">
-                          39 Vacancy
-                        </span>
-                      </div>
-                      <div className="col-lg-6 col-6 text-end">
-                        <span className="color-text-paragraph-2 text-14">
-                          186 companies
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-3 col-lg-3 col-md-5 col-sm-12 col-12">
-                <div className="card-image-top hover-up">
-                  <Link href="/jobs-grid">
-                    <div
-                      className="image"
-                      style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/homepage1/location6.png)",
-                      }}
-                    />
-                  </Link>
-
-                  <div className="informations">
-                    <Link href="/jobs-grid">
-                      <h5>Berlin, Germany</h5>
-                    </Link>
-
-                    <div className="row">
-                      <div className="col-lg-6 col-6">
-                        <span className="text-14 color-text-paragraph-2">
-                          15 Vacancy
-                        </span>
-                      </div>
-                      <div className="col-lg-6 col-6 text-end">
-                        <span className="color-text-paragraph-2 text-14">
-                          632 companies
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        
         <section className="section-box mt-50 mb-50">
           <div className="container">
             <div className="text-center">
@@ -686,7 +558,7 @@ export default function Home() {
               </div>
 
               <div className="text-center">
-                <Link href="/blog-grid">
+                <Link href="/blog-grid-2">
                   <span className="btn btn-brand-1 btn-icon-load mt--30 hover-up">
                     Load More Posts
                   </span>

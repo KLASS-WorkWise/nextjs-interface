@@ -1,15 +1,12 @@
-/* eslint-disable */
 "use client";
 
-import { Save } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+// import { useToast } from "@/hooks/use-toast";
+// import { useState } from "react";
 import type { ResumeData } from "./resume-builder";
 import type { CustomizationOptions } from "./customization-panel";
 import { ModernTemplate } from "./resume-templates/modern-template";
 import { ClassicTemplate } from "./resume-templates/classic-template";
-import { mapFormToApi, resumeApi } from "@/lib/api";
-import styles from "./resume-preview.module.css";
+// import { mapFormToApi, resumeApi } from "@/lib/api";
 
 interface viewCvProps {
   data: ResumeData;
@@ -32,46 +29,46 @@ export function ViewCv({
   template = "modern",
   customization = defaultCustomization,
   isCompact = false,
-  onSave,
-  resumeData,
-}: viewCvProps) {
-  const { toast } = useToast();
-  const [isSaving, setIsSaving] = useState(false);
+  // onSave,
+}: // resumeData,
+viewCvProps) {
+  // const { toast } = useToast();
+  // const [isSaving, setIsSaving] = useState(false);
 
-  const handleSaveCV = async () => {
-    if (isSaving) return;
-    setIsSaving(true);
-    try {
-      const apiData = mapFormToApi(data);
-      if (data.id) {
-        await resumeApi.updateMyResume(data.id, apiData);
-      } else {
-        await resumeApi.saveMyResume(apiData);
-      }
+  // const handleSaveCV = async () => {
+  //   if (isSaving) return;
+  //   setIsSaving(true);
+  //   try {
+  //     const apiData = mapFormToApi(data);
+  //     if (data.id) {
+  //       await resumeApi.updateMyResume(data.id, apiData);
+  //     } else {
+  //       await resumeApi.saveMyResume(apiData);
+  //     }
 
-      toast({
-        title: "Lưu CV thành công!",
-        description: "CV của bạn đã được lưu lên server.",
-      });
+  //     toast({
+  //       title: "Lưu CV thành công!",
+  //       description: "CV của bạn đã được lưu lên server.",
+  //     });
 
-      if (onSave) {
-        onSave(data);
-      }
-    } catch (error: any) {
-      console.error("Error saving CV:", error);
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Không thể lưu CV. Vui lòng thử lại.";
-      toast({
-        title: "Lỗi khi lưu CV",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  //     if (onSave) {
+  //       onSave(data);
+  //     }
+  //   } catch (error: any) {
+  //     console.error("Error saving CV:", error);
+  //     const errorMessage =
+  //       error.response?.data?.message ||
+  //       error.message ||
+  //       "Không thể lưu CV. Vui lòng thử lại.";
+  //     toast({
+  //       title: "Lỗi khi lưu CV",
+  //       description: errorMessage,
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     setIsSaving(false);
+  //   }
+  // };
 
   const renderTemplate = () => {
     switch (template) {

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
 import BlogSlider from "@/components/sliders/Blog";
-import TestimonialSlider1 from "@/components/sliders/Testimonial1";
+
 import React, { useEffect, useState } from "react";
 import { aboutUsApi, AboutUsResponse } from "@/lib/aboutUs/api";
 import { ourTeamApi, OurTeamResponseDto } from "@/lib/ourTeam/api";
@@ -227,7 +227,7 @@ export default function About() {
                   <BlogSlider />
                 </div>
                 <div className="text-center">
-                  <Link href="/blog-grid">
+                  <Link href="/blog-grid-2">
                     <span className="btn btn-brand-1 btn-icon-load mt--30 hover-up">
                       Load More Posts
                     </span>

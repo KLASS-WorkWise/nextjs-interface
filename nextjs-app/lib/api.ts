@@ -212,4 +212,45 @@ export const resumeApi = {
       },
     });
   },
+
+  async uploadPDF(file: File, userId: string, resumeId?: string): Promise<{
+    success: boolean;
+    resumeLink: string;
+    filePath: string;
+    fileName: string;
+    fileSize: number;
+  }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('userId', userId);
+    if (resumeId) {
+      formData.append('resumeId', resumeId);
+    }
+
+    try {
+      const response = await axios.post('/api/resume/upload-pdf', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return response.data;
+    } catch (error: any) {
+      console.error('PDF Upload Error:', error);
+      throw error;
+    }
+  },
+
+  async deletePDF(filePath: string): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      const response = await axios.delete(`/api/resume/upload-pdf?filePath=${encodeURIComponent(filePath)}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('PDF Delete Error:', error);
+      throw error;
+    }
+  }
 };

@@ -1,49 +1,108 @@
 "use client";
+type Job = {
+  id:  string | number;
+  title?: string;
+  jobType?: string;
+  createdAt?: string;
+  location?: string;
+  salaryRange?: string;
+  category?: string;
+  requiredSkills?: string[];
+  minExperience?: number;
+  requiredDegree?: string;
+  endAt?: string;
+  employerId?: string | number;
+  employerName?: string;
+  employer?: { id?: string | number; name?: string };
+  description?: string;
+  companyName?: string;
+   postPriceUSD: number;
+  postType: string; // NORMAL | VIP
+  postPrice: number;
+  status?: string;
+
+  applicantsCount: number;
+  newApplicantsCount: number;
+  lastAppliedAt: string | null;
+
+};
+type Company = {
+  id?: string | number;
+  companyName?: string;
+  logoUrl?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  location?: string;
+  openJobs?: number;
+};
 import { useEffect, useState, useRef } from "react";
 import { getCompanyByEmployerId } from "@/lib/company/api";
-import { useParams } from "next/navigation";
-/* eslint-disable react/no-unescaped-entities */
+import { useParams, useRouter } from "next/navigation";
+
+
 import Link from "next/link";
 import Layout from "@/components/Layout/Layout";
 import { useSession } from "next-auth/react";
 import FeaturedSlider from "@/components/sliders/Featured";
 import ApplyJob from "@/features/applicants/components/ApplyJob";
-import { applicantService } from "@/features/applicants/services/applicant.service";
+import Image from "next/image";
+
 import { toast } from "react-toastify";
 
 
 import FloatingChatWithEmployer from "@/components/FloatingChatWithEmployer";
 import type { FloatingChatHandle } from "@/components/FloatingChatWithEmployer";
+import { JobPostingResponseDTO, Resume } from "@/types/applicant";
+import { applicantService } from "@/features/applicants/services/applicant.service";
 
 
 export default function JobDetails2() {
-  const { id } = useParams();
-  const [job, setJob] = useState<any>(null);
-  const [company, setCompany] = useState<any>(null);
-  const [modalJob, setModalJob] = useState<any>(null); // 👈 Fix: declare modalJob state
-  const [resumes, setResumes] = useState<any[]>([]); // 👈 Optional: declare resumes if needed
+  const params = useParams<{ id: string }>();
+  const id = params.id;
+  const [job, setJob] = useState<Job | null>(null);
+  const [company, setCompany] = useState<Company | null>(null);
+ 
+
+    // Lấy dữ liệu Applyjob từ API 
+    const [modalJob, setModalJob] = useState<JobPostingResponseDTO | null>(null);
+    const [resumes, setResumes] = useState<Resume[]>([]);
+    const router = useRouter();
+      const handleOpenApply = (job: JobPostingResponseDTO) => {
+        if (!session) {
+          toast.error("You need to login to apply!");
+          router.push("/page-signin"); // 👈 redirect sang trang login của bạn
+          return;
+        }
+        setModalJob(job);
+      };
+      useEffect(() => {
+        const fetchResumes = async () => {
+          try {
+            const res = await applicantService.getMyResumes();
+             setResumes(res.data || []);
+          } catch (err) {
+            console.error("Error fetching resumes:", err);
+          }
+        };
+        fetchResumes();
+      }, []);
+    
 
   useEffect(() => {
     if (!id) return;
     fetch(`http://localhost:8080/api/job-postings/${id}`)
       .then((res) => res.json())
-      .then((data) => setJob(data))
+      .then((data: Job) => setJob(data))
       .catch(() => setJob(null));
   }, [id]);
-// lấy thông tin bài đăng
 
-  const [active, setActive] = useState(1);
-  
-    const handleOnClick = (index: number) => {
-      setActive(index);
-    };
-    const { data: session } = useSession();
-      const role = session?.user?.roles;
-      const chatRef = useRef<FloatingChatHandle | null>(null);
-      // Hook lấy dữ liệu job từ API
-      const [jobs, setJobs] = useState<any[]>([]);
-      const [jobsLoading, setJobsLoading] = useState(false);
-      const [jobsError, setJobsError] = useState("");
+  const { data: session } = useSession();
+  const chatRef = useRef<FloatingChatHandle | null>(null);
+  // Hook lấy dữ liệu job từ API
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobsLoading, setJobsLoading] = useState(false);
+  const [jobsError, setJobsError] = useState("");
   
     useEffect(() => {
         const fetchJobs = async () => {
@@ -54,8 +113,8 @@ export default function JobDetails2() {
             if (!res.ok) throw new Error("Không thể lấy danh sách công việc");
             const data = await res.json();
             setJobs(data);
-          } catch (err: any) {
-            setJobsError(err.message || "Lỗi không xác định");
+          } catch (err) {
+            setJobsError((err as Error).message || "Lỗi không xác định");
           } finally {
             setJobsLoading(false);
           }
@@ -64,7 +123,7 @@ export default function JobDetails2() {
       }, []);
 
       // Helper: robustly parse createdAt value from API (supports ms, seconds, ISO string)
-      const parseToDate = (val: any): Date | null => {
+  const parseToDate = (val: string | number | Date | null | undefined): Date | null => {
         if (!val && val !== 0) return null;
         if (typeof val === 'number') {
           return new Date(val > 1e12 ? val : val * 1000);
@@ -92,7 +151,8 @@ const hours = Math.floor(minutes / 60);
     if (!job?.employerId) return;
     (async () => {
       try {
-        const data = await getCompanyByEmployerId(job.employerId);
+        // Ép kiểu employerId về string
+        const data = await getCompanyByEmployerId(String(job.employerId));
         setCompany(data);
       } catch {
         setCompany(null);
@@ -114,20 +174,44 @@ const hours = Math.floor(minutes / 60);
                     ) : (
                       <>
                         <div className="row mt-10">
-                          <div className="col-lg-8 col-md-12">
-                            <h3>{job.title}</h3>
+                          <div className="">
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, width: '100%' }}>
+                              <h3 style={{ margin: 0, fontWeight: 800, fontSize: '2rem', color: '#1d3557', letterSpacing: 0.2 }}>{job.title}</h3>
+                              {job.postType === 'vip' && (
+                                <span
+                                  className="badge-vip"
+                                  style={{
+                                    fontSize: '1rem',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 4,
+                                    background: 'linear-gradient(90deg, #f59e0b 0%, #facc15 100%)',
+                                    color: '#fff',
+                                    fontWeight: 900,
+                                    padding: '7px 16px',
+                                    borderRadius: 999,
+                                    border: '2px solid #fffbe6',
+                                    boxShadow: '0 4px 16px 0 rgba(251,191,36,0.5), 0 0 8px 2px #fde68a',
+                                    letterSpacing: 1,
+                                    textShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                                    zIndex: 2,
+                                    backdropFilter: 'blur(3px)'
+                                  }}
+                                >
+                                  <span style={{ fontSize: '1.1em', color: '#fff', marginRight: 3 }}>★</span> VIP
+                                </span>
+                              )}
+                            </div>
                             <div className="mt-0 mb-15">
                               {job.jobType && <span className="card-briefcase">{job.jobType}</span>}
                               {job.createdAt && <span className="card-time">{new Date(job.createdAt).toLocaleDateString()}</span>}
                             </div>
                               <button
-                                onClick={() => setModalJob(job)} // 👈 Fix: open modal by setting modalJob
+                                onClick={() => handleOpenApply(job as JobPostingResponseDTO)} // 👈 Fix: open modal by setting modalJob
                                 className="btn-apply"
                               >
                                 Apply 
-                              </button>
-                              
-                           
+                              </button>                          
                           </div>
                         </div>
                         <div className="border-bottom pt-10 pb-10" />
@@ -277,65 +361,27 @@ const hours = Math.floor(minutes / 60);
                               onSuccess={() => toast.success("Applied successfully!")}
                             />
                           )}
-                          
+ 
                 <div className="col-lg-4 col-md-12 col-sm-12 col-12 pl-40 pl-lg-15 mt-lg-30">
-                  {/* <div className="sidebar-border">
-                    <div className="sidebar-heading">
-                      <div className="avatar-sidebar">
-                        <figure>
-                          <img alt="jobBox" src={ company?.logoUrl ||"/assets/imgs/page/job-single/avatar.png"} />
-                        </figure>
-                        <div className="sidebar-info">
-                          <span className="sidebar-company">{company?.companyName || "Company"}</span>
-                          <span className="card-location">{company?.location || "Unknown"}</span>
-                          {company?.openJobs && (
-                            <Link href="#">
-                              <span className="link-underline mt-15">{company.openJobs} Open Jobs</span>
-                            </Link>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="sidebar-list-job">
-                      <div className="box-map">
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2970.…Hoa%20K%E1%BB%B3!5e0!3m2!1svi!2s!4v1658551322537!5m2!1svi!2s" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
-                      </div>
-                      <ul className="ul-disc">
-                        <li>205 North Michigan Avenue, Suite 810 Chicago, 60601, USA</li>
-                        <li>Phone: (123) 456-7890</li>
-                        <li>Email: contact@Evara.com</li>
-                      </ul>
-                    </div>
-                  </div> */}
+                  
                   <div className="sidebar-border">
                   <div className="sidebar-heading">
                     <div className="avatar-sidebar">
-                      {/* <figure>
-                        <img alt="jobBox" src={company?.logoUrl || "/assets/imgs/page/job-single/avatar.png"} />
-                      </figure> */}
+                    
                       <figure style={{ width: 60, height: 60, borderRadius: 8, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <img
-                            alt="jobBox"
-                            src={company?.logoUrl || "/assets/imgs/page/job-single/avatar.png"}
-                            style={{
-                              maxWidth: "100%",
-                              maxHeight: "100%",
-                              objectFit: "contain", // ảnh vừa khung, không bị crop
-                              display: "block"
-                            }}
-                          />
-                        </figure>
-                      {/* <div className="sidebar-info">
-                        <Link href={`/company-details/${company.id}`}>
-                          <span className="sidebar-company">{company?.companyName || "Company"}</span>
-                        </Link>
-                        <span className="card-location">{company?.location || company?.address || "Unknown"}</span>
-                        {company?.openJobs && (
-                          <Link href="#">
-                            <span className="link-underline mt-15">{company.openJobs} Open Jobs</span>
-                          </Link>
-                        )}
-                      </div> */}
+                        <Image
+                          alt="jobBox"
+                          src={company?.logoUrl || "/assets/imgs/page/job-single/avatar.png"}
+                          width={60}
+                          height={60}
+                          style={{
+                            maxWidth: "100%",
+                            maxHeight: "100%",
+                            objectFit: "contain",
+                            display: "block"
+                          }}
+                        />
+                      </figure>
                       <div className="sidebar-info">
                         {company?.id ? (
                           <Link href={`/company-details/${company.id}`}>
@@ -344,7 +390,7 @@ const hours = Math.floor(minutes / 60);
                         ) : (
                           <span className="sidebar-company">{company?.companyName || "Company"}</span>
                         )}
-<span className="card-location">{company?.location || company?.address || "Unknown"}</span>
+                          <span className="card-location">{company?.location || company?.address || "Unknown"}</span>
                         {company?.openJobs && (
                           <Link href="#">
                             <span className="link-underline mt-15">{company.openJobs} Open Jobs</span>
@@ -385,17 +431,17 @@ const hours = Math.floor(minutes / 60);
                             const currentEmployerKey = job?.employer?.id ?? job?.employerId ?? job?.employerName ?? job?.employer?.name ?? null;
                             return jobs
                               .slice()
-                              .filter((j: any) => {
+                              .filter((j: Job) => {
                                 if (!currentEmployerKey) return false;
                                 return (
                                   String(j.employer?.id ?? j.employerId ?? j.employerName ?? j.employer?.name ?? '') === String(currentEmployerKey)
                                 );
                               })
-                              .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                              .sort((a: Job, b: Job) => new Date(b.createdAt ?? '').getTime() - new Date(a.createdAt ?? '').getTime())
                               .slice(0, 9)
-                              .map((j: any) => {
+                              .map((j: Job) => {
                                 const createdDate = parseToDate(j.createdAt);
-const timeText = createdDate ? formatCreatedAt(createdDate) : '';
+                                const timeText = createdDate ? formatCreatedAt(createdDate) : '';
                                 return (
                                   <li key={j.id} style={{ marginBottom: 10 }}>
                                     <div
@@ -414,13 +460,15 @@ const timeText = createdDate ? formatCreatedAt(createdDate) : '';
                                               backgroundColor: '#f9f9f9', // thêm nền để dễ nhìn nếu ảnh nhỏ
                                             }}
                                           >
-                                            <img
+                                            <Image
                                               src={company?.logoUrl || '/assets/imgs/brands/brand-8.png'}
                                               alt={j.companyName || 'jobBox'}
+                                              width={44}
+                                              height={44}
                                               style={{
                                                 width: '100%',
                                                 height: '100%',
-                                                objectFit: 'contain', // co ảnh lại vừa khung, không crop
+                                                objectFit: 'contain',
                                               }}
                                             />
                                           </span>
@@ -530,7 +578,7 @@ const timeText = createdDate ? formatCreatedAt(createdDate) : '';
               <div className="box-newsletter">
                 <div className="row">
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img src="/assets/imgs/template/newsletter-left.png" alt="joxBox" />
+                    <Image src="/assets/imgs/template/newsletter-left.png" alt="joxBox" width={120} height={120} />
                   </div>
                   <div className="col-lg-12 col-xl-6 col-12">
                     <h2 className="text-md-newsletter text-center">
@@ -545,7 +593,7 @@ const timeText = createdDate ? formatCreatedAt(createdDate) : '';
                     </div>
                   </div>
                   <div className="col-xl-3 col-12 text-center d-none d-xl-block">
-                    <img src="/assets/imgs/template/newsletter-right.png" alt="joxBox" />
+                    <Image src="/assets/imgs/template/newsletter-right.png" alt="joxBox" width={120} height={120} />
                   </div>
                 </div>
               </div>
@@ -556,7 +604,7 @@ const timeText = createdDate ? formatCreatedAt(createdDate) : '';
       {job?.employerId && session?.user?.id && (
         <FloatingChatWithEmployer
           ref={chatRef}
-          employerId={job.employerId}
+          employerId={String(job.employerId)}
           applicantId={session.user.id}
           // Only pass applicantName when the session actually contains it. If undefined, the chat component
           // will avoid writing a placeholder into Firestore and the admin-side fallback can populate the real name.

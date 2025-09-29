@@ -13,26 +13,38 @@ import { CVDashboard } from "@/components/cv-dashboard";
 import { CVSuccessModal } from "@/components/jobRecommend/cv-success-modal";
 import type { ResumeData } from "@/components/resume-builder";
 import Image from "next/image";
-
+import styles from "../../styles/CandidateProfileTabs.module.css";
+import RecommendedJobsList from "@/features/applicants/components/RecommendedJobsList";
 export default function CandidateProfile() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [resume, setResume] = useState<ResumeData | null>(null);
   const [avatarSrc, setAvatarSrc] = useState<string>(
     "/assets/imgs/avatar/logoLogin.jpg"
   );
-  const router = useRouter();
+
   const searchParams = useSearchParams();
   const resumeId = searchParams.get("resume_id");
 
   // Modal hiển thị sau khi lưu CV
   const [showModal, setShowModal] = useState(false);
+
+   // ---------- redirect nếu chưa login ----------
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/page-signin");
+    }
+  }, [status, router]);
+
   // Lấy resume từ URL nếu có
   useEffect(() => {
     if (!resumeId) return;
 
     const fetchResume = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/resumes/${resumeId}`);
+        const res = await fetch(
+          `http://localhost:8080/api/resumes/${resumeId}`
+        );
         const data = await res.json();
         setResume(data);
       } catch (err) {
@@ -54,6 +66,7 @@ export default function CandidateProfile() {
     { id: 1, key: "profile", label: "My CV" },
     { id: 2, key: "apply", label: "My Apply" },
     { id: 3, key: "saved", label: "Saved Jobs" },
+    { id: 4, key: "recommended", label: "Recommended Jobs" },
   ];
 
   // Lấy tab từ URL, mặc định = profile
@@ -63,15 +76,15 @@ export default function CandidateProfile() {
   const handleOnClick = (tabKey: string) => {
     const params = new URLSearchParams(window.location.search);
     params.set("tab", tabKey);
-   // 👇 Nếu tab là apply thì reset page = 1
-  if (tabKey === "apply") {
-    params.set("page", "1");
-  } else {
-    params.delete("page"); // tab khác thì bỏ page đi cho sạch URL
-  }
+    // 👇 Nếu tab là apply thì reset page = 1
+    if (tabKey === "apply") {
+      params.set("page", "1");
+    } else {
+      params.delete("page"); // tab khác thì bỏ page đi cho sạch URL
+    }
 
-  router.replace(`?${params.toString()}`);
-};
+    router.replace(`?${params.toString()}`);
+  };
 
   // Xử lý tạo CV: điều hướng sang trang tạo CV trong danh sách CV
   const handleCreateNew = () => {
@@ -80,6 +93,7 @@ export default function CandidateProfile() {
 
   // Lấy avatar trực tiếp từ backend khi session thay đổi
   useEffect(() => {
+      if (!session) return; 
     const loadAvatar = async () => {
       const userId = (session as any)?.user?.id;
       const token = (session as any)?.accessToken;
@@ -117,11 +131,21 @@ export default function CandidateProfile() {
       window.removeEventListener("avatar-updated", handleCustom as any);
   }, [session]);
 
+  
+  // ---------- fallback UI khi loading hoặc chưa login ----------
+  if (status === "loading") {
+    return <Layout><div className="text-center py-20">Loading...</div></Layout>;
+  }
+
+  if (!session) {
+    // session chưa có nhưng hook vẫn đã gọi ở trên
+    return <Layout><div className="text-center py-20">Redirecting to login...</div></Layout>;
+  }
+
   return (
     <>
       <Layout>
-
-         {/* Modal hiển thị khi cv_saved=true */}
+        {/* Modal hiển thị khi cv_saved=true */}
         <CVSuccessModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
@@ -129,12 +153,17 @@ export default function CandidateProfile() {
           resume={resume}
         />
 
-
         <div>
           <section className="section-box-2">
             <div className="container">
               <div className="banner-hero banner-image-single">
-                <Image src="assets/imgs/page/candidates/img.png" alt="jobbox" width={1000} height={300}  unoptimized />
+                <Image
+                  src="assets/imgs/page/candidates/img.png"
+                  alt="jobbox"
+                  width={1000}
+                  height={300}
+                  unoptimized
+                />
                 <a className="btn-editor" href="#" />
               </div>
               <div className="box-company-profile">
@@ -146,13 +175,12 @@ export default function CandidateProfile() {
                     height={100}
                     unoptimized
                     style={{
-                     
                       marginBottom: 10,
                       objectFit: "cover",
                       borderRadius: 8,
                       backgroundColor: "#f5f5f5",
                       display: "block",
-                    }}
+                                }}
                   />
                 </div>
                 <div className="row mt-10">
@@ -166,7 +194,7 @@ export default function CandidateProfile() {
                       className="btn btn-preview-icon btn-apply btn-apply-big"
                       onClick={handleCreateNew}
                     >
-                      Tạo CV
+                      Create CV
                     </button>
                   </div>
                 </div>
@@ -179,12 +207,14 @@ export default function CandidateProfile() {
               <div className="row">
                 <div className="col-lg-3 col-md-4 col-sm-12">
                   <div className="box-nav-tabs nav-tavs-profile mb-5">
-                    <ul className="nav" role="tablist">
+                      <ul className={styles.tabList} role="tablist">
                       {tabs.map((tab) => (
-                        <li key={tab.key}>
+                        <li key={tab.key} className={styles.tabItem}>
                           <span
-                            className={`btn btn-sm mb-20 w-full text-left ${
-                              activeTab === tab.key ? "active" : ""
+                            className={`${styles.tabButton} ${
+                              activeTab === tab.key
+                                ? styles.tabButtonActive
+                                : ""
                             }`}
                             onClick={() => handleOnClick(tab.key)}
                           >
@@ -194,11 +224,7 @@ export default function CandidateProfile() {
                       ))}
                     </ul>
                     <div className="border-bottom pt-10 pb-10" />
-                    <div className="mt-20 mb-20">
-                      <Link href="#">
-                        <span className="link-red">Delete Account</span>
-                      </Link>
-                    </div>
+                    
                   </div>
                 </div>
                 <div className="col-lg-9 col-md-8 col-sm-12 col-12 mb-50">
@@ -219,7 +245,15 @@ export default function CandidateProfile() {
                             Saved Jobs
                           </h3> */}
                           <SavedJobsList />
-                         
+                        </div>
+                      )}
+                      {/* Recommended Jobs */}
+                      {activeTab === "recommended" && (
+                        <div className="tab-pane fade show active">
+                          {/* <h3 className="mt-0 color-brand-1 mb-50">
+                            Saved Jobs
+                          </h3> */}
+                          <RecommendedJobsList />
                         </div>
                       )}
                     </div>

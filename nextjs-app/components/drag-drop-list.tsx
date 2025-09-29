@@ -20,11 +20,11 @@ import { CSS } from "@dnd-kit/utilities"
 import { GripVertical } from "lucide-react"
 import { Card } from "@/components/ui/card"
 
-interface DragDropListProps {
-  items: any[]
+interface DragDropListProps<T> {
+  items: T[]
   onReorder: (oldIndex: number, newIndex: number) => void
-  renderItem: (item: any, index: number, isDragging?: boolean) => React.ReactNode
-  keyExtractor: (item: any) => string
+  renderItem: (item: T, index: number, isDragging?: boolean) => React.ReactNode
+  keyExtractor: (item: T) => string
 }
 
 interface SortableItemProps {
@@ -60,7 +60,7 @@ function SortableItem({ id, children, isDragOverlay = false }: SortableItemProps
   )
 }
 
-export function DragDropList({ items, onReorder, renderItem, keyExtractor }: DragDropListProps) {
+export function DragDropList<T>({ items, onReorder, renderItem, keyExtractor }: DragDropListProps<T>) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const sensors = useSensors(
     useSensor(PointerSensor),

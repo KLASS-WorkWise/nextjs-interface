@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable */
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -29,7 +28,7 @@ export function CVDashboard() {
     try {
       const apiResumes = await resumeApi.getMyResume();
       const mappedResumes = Array.isArray(apiResumes)
-        ? apiResumes.map((r: any) => mapApiToForm(r))
+        ? apiResumes.map((r) => mapApiToForm(r))
         : apiResumes
         ? [mapApiToForm(apiResumes)]
         : [];
@@ -53,7 +52,7 @@ export function CVDashboard() {
       }
     } catch (error) {
       console.error("Failed to load resumes:", error);
-      toast({ description: "Lỗi: Không thể tải danh sách CV" });
+      toast({ description: "Error: Unable to load CV list" });
       setCurrentView("empty");
     }
   };
@@ -81,7 +80,7 @@ export function CVDashboard() {
             setCurrentView("builder");
             const getDataResumeById = await resumeApi.getResumeById(idParam);
             const mappedResume = mapApiToForm(getDataResumeById);
-            setEditingResume(mappedResume as any);
+            setEditingResume(mappedResume);
           } catch (error) {
             console.error("Failed to load resume (deeplink edit):", error);
             toast({ description: "Lỗi: Không thể tải CV" });
@@ -115,7 +114,7 @@ export function CVDashboard() {
       setCurrentView("builder");
     } catch (error) {
       console.error("Failed to load resume:", error);
-      toast({ description: "Lỗi: Không thể tải CV" });
+      toast({ description: "Error: Unable to load CV" });
     }
   };
 
@@ -133,7 +132,7 @@ export function CVDashboard() {
       await loadResumes();
     } catch (error) {
       console.error("Failed to delete resume:", error);
-      toast({ description: "Lỗi: Không thể xóa CV" });
+      toast({ description: "Error: Unable to delete CV" });
     }
   };
 
@@ -190,7 +189,7 @@ export function CVDashboard() {
       );
     }
     // Nếu đang edit, chỉ render khi đã có dữ liệu
-    if (!editingResume) return <div>Đang tải dữ liệu...</div>;
+    if (!editingResume) return <div>Loading data...</div>;
     return (
       <ResumeUpdate
         onBack={handleBackToList}
@@ -247,12 +246,12 @@ export function CVDashboard() {
                 }}
                 className="btn btn-secondary"
               >
-                Đóng
+                Close
               </button>
               {/* Hiển thị ViewCv ở chế độ chỉ xem */}
               <ViewCv
                 data={previewResume}
-                template={(previewResume as any)?.template || "modern"}
+                template={(previewResume)?.template || "modern"}
                 isCompact={false}
               />
             </div>

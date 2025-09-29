@@ -1,123 +1,52 @@
-/* eslint-disable @next/next/no-img-element */
 import React from "react";
-import Link from "next/link";
-
 const Footer = () => {
   return (
     <footer className="footer mt-50">
       <div className="container">
-        <div className="row">
-          <div className="footer-col-1 col-md-3 col-sm-12">
+        <div className="row align-items-center">
+          <div
+            className="col-lg-8 col-md-8 col-sm-12"
+            style={{ color: "#5e6d55" }}
+          >
+            <h5 style={{ fontWeight: "bold", color: "#05264e" }}>
+              JobBox Vietnam Joint Stock Company
+            </h5>
+            <p className="font-xs color-text-paragraph-2 mt-10">
+              <i className="fi-rr-document" style={{ marginRight: "8px" }}></i>
+              Business registration certificate number: 0107307178 issued on
+              January 21, 2016, 17th change on April 3, 2025 at Hanoi City
+              Department of Finance
+            </p>
+            <p className="font-xs color-text-paragraph-2 mt-10">
+              <i className="fi-rr-document" style={{ marginRight: "8px" }}></i>
+              Employment service license number: 44/2024/SLDTBXH-GP
+            </p>
+            <p className="font-xs color-text-paragraph-2 mt-10">
+              <i className="fi-rr-marker" style={{ marginRight: "8px" }}></i>
+              HN Headquarter: FS Building - GoldSeason No. 47 Nguyen Tuan, Thanh
+              Xuan Ward, Hanoi City, Vietnam
+            </p>
+            <p className="font-xs color-text-paragraph-2 mt-10">
+              <i className="fi-rr-marker" style={{ marginRight: "8px" }}></i>
+              HCM Branch: Dali Building, 24C Phan Dang Luu, Go Vap District, Ho
+              Chi Minh City
+            </p>
+          </div>
+          {/* <div className="col-lg-4 col-md-4 col-sm-12 text-md-end">
             <Link href="/">
               <span>
                 <img alt="jobBox" src="/assets/imgs/template/jobhub-logo.svg" />
               </span>
             </Link>
-            <div className="mt-20 mb-20 font-xs color-text-paragraph-2">JobBox is the heart of the design community and the best resource to discover and connect with designers and jobs worldwide.</div>
-            <div className="footer-social">
-              <a className="icon-socials icon-facebook" href="#" />
-              <a className="icon-socials icon-twitter" href="#" />
-              <a className="icon-socials icon-linkedin" href="#" />
-            </div>
-          </div>
-          <div className="footer-col-2 col-md-2 col-xs-6">
-            <h6 className="mb-20">Resources</h6>
-            <ul className="menu-footer">
-              <li>
-                <a href="#">About us</a>
-              </li>
-              <li>
-                <a href="#">Our Team</a>
-              </li>
-              <li>
-                <a href="#">Products</a>
-              </li>
-              <li>
-                <a href="#">Contact</a>
-              </li>
-            </ul>
-          </div>
-          <div className="footer-col-3 col-md-2 col-xs-6">
-            <h6 className="mb-20">Community</h6>
-            <ul className="menu-footer">
-              <li>
-                <a href="#">Feature</a>
-              </li>
-              <li>
-                <a href="#">Pricing</a>
-              </li>
-              <li>
-                <a href="#">Credit</a>
-              </li>
-              <li>
-                <a href="#">FAQ</a>
-              </li>
-            </ul>
-          </div>
-          <div className="footer-col-4 col-md-2 col-xs-6">
-            <h6 className="mb-20">Quick links</h6>
-            <ul className="menu-footer">
-              <li>
-                <a href="#">iOS</a>
-              </li>
-              <li>
-                <a href="#">Android</a>
-              </li>
-              <li>
-                <a href="#">Microsoft</a>
-              </li>
-              <li>
-                <a href="#">Desktop</a>
-              </li>
-            </ul>
-          </div>
-          <div className="footer-col-5 col-md-2 col-xs-6">
-            <h6 className="mb-20">More</h6>
-            <ul className="menu-footer">
-              <li>
-                <a href="#">Privacy</a>
-              </li>
-              <li>
-                <a href="#">Help</a>
-              </li>
-              <li>
-                <a href="#">Terms</a>
-              </li>
-              <li>
-                <a href="#">FAQ</a>
-              </li>
-            </ul>
-          </div>
-          <div className="footer-col-6 col-md-3 col-sm-12">
-            <h6 className="mb-20">Download App</h6>
-            <p className="color-text-paragraph-2 font-xs">Download our Apps and get extra 15% Discount on your first Order…!</p>
-            <div className="mt-15">
-              <a className="mr-5" href="#">
-                <img src="/assets/imgs/template/icons/app-store.png" alt="joxBox" />
-              </a>
-              <a href="#">
-                <img src="/assets/imgs/template/icons/android.png" alt="joxBox" />
-              </a>
-            </div>
-          </div>
+          </div> */}
         </div>
         <div className="footer-bottom mt-50">
           <div className="row">
-            <div className="col-md-6">
-              <span className="font-xs color-text-paragraph">Copyright © 2022. JobBox all right reserved</span>
-            </div>
-            <div className="col-md-6 text-md-end text-start">
-              <div className="footer-social">
-                <a className="font-xs color-text-paragraph" href="#">
-                  Privacy Policy
-                </a>
-                <a className="font-xs color-text-paragraph mr-30 ml-30" href="#">
-                  Terms &amp; Conditions
-                </a>
-                <a className="font-xs color-text-paragraph" href="#">
-                  Security
-                </a>
-              </div>
+            <div className="col-md-12">
+              <span className="font-xs color-text-paragraph text-center">
+                Copyright © {new Date().getFullYear()}. JobBox all right
+                reserved
+              </span>
             </div>
           </div>
         </div>
