@@ -324,7 +324,7 @@ export default function CompaniesGrid() {
                                 </button>
                               </Link>
                             )}
-                            <div className="box-border mr-10">
+                            {/* <div className="box-border mr-10">
                               <span className="text-sortby">Show:</span>
                               <div className="dropdown dropdown-sort">
                                 <button
@@ -368,7 +368,7 @@ export default function CompaniesGrid() {
                                   </li>
                                 </ul>
                               </div>
-                            </div>
+                            </div> */}
                             <div className="box-border">
                               <span className="text-sortby">Sort by:</span>
                               <div className="dropdown dropdown-sort">
@@ -412,14 +412,14 @@ export default function CompaniesGrid() {
                               </div>
                             </div>
                             <div className="box-view-type">
-                              <Link href="/jobs-list">
+                              {/* <Link href="/jobs-list">
                                 <span className="view-type">
                                   <img
                                     src="assets/imgs/template/icons/icon-list.svg"
                                     alt="jobBox"
                                   />
                                 </span>
-                              </Link>
+                              </Link> */}
                               <Link href="/jobs-grid">
                                 <span className="view-type">
                                   <img

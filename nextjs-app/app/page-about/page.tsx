@@ -227,7 +227,7 @@ export default function About() {
                   <BlogSlider />
                 </div>
                 <div className="text-center">
-                  <Link href="/blog-grid">
+                  <Link href="/blog-grid-2">
                     <span className="btn btn-brand-1 btn-icon-load mt--30 hover-up">
                       Load More Posts
                     </span>

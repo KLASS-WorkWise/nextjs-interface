@@ -76,9 +76,9 @@ ResumePreviewProps) {
       }
       const resumeId = savedResume?.id ?? savedResume?.data?.id;
       toast({
-        title: "Lưu CV thành công!",
+        title: "CV saved successfully!",
         description:
-          "CV của bạn đã được lưu lên server và file PDF đã được upload lên Firebase.",
+          "Your CV has been saved to the server and the PDF file has been uploaded to Firebase.",
       });
       if (onSave) {
         onSave({
@@ -161,7 +161,7 @@ ResumePreviewProps) {
                 size={16}
                 className={isSaving ? "spinner-border spinner-border-sm" : ""}
               />
-              {isSaving ? "Đang lưu..." : "Lưu CV"}
+              {isSaving ? "Saving..." : "Save CV"}
             </button>
           </div>
         )}
