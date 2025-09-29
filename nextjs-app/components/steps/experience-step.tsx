@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable */
+
 import { useFormContext, useFieldArray } from "react-hook-form";
 import type { ResumeData } from "../resume-builder";
 import { Plus, Trash2, Briefcase } from "lucide-react";
@@ -57,12 +57,20 @@ export function ExperienceStep() {
     });
   };
 
+  interface ExperienceField {
+    id: string;
+    company: string;
+    position: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+  }
   const handleReorder = (oldIndex: number, newIndex: number) => {
     move(oldIndex, newIndex);
   };
 
   const renderExperienceItem = (
-    field: any,
+    field: ExperienceField,
     index: number,
     isDragging?: boolean
   ) => {
@@ -72,7 +80,7 @@ export function ExperienceStep() {
         className={`card mb-4 ${isDragging ? "shadow-lg" : ""}`}
       >
         <div className="card-header d-flex justify-content-between align-items-center">
-          <h6 className="mb-0">Kinh nghiệm {index + 1}</h6>
+          <h6 className="mb-0">Experience {index + 1}</h6>
           <button
             type="button"
             className="btn btn-link text-danger p-0"
@@ -85,27 +93,34 @@ export function ExperienceStep() {
           <div className="row g-3">
             <div className="col-md-6">
               <label className="form-label" htmlFor={`company-${index}`}>
-                Công ty *
+                Company *
               </label>
               <input
                 id={`company-${index}`}
                 className="form-control"
-                {...register(`experience.${index}.company`, { required: true })}
-                placeholder="Tên công ty"
+                {...register(`experience.${index}.company`, {
+                  required: "Please enter company name",
+                })}
+                placeholder="Company name"
               />
+              {errors.experience?.[index]?.company && (
+                <div className="text-danger small">
+                  {errors.experience[index].company.message}
+                </div>
+              )}
             </div>
 
             <div className="col-md-6">
               <label className="form-label" htmlFor={`position-${index}`}>
-                Vị trí *
+                Position *
               </label>
               <select
                 id={`position-${index}`}
                 className="form-select"
                 {...register(`experience.${index}.position`, {
-                  required: true,
+                  required: "Please select a job position",
                 })}
-                value={watch(`experience.${index}.position`) || ""}
+                value={watch(`experience.${index}.position`)}
                 onChange={(e) =>
                   setValue(`experience.${index}.position`, e.target.value)
                 }
@@ -119,7 +134,7 @@ export function ExperienceStep() {
                 }}
               >
                 <option value="" disabled>
-                  Chọn vị trí công việc
+                  Select a job position
                 </option>
                 {positionOptions.map((position) => (
                   <option key={position} value={position}>
@@ -127,27 +142,32 @@ export function ExperienceStep() {
                   </option>
                 ))}
               </select>
+              {errors.experience?.[index]?.position && (
+                <div className="text-danger small">
+                  {errors.experience[index].position.message}
+                </div>
+              )}
             </div>
 
             {/* Ngày bắt đầu & Ngày kết thúc cùng 1 hàng */}
             <div className="col-md-6">
               <label className="form-label" htmlFor={`startDate-${index}`}>
-                Ngày bắt đầu *
+                Start Date *
               </label>
               <input
                 type="date"
                 id={`startDate-${index}`}
                 className="form-control"
                 {...register(`experience.${index}.startDate`, {
-                  required: true,
+                  required: "Please enter start date",
                   validate: (startDate) => {
                     const endDate = watch(`experience.${index}.endDate`);
                     const today = new Date().toISOString().slice(0, 10);
                     if (endDate && startDate && startDate > endDate) {
-                      return "Ngày bắt đầu không được lớn hơn ngày kết thúc";
+                      return "Start date cannot be greater than end date";
                     }
                     if (startDate && startDate > today) {
-                      return "Ngày bắt đầu không được lớn hơn ngày hiện tại";
+                      return "Start date cannot be greater than today";
                     }
                     return true;
                   },
@@ -162,22 +182,23 @@ export function ExperienceStep() {
 
             <div className="col-md-6">
               <label className="form-label" htmlFor={`endDate-${index}`}>
-                Ngày kết thúc
+                End Date
               </label>
               <input
                 type="date"
                 id={`endDate-${index}`}
                 className="form-control"
                 {...register(`experience.${index}.endDate`, {
+                  required: "Please enter end date",
                   validate: (endDate) => {
                     if (!endDate) return true;
                     const startDate = watch(`experience.${index}.startDate`);
                     const today = new Date().toISOString().slice(0, 10);
                     if (startDate && endDate < startDate) {
-                      return "Ngày kết thúc không được nhỏ hơn ngày bắt đầu";
+                      return "End date cannot be less than start date";
                     }
                     if (endDate > today) {
-                      return "Ngày kết thúc không được lớn hơn hiện tại";
+                      setValue(`experience.${index}.endDate`, today);
                     }
                     return true;
                   },
@@ -192,7 +213,7 @@ export function ExperienceStep() {
 
             <div className="col-12">
               <label className="form-label" htmlFor={`description-${index}`}>
-                Mô tả công việc
+                Job Description
               </label>
               <textarea
                 id={`description-${index}`}
@@ -200,7 +221,7 @@ export function ExperienceStep() {
                 style={{ minHeight: 240 }}
                 rows={8}
                 {...register(`experience.${index}.description`)}
-                placeholder="Mô tả chi tiết về công việc, thành tích đạt được..."
+                placeholder="Detailed description of work, achievements..."
               />
             </div>
           </div>
@@ -215,7 +236,7 @@ export function ExperienceStep() {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="d-flex align-items-center gap-2">
           <Briefcase size={20} />
-          <h5 className="mb-0">Kinh nghiệm làm việc</h5>
+          <h5 className="mb-0">Work Experience</h5>
         </div>
         <button
           type="button"
@@ -223,7 +244,7 @@ export function ExperienceStep() {
           className="btn btn-primary btn-sm d-inline-flex align-items-center"
         >
           <Plus size={16} className="me-1" />
-          <span>Thêm kinh nghiệm</span>
+          <span>Add Experience</span>
         </button>
       </div>
 
@@ -237,10 +258,7 @@ export function ExperienceStep() {
             >
               <Briefcase size={40} />
             </div>
-            <p>
-              Chưa có kinh nghiệm làm việc nào. Hãy thêm kinh nghiệm đầu tiên
-              của bạn!
-            </p>
+            <p>No work experience yet. Add your first experience!</p>
           </div>
         </div>
       )}
@@ -249,7 +267,7 @@ export function ExperienceStep() {
       {fields.length > 0 && (
         <div>
           <div className="mb-3 p-3 rounded border border-dashed text-center text-muted small">
-            💡 Kéo và thả để sắp xếp lại thứ tự kinh nghiệm
+            💡 Drag and drop to rearrange the order of experiences
           </div>
 
           <DragDropList

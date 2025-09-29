@@ -12,7 +12,7 @@
 }
 
 /* ---------------- ZALO ---------------- */
-.zalo {
+/* .zalo {
     position: relative;
     width: 70px;
     height: 70px;
@@ -28,16 +28,16 @@
     z-index: 2;
     border-radius: 50%;
     animation: rung 1s infinite;
-}
+} */
 
-.nen1 {
+/* .nen1 {
     position: absolute;
     width: 58px;
     height: 58px;
     background-color: #87CEEB;
     border-radius: 50%;
     /* z-index: 1; */
-}
+/* } */ */
 
 /* .vien2 {
     position: absolute;

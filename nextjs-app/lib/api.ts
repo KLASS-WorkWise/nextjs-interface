@@ -30,6 +30,7 @@ export interface ApiResumeData {
   phone: string;
   profilePicture?: string;
   summary: string;
+  resumeLink?: string;
   jobTitle: string;
   template: string;
   educations: Array<{
@@ -148,6 +149,7 @@ export function mapApiToForm(apiData: ApiResumeData & { id?: number }): any {
     })),
     skills: apiData.skillsResumes,
     template: apiData.template,
+    resumeLink: apiData.resumeLink,
   };
 }
 
@@ -173,6 +175,11 @@ export const resumeApi = {
     });
     return response.data;
   },
+
+  getResumeByLink: async (resumeLink: string): Promise<ApiResumeData> => {
+  const response = await api.get(`/api/resumes/public/${resumeLink}`);
+  return response.data;
+},
 
   saveMyResume: async (data: ApiResumeData): Promise<any> => {
     const session = await getSession();
@@ -205,4 +212,45 @@ export const resumeApi = {
       },
     });
   },
+
+  async uploadPDF(file: File, userId: string, resumeId?: string): Promise<{
+    success: boolean;
+    resumeLink: string;
+    filePath: string;
+    fileName: string;
+    fileSize: number;
+  }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('userId', userId);
+    if (resumeId) {
+      formData.append('resumeId', resumeId);
+    }
+
+    try {
+      const response = await axios.post('/api/resume/upload-pdf', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      return response.data;
+    } catch (error: any) {
+      console.error('PDF Upload Error:', error);
+      throw error;
+    }
+  },
+
+  async deletePDF(filePath: string): Promise<{
+    success: boolean;
+    message: string;
+  }> {
+    try {
+      const response = await axios.delete(`/api/resume/upload-pdf?filePath=${encodeURIComponent(filePath)}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('PDF Delete Error:', error);
+      throw error;
+    }
+  }
 };

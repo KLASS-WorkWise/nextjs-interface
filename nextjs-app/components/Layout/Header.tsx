@@ -20,6 +20,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
   const { data: session } = useSession();
   const [avatarSrc, setAvatarSrc] = useState<string>("");
   const [avatarReady, setAvatarReady] = useState<boolean>(false);
+  const [balance, setBalance] = useState<string>("");
   const role = session?.user?.roles;
 
   const handleLogout = async () => {
@@ -38,7 +39,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
 
   // Load avatar from backend when session changes
   useEffect(() => {
-    const loadAvatar = async () => {
+    const loadUserInfo = async () => {
       const userId = (session as any)?.user?.id;
       const token = (session as any)?.accessToken;
       if (!userId) return;
@@ -53,12 +54,14 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
           "/assets/imgs/avatar/logoLogin.jpg";
         setAvatarSrc(url);
         setAvatarReady(true);
+        setBalance(user?.balance || "0");
       } catch {
         setAvatarSrc("/assets/imgs/avatar/logoLogin.jpg");
         setAvatarReady(true);
+        setBalance("0");
       }
     };
-    loadAvatar();
+    loadUserInfo();
   }, [session]);
 
   useEffect(() => {
@@ -84,7 +87,8 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
           url ? `${url}?t=${Date.now()}` : "/assets/imgs/avatar/logoLogin.jpg"
         );
         setAvatarReady(true);
-      } catch {}
+        setBalance(user?.balance || "0");
+      } catch { }
     };
     window.addEventListener("avatar-updated", handleCustom as any);
     return () => {
@@ -168,7 +172,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                         </Link>
                         <ul className="sub-menu">
                           {/* <li><Link href="/page-resume"><span>Create Cv</span></Link></li> */}
-                          {/* <li>
+                      {/* <li>
                             <Link href="/candidate-profile">
                               <span>Candidate Profile</span>
                             </Link>
@@ -227,12 +231,12 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                               <span>Create Cv</span>
                             </Link>
                           </li> */}
-                          {/* <li>
+                        {/* <li>
                             <Link href="/candidate-profile">
                               <span>Candidate Profile</span>
                             </Link>
                           </li>
-                        </ul> */} 
+                        </ul> */}
                       </li>
 
                       <li>
@@ -276,11 +280,11 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                         </Link>
                       </li>
 
-                      <li>
+                      {/* <li>
                         <Link href="/candidates-grid">
                           <span>Manager Candidates</span>
                         </Link>
-                      </li>
+                      </li> */}
 
                       <li>
                         <Link href="/page-about">
@@ -416,7 +420,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                       >
                         <div style={{ lineHeight: 1.2 }}>
                           <div style={{ fontSize: 13, color: "#888" }}>
-                            Bạn là nhà tuyển dụng?
+                            Are you an employer?
                           </div>
                           <div
                             style={{
@@ -425,7 +429,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                               color: "blue",
                             }}
                           >
-                            Đăng tuyển ngay »
+                            Post a job now »
                           </div>
                         </div>
                       </Link>
@@ -435,13 +439,47 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                     {session?.user && role?.includes("Employers") && (
                       <div
                         style={{
-                          fontSize: 15,
-                          fontWeight: 600,
-                          color: "#333",
-                          padding: "4px 8px",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minWidth: 180,
+                          padding: "8px 16px",
+                          background: "rgba(245,248,255,0.7)",
+                          borderRadius: 16,
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                         }}
                       >
-                        Hi, {session.user.username}
+                        <span
+                          style={{
+                            fontSize: 16,
+                            fontWeight: 700,
+                            color: "#1976d2",
+                            marginBottom: 2,
+                          }}
+                        >
+                          Hi, {session.user.username}
+                        </span>
+                        {/* <span style={{
+                          fontSize: 11,
+                          color: "#888",
+                          fontWeight: 500,
+                          marginBottom: 2,
+                          marginRight: 6,
+                          display: "inline"
+                        }}>
+                          Balance:
+                        </span> */}
+                        <span style={{
+                          fontSize: 11,
+                          color: "#43a047",
+                          fontWeight: 600,
+                          letterSpacing: 1,
+                          display: "inline"
+                        }}>
+                          {Number(balance).toLocaleString("vi-VN")} VNĐ
+                        </span>
+
                       </div>
                     )}
 

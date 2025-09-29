@@ -3,8 +3,9 @@
 
 import { useApplicants } from "../hooks/useApplicants";
 // import ApplicantDetailModal from "@/features/applicants/components/ApplicantDetailModal";
-import Link from "next/link";
+// import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import styles from "../../../styles/ApplicantsTable.module.css";
 
 export default function ApplicantsTable() {
   const router = useRouter();
@@ -39,89 +40,108 @@ export default function ApplicantsTable() {
   };
 
   return (
-    <div className="row display-list">
-      {applications.map((app) => (
-        <div key={app.id} className="col-xl-6 col-lg-6 ">
-          <div className="card-grid-2 hover-up">
-            <span className="flash" />
-            <div className="row">
-              <div className="col-lg-6 col-md-6 col-sm-12">
-                <div className="card-grid-2-image-left">
-                  <div className="image-box">
-                    <img src="assets/imgs/brands/brand-5.png" alt="jobBox" />
-                  </div>
-                  <div className="right-info">
-                    <Link href="#">
-                      <span className="name-job">{app.companyName}</span>
-                    </Link>
-                    <span className="location-small">
-                      {app.location_company}
-                    </span>
-                  </div>
+    <>
+      <div className={styles.wrapper}>
+        {applications.map((app) => (
+          <div key={app.id} className={styles.card}>
+            <div className={styles.header}>
+              <div className={styles.company}>
+                {/* <div className={styles.logo}>
+                  {app.logoUrl && <img src={app.logoUrl} alt="logo" />}
+                </div> */}
+                {/* <div className={styles.logo}>
+                  {app.logoUrl ? (
+                    <Image
+                      src={app.logoUrl}
+                      alt="logo"
+                      width={58}
+                      height={58}
+                      className={styles.logoImg}
+                      
+                      unoptimized // tránh lỗi domain khi logoUrl là link ngoài
+                    />
+                  ) : (
+                    <Image
+                      src="/default-logo.png"
+                      alt="default logo"
+                      width={58}
+                      height={58}
+                      className={styles.logoImg}
+                    />
+                  )}
+                </div> */}
+                <div
+                  className="image-box"
+                  style={{
+                    width: 58,
+                    height: 58,
+                    borderRadius: 8,
+                    objectFit: "cover",
+                  }}
+                >
+                  <img
+                    src={
+                      app?.logoUrl ||
+                      "/assets/imgs/brands/brand-1.png"
+                    }    
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "100%",
+                      borderRadius: 8,
+                      objectFit: "contain",
+                      display: "block",
+                      margin: "auto",
+                    }}
+                  />
+                </div>
+                <div className={styles.info}>
+                  <span className={styles.companyName}>{app.companyName}</span>
+                  <span className={styles.location}>
+                    {app.location_company}
+                  </span>
                 </div>
               </div>
-              <div className="col-lg-6 text-start text-md-end pr-60 col-md-6 col-sm-12">
-                <div className="pl-15 mb-15 mt-30">
-                  <Link href="#">
-                    <span className="btn btn-grey-small mr-5">Adobe XD</span>
-                  </Link>
-                  <Link href="#">
-                    <span className="btn btn-grey-small mr-5">Figma</span>
-                  </Link>
-                </div>
-              </div>
+              <span className={styles.status}>{app.applicationStatus}</span>
             </div>
-            <div className="card-block-info">
-              <h4>
-                <Link href="/job-details">
-                  <span>{app.jobTitle}</span>
-                </Link>
-              </h4>
-              <div className="mt-5">
-                <span className="card-briefcase">Fulltime</span>
-                <span className="card-time">
-                  <span>4</span>
-                  <span> mins ago</span>
-                </span>
+
+            <div className={styles.body}>
+              <h4>{app.jobTitle}</h4>
+              <div className={styles.meta}>
+                <span>{app.appliedAt}</span>
+                <span>• mins ago</span>
               </div>
-              <p className="font-sm color-text-paragraph mt-10">
+              <p className={styles.description}>
                 {app.description_company?.substring(0, 100)}
               </p>
-              <div className="card-2-bottom mt-20">
-                <div className="row">
-                  <div className="col-lg-7 col-7">
-                    <span className="card-text-price">$500</span>
-                    <span className="text-muted">/Hour</span>
-                  </div>
-                  <div className="col-lg-5 col-5 d-flex justify-content-end gap-2">
-                    <button
-                      className="btn btn-danger"
-                      data-bs-toggle="modal"
-                      data-bs-target="#ModalApplyJobForm"
-                      onClick={() => handleDeleteApplicant(app.id)}
-                    >
-                      Delete
-                    </button>
+            </div>
 
-                    <button
-                      className="btn btn-apply-now"
-                      onClick={() => router.push(`/applicants/${app.id}`)}
-                    >
-                      Xem chi tiết
-                    </button>
-                  </div>
-                </div>
+            <div className={styles.footer}>
+              <span className={styles.salary}>{app.salaryRange}</span>
+              <div className={styles.actions}>
+                <button
+                  className={`${styles.btn} ${styles.delete}`}
+                  onClick={() => handleDeleteApplicant(app.id)}
+                >
+                  Delete
+                </button>
+                <button
+                  className={`${styles.btn} ${styles.view}`}
+                  onClick={() => router.push(`/applicants/${app.id}`)}
+                >
+                  View status
+                </button>
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       {/* Pagination */}
-      <div className="pagination">
+      <div className={styles.pagination}>
         <button
           onClick={() => setPage(currentPage - 1)}
           disabled={currentPage === 1}
+          className={styles.pageBtn}
         >
           Prev
         </button>
@@ -129,7 +149,9 @@ export default function ApplicantsTable() {
         {[...Array(totalPages)].map((_, idx) => (
           <button
             key={idx}
-            className={currentPage === idx + 1 ? "active" : ""}
+            className={`${styles.pageBtn} ${
+              currentPage === idx + 1 ? styles.active : ""
+            }`}
             onClick={() => setPage(idx + 1)}
           >
             {idx + 1}
@@ -139,17 +161,11 @@ export default function ApplicantsTable() {
         <button
           onClick={() => setPage(currentPage + 1)}
           disabled={currentPage === totalPages}
+          className={styles.pageBtn}
         >
           Next
         </button>
       </div>
-
-      {/* {selectedApplicantId && (
-        <ApplicantDetailModal
-          applicantId={selectedApplicantId}
-          onClose={() => setSelectedApplicantId(null)}
-        />
-      )} */}
-    </div>
+    </>
   );
 }

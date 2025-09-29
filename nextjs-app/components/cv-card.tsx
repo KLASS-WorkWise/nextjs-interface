@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable */
 import type { ResumeData } from "./resume-builder";
 
 import { Check, Eye } from "lucide-react";
@@ -18,6 +17,7 @@ interface CVCardProps {
 
 export function CVCard({ resume, onEdit, onDelete, onPreview }: CVCardProps) {
   const [download, setDownload] = useState(false);
+  console.log("Resume in CVCard:", resume);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("vi-VN", {
@@ -30,7 +30,7 @@ export function CVCard({ resume, onEdit, onDelete, onPreview }: CVCardProps) {
   // Đánh dấu hàm là async
   const handleDownload = async () => {
     try {
-      await exportResumeToPDF(resume, (resume as any)?.template || "modern");
+      await exportResumeToPDF(resume, (resume)?.template || "modern");
       setDownload(true);
       setTimeout(() => setDownload(false), 2000);
     } catch {
@@ -44,13 +44,13 @@ export function CVCard({ resume, onEdit, onDelete, onPreview }: CVCardProps) {
         <div className={styles.previewWrapper}>
           <ResumeCardItem
             data={resume}
-            template={(resume as any)?.template || "modern"}
+            template={(resume)?.template || "modern"}
             // isCompact
           />
         </div>
         <div className={styles.overlay}>
           <div className={styles.actions}>
-            {/* xem cv */}
+            {/* xem cv  */}
             <button
               className={styles.editButton}
               onClick={onPreview}

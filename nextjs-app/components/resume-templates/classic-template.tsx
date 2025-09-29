@@ -94,7 +94,7 @@ export function ClassicTemplate({
         {/* Thông tin cá nhân */}
         <div className={styles.classicResumeSection}>
           <div className={styles.classicResumeSectionTitle}>
-            Thông tin cá nhân
+            Personal information
           </div>
           <ul className={styles.classicResumeInfoList}>
             {data.personalInfo.phone && (
@@ -177,7 +177,7 @@ export function ClassicTemplate({
       {/* Main phải */}
       <main className={styles.classicResumeMain}>
         <div className={styles.classicResumeName}>
-          {data.personalInfo.fullName || "Họ và tên"}
+          {data.personalInfo.fullName || "Full name"}
         </div>
         {/* {data.personalInfo.jobTitle && (
           <div className={styles.classicResumeJobTitle}>
@@ -193,7 +193,7 @@ export function ClassicTemplate({
         {data.experience.length > 0 && (
           <div className={styles.classicResumeSection}>
             <div className={styles.classicResumeSectionTitle}>
-              Kinh nghiệm làm việc
+              Work Experience
             </div>
             {data.experience.map((exp, index) => (
               <div

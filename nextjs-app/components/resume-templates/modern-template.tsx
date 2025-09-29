@@ -25,6 +25,7 @@ export function ModernTemplate({
     fontOptions.find((f) => f.value === customization.font)?.family ||
     '"Inter", Arial, sans-serif';
 
+  const today = new Date().toISOString().slice(0, 10);
   const getSizeStyles = (type: "text" | "heading" | "title" | "name") => {
     const sizeMap = {
       small: {
@@ -293,7 +294,7 @@ export function ModernTemplate({
                 fontFamily: fontFamily,
               }}
             >
-              MÔ TẢ BẢN THÂN
+              DESCRIBE YOURSELF
             </h2>
             <p
               style={{
@@ -319,7 +320,7 @@ export function ModernTemplate({
                 fontFamily: fontFamily,
               }}
             >
-              KINH NGHIỆM LÀM VIỆC
+              WORK EXPERIENCE
             </h2>
             <div
               style={{
@@ -359,7 +360,10 @@ export function ModernTemplate({
                         fontFamily: fontFamily,
                       }}
                     >
-                      {exp.startDate} - {exp.endDate ? "Hiện tại" : exp.endDate}
+                      {exp.startDate} -{" "}
+                      {exp.endDate && exp.endDate < today
+                        ? exp.endDate
+                        : "Hiện tại"}
                     </p>
                   </div>
                   {exp.description && (
@@ -388,7 +392,7 @@ export function ModernTemplate({
                 fontFamily: fontFamily,
               }}
             >
-              HỌC VẤN
+              EDUCATION
             </h2>
             <div
               style={{
@@ -428,7 +432,11 @@ export function ModernTemplate({
                         fontFamily: fontFamily,
                       }}
                     >
-                      {edu.startDate} - {edu.endDate}
+                      {/* {edu.startDate} - {edu.endDate} */}
+                      {edu.startDate} -{" "}
+                      {edu.endDate && edu.endDate < today
+                        ? edu.endDate
+                        : "Present"}
                     </p>
                   </div>
                   {edu.gpa && (
@@ -460,7 +468,7 @@ export function ModernTemplate({
                 fontFamily: fontFamily,
               }}
             >
-              KỸ NĂNG
+              SKILL
             </h2>
             <div
               style={{
@@ -516,7 +524,7 @@ export function ModernTemplate({
                 fontFamily: fontFamily,
               }}
             >
-              HOẠT ĐỘNG
+              ACTIVITIES
             </h2>
             <div
               style={{
@@ -556,7 +564,10 @@ export function ModernTemplate({
                         fontFamily: fontFamily,
                       }}
                     >
-                      {activity.startDate} - {activity.endDate || "Hiện tại"}
+                      {activity.startDate} -{" "}
+                      {activity.endDate && activity.endDate < today
+                        ? activity.endDate
+                        : "Hiện tại"}
                     </p>
                   </div>
                   {activity.description && (
@@ -589,7 +600,7 @@ export function ModernTemplate({
                 fontFamily: fontFamily,
               }}
             >
-              GIẢI THƯỞNG & CHỨNG CHỈ
+              AWARDS & CERTIFICATES
             </h2>
             <div
               style={{

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
@@ -129,14 +130,14 @@ export function TemplateSelector({
                     marginBottom: "0.5rem",
                     overflow: "hidden",
                     aspectRatio: "3 / 4",
+                    position: "relative",
                   }}
                 >
-                  <img
+                  <Image
                     src={template.preview || "/placeholder.svg"}
                     alt={`${template.name} template preview`}
+                    fill
                     style={{
-                      width: "100%",
-                      height: "100%",
                       objectFit: "cover",
                     }}
                   />

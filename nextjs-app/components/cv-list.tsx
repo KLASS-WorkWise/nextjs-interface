@@ -1,8 +1,7 @@
 "use client";
-/* eslint-disable */
+
 import { CVCard } from "@/components/cv-card";
-import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+// import { useRouter } from "next/navigation";
 import type { ResumeData } from "@/components/resume-builder";
 
 interface CVListProps {
@@ -15,12 +14,12 @@ interface CVListProps {
 
 export function CVList({
   resumes,
-  onCreateNew,
+  // onCreateNew,
   onEditCV,
   onDeleteCV,
   onPreviewCV,
 }: CVListProps) {
-  const router = useRouter();
+  // const router = useRouter();
   return (
     <div className="pb-4">
       <div className="container">
@@ -64,7 +63,7 @@ export function CVList({
               return null;
             })
           ) : (
-            <div className="text-center text-muted py-5">Chưa có CV nào</div>
+            <div className="text-center text-muted py-5">No CV yet</div>
           )}
         </div>
       </div>

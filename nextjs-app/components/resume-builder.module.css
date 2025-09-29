@@ -187,7 +187,7 @@ Resume Builder Component Styles .container {
 }
 
 .previewContainer {
-  /* Cho phép cuộn trong khung xem trước ở sidebar */
+  /* Cho phép cuộn trong khung Preview ở sidebar */
   background-color: white;
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;

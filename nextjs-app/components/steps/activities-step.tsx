@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable */
 import { useFormContext, useFieldArray } from "react-hook-form";
 import { Plus, Trash2, Users } from "lucide-react";
 import { DragDropList } from "../drag-drop-list";
@@ -8,6 +7,7 @@ import type { ResumeData } from "../resume-builder";
 export function ActivitiesStep() {
   const {
     register,
+    setValue,
     control,
     watch,
     formState: { errors },
@@ -28,12 +28,21 @@ export function ActivitiesStep() {
     });
   };
 
+  interface ActivityField {
+    id: string;
+    title: string;
+    organization: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+  }
+
   const handleReorder = (oldIndex: number, newIndex: number) => {
     move(oldIndex, newIndex);
   };
 
   const renderActivityItem = (
-    field: any,
+    field: ActivityField,
     index: number,
     isDragging?: boolean
   ) => (
@@ -42,7 +51,7 @@ export function ActivitiesStep() {
       key={field.id}
     >
       <div className="card-header d-flex justify-content-between align-items-center">
-        <h6 className="mb-0">Hoạt động {index + 1}</h6>
+        <h6 className="mb-0">Activities {index + 1}</h6>
         <button
           type="button"
           className="btn btn-outline-danger btn-sm"
@@ -55,30 +64,42 @@ export function ActivitiesStep() {
         <div className="row g-3">
           <div className="col-md-6">
             <label htmlFor={`activityTitle-${index}`} className="form-label">
-              Tên hoạt động *
+              Activity Name *
             </label>
             <input
               type="text"
               id={`activityTitle-${index}`}
               className="form-control"
-              {...register(`activities.${index}.title`, { required: true })}
-              placeholder="Tình nguyện viên, Chủ tịch CLB..."
+              {...register(`activities.${index}.title`, {
+                required: "Please enter the activity name",
+              })}
+              placeholder="Volunteer, Club President..."
             />
+            {errors?.activities?.[index]?.title && (
+              <div className="text-danger small">
+                {errors.activities[index].title.message}
+              </div>
+            )}
           </div>
 
           <div className="col-md-6">
             <label htmlFor={`organization-${index}`} className="form-label">
-              Tổ chức *
+              Organization *
             </label>
             <input
               type="text"
               id={`organization-${index}`}
               className="form-control"
               {...register(`activities.${index}.organization`, {
-                required: true,
+                required: "Please enter the organization name",
               })}
-              placeholder="Tên tổ chức, câu lạc bộ..."
+              placeholder="Organization name, club..."
             />
+            {errors?.activities?.[index]?.organization && (
+              <div className="text-danger small">
+                {errors.activities[index].organization.message}
+              </div>
+            )}
           </div>
 
           <div className="col-md-6">
@@ -86,20 +107,20 @@ export function ActivitiesStep() {
               htmlFor={`activityStartDate-${index}`}
               className="form-label"
             >
-              Ngày bắt đầu *
+              Start Date *
             </label>
             <input
               type="date"
               id={`activityStartDate-${index}`}
               className="form-control"
               {...register(`activities.${index}.startDate`, {
-                required: true,
+                required: "Please select a start date",
                 validate: (startDate) => {
                   const endDate = watch(`activities.${index}.endDate`);
                   const today = new Date().toISOString().slice(0, 10);
-                  if (startDate > today) return "Không quá hiện tại";
+                  if (startDate > today) return "Cannot be in the future";
                   if (endDate && startDate > endDate)
-                    return "Bắt đầu <= kết thúc";
+                    return "Start date must be before end date";
                   return true;
                 },
               })}
@@ -113,17 +134,20 @@ export function ActivitiesStep() {
 
           <div className="col-md-6">
             <label htmlFor={`activityEndDate-${index}`} className="form-label">
-              Ngày kết thúc
+              End Date
             </label>
             <input
               type="date"
               id={`activityEndDate-${index}`}
               className="form-control"
               {...register(`activities.${index}.endDate`, {
+                required: "Please select an end date",
                 validate: (endDate) => {
                   if (!endDate) return true;
                   const today = new Date().toISOString().slice(0, 10);
-                  if (endDate > today) return "Không quá hiện tại";
+                  if (endDate > today) {
+                    setValue(`activities.${index}.endDate`, today);
+                  }
                   return true;
                 },
               })}
@@ -141,14 +165,14 @@ export function ActivitiesStep() {
             htmlFor={`activityDescription-${index}`}
             className="form-label"
           >
-            Mô tả
+            Description
           </label>
           <textarea
             id={`activityDescription-${index}`}
             className="form-control"
             style={{ minHeight: 200 }}
             {...register(`activities.${index}.description`)}
-            placeholder="Mô tả chi tiết về hoạt động và vai trò của bạn..."
+            placeholder="Describe your activity and role..."
             rows={3}
           />
         </div>
@@ -161,14 +185,14 @@ export function ActivitiesStep() {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="d-flex align-items-center gap-2">
           <Users size={20} />
-          <h5 className="mb-0">Hoạt động</h5>
+          <h5 className="mb-0">Activities</h5>
         </div>
         <button
           type="button"
           onClick={addActivity}
           className="btn btn-primary d-flex align-items-center gap-1"
         >
-          <Plus size={16} /> Thêm hoạt động
+          <Plus size={16} /> Add Activity
         </button>
       </div>
 
@@ -182,7 +206,8 @@ export function ActivitiesStep() {
               <Users size={40} className="text-secondary" />
             </div>
             <p className="text-muted">
-              Chưa có hoạt động nào. Hãy thêm các hoạt động ngoại khóa của bạn!
+              No activities have been added yet. Please add your extracurricular
+              activities!
             </p>
           </div>
         </div>
@@ -191,7 +216,7 @@ export function ActivitiesStep() {
       {fields.length > 0 && (
         <div>
           <div className="alert alert-secondary text-center mb-3">
-            💡 Kéo và thả để sắp xếp lại thứ tự hoạt động
+            💡 Drag and drop to reorder activities
           </div>
           <DragDropList
             items={fields}

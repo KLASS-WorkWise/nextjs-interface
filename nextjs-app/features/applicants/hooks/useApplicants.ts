@@ -21,6 +21,7 @@ export const useApplicants = (pageSize: number, page: number) => {
         const apiRes: PaginatedResponse<Applicant> = res.data;
 
         setApplications(apiRes.data ?? []);
+        console.log("apiRes.totalPages", apiRes.data);
         setTotalPages(apiRes.totalPages ?? 1);
       } catch (error) {
         console.error("Error fetching applicants:", error);
@@ -40,7 +41,7 @@ export const useApplicants = (pageSize: number, page: number) => {
       await applicantService.deleteApplicant(id);
       setApplications((prev) => prev.filter((app) => app.id !== id));
 
-      toast.error("Deleted successfully!");
+      toast.success("Deleted successfully!");
       return true;
     } catch (error) {
       console.error("Error deleting applicant:", error);

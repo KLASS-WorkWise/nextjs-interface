@@ -78,7 +78,7 @@ export function PersonalInfoStep() {
                   htmlFor="profile-image"
                   className="btn btn-outline-secondary btn-sm"
                 >
-                  <i className="bi bi-upload me-1"></i> Tải ảnh lên
+                  <i className="bi bi-upload me-1"></i> Upload
                 </label>
                 <input
                   id="profile-image"
@@ -95,13 +95,13 @@ export function PersonalInfoStep() {
                 className="btn btn-sm btn-danger"
                 onClick={handleRemoveImage}
               >
-                Xóa
+                Delete
               </button>
             )}
           </div>
 
           <div className="form-text mt-2">
-            Khuyến nghị: Ảnh vuông, kích thước tối thiểu 200x200px
+            Recommended: Square image, minimum size 200x200px
           </div>
         </div>
       </div>
@@ -110,15 +110,15 @@ export function PersonalInfoStep() {
       <div className="row g-3">
         <div className="col-md-6">
           <label htmlFor="fullName" className="form-label">
-            Họ và tên *
+            Full name *
           </label>
           <input
             id="fullName"
             className="form-control"
             {...register("personalInfo.fullName", {
-              required: "Vui lòng nhập họ tên",
+              required: "Please enter your full name",
             })}
-            placeholder="Nguyễn Văn A"
+            placeholder="Nguyen Van A"
           />
           {errors.personalInfo?.fullName && (
             <div className="text-danger small">
@@ -136,10 +136,10 @@ export function PersonalInfoStep() {
             type="email"
             className="form-control"
             {...register("personalInfo.email", {
-              required: "Vui lòng nhập email",
+              required: "Please enter your email",
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Email không hợp lệ",
+                message: "Invalid email address",
               },
             })}
             placeholder="example@email.com"
@@ -153,13 +153,13 @@ export function PersonalInfoStep() {
 
         <div className="col-md-6">
           <label htmlFor="phone" className="form-label">
-            Số điện thoại *
+            Phone number *
           </label>
           <input
             id="phone"
             className="form-control"
             {...register("personalInfo.phone", {
-              required: "Vui lòng nhập số điện thoại",
+              required: "Please enter your phone number",
             })}
             placeholder="0123456789"
           />
@@ -172,15 +172,15 @@ export function PersonalInfoStep() {
 
         <div className="col-md-6">
           <label htmlFor="jobTitle" className="form-label">
-            Địa chỉ *
+            Address *
           </label>
           <input
             id="jobTitle"
             className="form-control"
             {...register("personalInfo.jobTitle", {
-              required: "Vui lòng nhập địa chỉ",
+              required: "Please enter your address",
             })}
-            placeholder="Vui lòng nhập địa chỉ hiện tại"
+            placeholder="Please enter your current address"
           />
           {errors.personalInfo?.jobTitle && (
             <div className="text-danger small">
@@ -193,18 +193,18 @@ export function PersonalInfoStep() {
       {/* Mô tả */}
       <div>
         <label htmlFor="summary" className="form-label">
-          Mô tả bản thân
+          Describe yourself
         </label>
         <textarea
           id="summary"
           className="form-control"
           style={{ minHeight: 240 }}
           {...register("personalInfo.summary")}
-          placeholder="Mô tả ngắn gọn về bản thân, mục tiêu nghề nghiệp..."
+          placeholder="Brief description of yourself, career goals..."
           rows={8}
         />
         <div className="form-text">
-          Viết 2-3 câu ngắn gọn về kinh nghiệm và mục tiêu của bạn
+          Write 2-3 short sentences about your experience and goals
         </div>
       </div>
 

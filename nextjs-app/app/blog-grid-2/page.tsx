@@ -1,10 +1,45 @@
 /* eslint-disable react/no-unescaped-entities */
-import Link from "next/link";
-import Layout from "@/components/Layout/Layout";
+import Link from "next/link"
+import Layout from "@/components/Layout/Layout"
+import { blogApiServer } from "../../lib/blog/blog-api-server"
+import "./blog-grid.css"
 
-export default function BlogGrid2() {
-  return (
-    <>
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("vi-VN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })
+}
+
+const getReadTime = (content: string) => {
+  const wordsPerMinute = 200
+  const wordCount = content.split(" ").length
+  return Math.ceil(wordCount / wordsPerMinute)
+}
+
+export default async function BlogGrid2() {
+  try {
+    const blogs = await blogApiServer.getAllBlogs()
+    const featuredBlog = blogs.length > 0 ? blogs[0] : null
+
+    if (!blogs || blogs.length === 0) {
+      return (
+        <Layout>
+          <div className="section-box">
+            <div className="container">
+              <div className="text-center">
+                <div className="alert alert-info" role="alert">
+                  Không có bài viết nào để hiển thị.
+                </div>
+              </div>
+            </div>
+          </div>
+        </Layout>
+      )
+    }
+
+    return (
       <Layout>
         <div>
           <section className="section-box">
@@ -29,395 +64,120 @@ export default function BlogGrid2() {
               </div>
             </div>
           </section>
-          <section className="section-box mt-50">
-            <div className="container">
-              <div className="box-improve">
-                <div className="row">
-                  <div className="col-lg-5 col-md-12 col-sm-12">
-                    <Link href="blog-details">
-                      <span>
-                        <img src="assets/imgs/page/job-single-2/img2.png" alt="jobBox" />
-                      </span>
-                    </Link>
-                  </div>
-                  <div className="col-lg-7 col-md-12 col-sm-12">
-                    <div className="pt-40 pb-30 pl-30 pr-30">
-                      <Link href="blog-grid">
-                        <span className="btn btn-tag">Marketing</span>
-                      </Link>
 
-                      <h2 className="mt-20 mb-20">
-                        <Link href="blog-details">
-                          <span>Improve Your Business With These 8 Simple Tricks</span>
+          {/* Featured Blog Section */}
+          {featuredBlog && (
+            <section className="section-box mt-50">
+              <div className="container">
+                <div className="box-improve">
+                  <div className="row">
+                    <div className="col-lg-5 col-md-12 col-sm-12">
+                      <Link href={`/blog/${featuredBlog.slug}`}>
+                        <span>
+                          <img
+                            src={
+                              featuredBlog.imageUrl || "assets/imgs/page/job-single-2/img2.png" || "/placeholder.svg"
+                            }
+                            alt={featuredBlog.title}
+                          />
+                        </span>
+                      </Link>
+                    </div>
+                    <div className="col-lg-7 col-md-12 col-sm-12">
+                      <div className="pt-40 pb-30 pl-30 pr-30">
+                        <Link href="blog-grid">
+                          <span className="btn btn-tag">{featuredBlog.category.name}</span>
                         </Link>
-                      </h2>
-                      <p className="font-md mb-20">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam laoreet rutrum quam, id faucibus erat interdum a. Curabitur eget tortor a nulla interdum semper. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam laoreet rutrum quam, id faucibus erat interdum a. Curabitur eget tortor a nulla interdum semper.</p>
-                      <div>
-                        <Link href="blog-details">
-                          <span className="btn btn-arrow-right">Read More</span>
-                        </Link>
+
+                        <h2 className="mt-20 mb-20">
+                          <Link href={`/blog-details?slug=${featuredBlog.slug}`}>
+                            <span>{featuredBlog.title}</span>
+                          </Link>
+                        </h2>
+                        <p className="font-md mb-20">
+                          {featuredBlog.summary || featuredBlog.content.substring(0, 200) + "..."}
+                        </p>
+                        <div>
+                          <Link href={`/blog-details?slug=${featuredBlog.slug}`}>
+                            <span className="btn btn-arrow-right">Read More</span>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
+
           <section className="section-box mt-50">
             <div className="post-loop-grid">
               <div className="container">
                 <div className="text-left">
                   <h2 className="section-title mb-10 wow animate__animated animate__fadeInUp">Latest Posts</h2>
-                  <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">Don't miss the trending news</p>
+                  <p className="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">
+                    Don't miss the trending news
+                  </p>
                 </div>
-                <div className="row mt-30">
+                <div className="row mt-30 latest-posts">
                   <div className="col-lg-8">
                     <div className="row">
-                      <div className="col-lg-6 mb-30">
-                        <div className="card-grid-3 hover-up">
-                          <div className="text-center card-grid-3-image">
-                            <Link href="blog-details">
-                              <span>
-                                <figure>
-                                  <img alt="jobBox" src="assets/imgs/page/job-single-2/img3.png" />
-                                </figure>
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="card-block-info">
-                            <div className="tags mb-15">
-                              <Link href="blog-grid">
-                                <span className="btn btn-tag">News</span>
+                      {blogs.slice(1).map((blog) => (
+                        <div key={blog.id} className="col-lg-6 mb-30 d-flex">
+                          <div className="card-grid-3 hover-up w-100 latest-card">
+                            <div className="text-center card-grid-3-image">
+                              <Link href={`/blog-details?slug=${blog.slug}`}>
+                                <span>
+                                  <figure>
+                                    <img
+                                      alt={blog.title}
+                                      src={
+                                        blog.imageUrl || "assets/imgs/page/job-single-2/img3.png" || "/placeholder.svg"
+                                      }
+                                    />
+                                  </figure>
+                                </span>
                               </Link>
                             </div>
-                            <h5>
-                              <Link href="blog-details">
-                                <span>21 Job Interview Tips: How To Make a Great Impression</span>
-                              </Link>
-                            </h5>
-                            <p className="mt-10 color-text-paragraph font-sm">Our mission is to create the world&amp;rsquo;s most sustainable healthcare company by creating high-quality healthcare products in iconic, sustainable packaging.</p>
-                            <div className="card-2-bottom mt-20">
-                              <div className="row">
-                                <div className="col-lg-6 col-6">
-                                  <div className="d-flex">
-                                    <img className="img-rounded" src="assets/imgs/page/homepage1/user1.png" />
-                                    <div className="info-right-img">
-                                      <span className="font-sm font-bold color-brand-1 op-70">Azumi Rose</span>
-                                      <br />
-                                      <span className="font-xs color-text-paragraph-2">25 April 2022</span>
+                            <div className="card-block-info">
+                              <div className="tags mb-15">
+                                <Link href="blog-grid">
+                                  <span className="btn btn-tag">{blog.category.name}</span>
+                                </Link>
+                              </div>
+                              <h5>
+                                <Link href={`/blog-details?slug=${blog.slug}`}>
+                                  <span>{blog.title}</span>
+                                </Link>
+                              </h5>
+                              <p className="mt-10 color-text-paragraph font-sm lp-line-clamp-4">
+                                {blog.summary || blog.content.substring(0, 150) + "..."}
+                              </p>
+                              <div className="card-2-bottom mt-20">
+                                <div className="row">
+                                  <div className="col-lg-6 col-6">
+                                    <div className="d-flex">
+                                      <div className="info-right-img">
+                                        <span className="font-xs color-text-paragraph-2">
+                                          {formatDate(blog.createdAt)}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                                <div className="col-lg-6 text-end col-6 pt-15">
-                                  <span className="color-text-paragraph-2 font-xs">8 mins to read</span>
+                                  <div className="col-lg-6 text-end col-6 pt-15">
+                                    <span className="color-text-paragraph-2 font-xs">
+                                      {getReadTime(blog.content)} mins to read
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="col-lg-6 mb-30">
-                        <div className="card-grid-3 hover-up">
-                          <div className="text-center card-grid-3-image">
-                            <Link href="blog-details">
-                              <span>
-                                <figure>
-                                  <img alt="jobBox" src="assets/imgs/page/job-single-2/img4.png" />
-                                </figure>
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="card-block-info">
-                            <div className="tags mb-15">
-                              <Link href="blog-grid">
-                                <span className="btn btn-tag">Events</span>
-                              </Link>
-                            </div>
-                            <h5>
-                              <Link href="blog-details">
-                                <span>Email Examples: How To Respond to Employer Interview Requests</span>
-                              </Link>
-                            </h5>
-                            <p className="mt-10 color-text-paragraph font-sm">Our mission is to create the world&amp;rsquo;s most sustainable healthcare company by creating high-quality healthcare products in iconic, sustainable packaging.</p>
-                            <div className="card-2-bottom mt-20">
-                              <div className="row">
-                                <div className="col-lg-6 col-6">
-                                  <div className="d-flex">
-                                    <img className="img-rounded" src="assets/imgs/page/homepage1/user2.png" />
-                                    <div className="info-right-img">
-                                      <span className="font-sm font-bold color-brand-1 op-70">Azumi Rose</span>
-                                      <br />
-                                      <span className="font-xs color-text-paragraph-2">25 April 2022</span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-6 text-end col-6 pt-15">
-                                  <span className="color-text-paragraph-2 font-xs">8 mins to read</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-6 mb-30">
-                        <div className="card-grid-3 hover-up">
-                          <div className="text-center card-grid-3-image">
-                            <Link href="blog-details">
-                              <span>
-                                <figure>
-                                  <img alt="jobBox" src="assets/imgs/page/job-single-2/img5.png" />
-                                </figure>
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="card-block-info">
-                            <div className="tags mb-15">
-                              <Link href="blog-grid">
-                                <span className="btn btn-tag">Events</span>
-                              </Link>
-                            </div>
-                            <h5>
-                              <Link href="blog-details">
-                                <span>How To Write an Application Letter (With Examples)</span>
-                              </Link>
-                            </h5>
-                            <p className="mt-10 color-text-paragraph font-sm">Our mission is to create the world&amp;rsquo;s most sustainable healthcare company by creating high-quality healthcare products in iconic, sustainable packaging.</p>
-                            <div className="card-2-bottom mt-20">
-                              <div className="row">
-                                <div className="col-lg-6 col-6">
-                                  <div className="d-flex">
-                                    <img className="img-rounded" src="assets/imgs/page/homepage1/user3.png" />
-                                    <div className="info-right-img">
-                                      <span className="font-sm font-bold color-brand-1 op-70">Azumi Rose</span>
-                                      <br />
-                                      <span className="font-xs color-text-paragraph-2">25 April 2022</span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-6 text-end col-6 pt-15">
-                                  <span className="color-text-paragraph-2 font-xs">8 mins to read</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-6 mb-30">
-                        <div className="card-grid-3 hover-up">
-                          <div className="text-center card-grid-3-image">
-                            <Link href="blog-details">
-                              <span>
-                                <figure>
-                                  <img alt="jobBox" src="assets/imgs/page/job-single-2/img6.png" />
-                                </figure>
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="card-block-info">
-                            <div className="tags mb-15">
-                              <Link href="blog-grid">
-                                <span className="btn btn-tag">Events</span>
-                              </Link>
-                            </div>
-                            <h5>
-                              <Link href="blog-details">
-                                <span>17 jobs hired at 15 (and even 14) you should know</span>
-                              </Link>
-                            </h5>
-                            <p className="mt-10 color-text-paragraph font-sm">Our mission is to create the world&amp;rsquo;s most sustainable healthcare company by creating high-quality healthcare products in iconic, sustainable packaging.</p>
-                            <div className="card-2-bottom mt-20">
-                              <div className="row">
-                                <div className="col-lg-6 col-6">
-                                  <div className="d-flex">
-                                    <img className="img-rounded" src="assets/imgs/page/about/user1.png" />
-                                    <div className="info-right-img">
-                                      <span className="font-sm font-bold color-brand-1 op-70">Azumi Rose</span>
-                                      <br />
-                                      <span className="font-xs color-text-paragraph-2">25 April 2022</span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-6 text-end col-6 pt-15">
-                                  <span className="color-text-paragraph-2 font-xs">8 mins to read</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-6 mb-30">
-                        <div className="card-grid-3 hover-up">
-                          <div className="text-center card-grid-3-image">
-                            <Link href="blog-details">
-                              <span>
-                                <figure>
-                                  <img alt="jobBox" src="assets/imgs/page/job-single-2/img7.png" />
-                                </figure>
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="card-block-info">
-                            <div className="tags mb-15">
-                              <Link href="blog-grid">
-                                <span className="btn btn-tag">Events</span>
-                              </Link>
-                            </div>
-                            <h5>
-                              <Link href="blog-details">
-                                <span>How To Write a Cover Letter (Plus Tips and Examples)</span>
-                              </Link>
-                            </h5>
-                            <p className="mt-10 color-text-paragraph font-sm">Our mission is to create the world&amp;rsquo;s most sustainable healthcare company by creating high-quality healthcare products in iconic, sustainable packaging.</p>
-                            <div className="card-2-bottom mt-20">
-                              <div className="row">
-                                <div className="col-lg-6 col-6">
-                                  <div className="d-flex">
-                                    <img className="img-rounded" src="assets/imgs/page/about/user2.png" />
-                                    <div className="info-right-img">
-                                      <span className="font-sm font-bold color-brand-1 op-70">Azumi Rose</span>
-                                      <br />
-                                      <span className="font-xs color-text-paragraph-2">25 April 2022</span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-6 text-end col-6 pt-15">
-                                  <span className="color-text-paragraph-2 font-xs">8 mins to read</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-6 mb-30">
-                        <div className="card-grid-3 hover-up">
-                          <div className="text-center card-grid-3-image">
-                            <Link href="blog-details">
-                              <span>
-                                <figure>
-                                  <img alt="jobBox" src="assets/imgs/page/job-single-2/img8.png" />
-                                </figure>
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="card-block-info">
-                            <div className="tags mb-15">
-                              <Link href="blog-grid">
-                                <span className="btn btn-tag">Events</span>
-                              </Link>
-                            </div>
-                            <h5>
-                              <Link href="blog-details">
-                                <span>10 Best Skills To Include on a Resume in 2022</span>
-                              </Link>
-                            </h5>
-                            <p className="mt-10 color-text-paragraph font-sm">Our mission is to create the world&amp;rsquo;s most sustainable healthcare company by creating high-quality healthcare products in iconic, sustainable packaging.</p>
-                            <div className="card-2-bottom mt-20">
-                              <div className="row">
-                                <div className="col-lg-6 col-6">
-                                  <div className="d-flex">
-                                    <img className="img-rounded" src="assets/imgs/page/about/user3.png" />
-                                    <div className="info-right-img">
-                                      <span className="font-sm font-bold color-brand-1 op-70">Azumi Rose</span>
-                                      <br />
-                                      <span className="font-xs color-text-paragraph-2">25 April 2022</span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-6 text-end col-6 pt-15">
-                                  <span className="color-text-paragraph-2 font-xs">8 mins to read</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-6 mb-30">
-                        <div className="card-grid-3 hover-up">
-                          <div className="text-center card-grid-3-image">
-                            <Link href="blog-details">
-                              <span>
-                                <figure>
-                                  <img alt="jobBox" src="assets/imgs/page/job-single-2/img4.png" />
-                                </figure>
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="card-block-info">
-                            <div className="tags mb-15">
-                              <Link href="blog-grid">
-                                <span className="btn btn-tag">Events</span>
-                              </Link>
-                            </div>
-                            <h5>
-                              <Link href="blog-details">
-                                <span>39 Strengths and Weaknesses To Discuss in a Job Interview</span>
-                              </Link>
-                            </h5>
-                            <p className="mt-10 color-text-paragraph font-sm">Our mission is to create the world&amp;rsquo;s most sustainable healthcare company by creating high-quality healthcare products in iconic, sustainable packaging.</p>
-                            <div className="card-2-bottom mt-20">
-                              <div className="row">
-                                <div className="col-lg-6 col-6">
-                                  <div className="d-flex">
-                                    <img className="img-rounded" src="assets/imgs/page/homepage1/user1.png" />
-                                    <div className="info-right-img">
-                                      <span className="font-sm font-bold color-brand-1 op-70">Azumi Rose</span>
-                                      <br />
-                                      <span className="font-xs color-text-paragraph-2">25 April 2022</span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-6 text-end col-6 pt-15">
-                                  <span className="color-text-paragraph-2 font-xs">8 mins to read</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-6 mb-30">
-                        <div className="card-grid-3 hover-up">
-                          <div className="text-center card-grid-3-image">
-                            <Link href="blog-details">
-                              <span>
-                                <figure>
-                                  <img alt="jobBox" src="assets/imgs/page/job-single-2/img5.png" />
-                                </figure>
-                              </span>
-                            </Link>
-                          </div>
-                          <div className="card-block-info">
-                            <div className="tags mb-15">
-                              <Link href="blog-grid">
-                                <span className="btn btn-tag">Events</span>
-                              </Link>
-                            </div>
-                            <h5>
-                              <Link href="blog-details">
-                                <span>List of Weaknesses: 10 Things To Say in an Interview</span>
-                              </Link>
-                            </h5>
-                            <p className="mt-10 color-text-paragraph font-sm">Our mission is to create the world&amp;rsquo;s most sustainable healthcare company by creating high-quality healthcare products in iconic, sustainable packaging.</p>
-                            <div className="card-2-bottom mt-20">
-                              <div className="row">
-                                <div className="col-lg-6 col-6">
-                                  <div className="d-flex">
-                                    <img className="img-rounded" src="assets/imgs/page/homepage1/user1.png" />
-                                    <div className="info-right-img">
-                                      <span className="font-sm font-bold color-brand-1 op-70">Azumi Rose</span>
-                                      <br />
-                                      <span className="font-xs color-text-paragraph-2">25 April 2022</span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-6 text-end col-6 pt-15">
-                                  <span className="color-text-paragraph-2 font-xs">8 mins to read</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      ))}
                     </div>
+
+                    {/* Pagination */}
                     <div className="paginations">
                       <ul className="pager">
                         <li>
@@ -425,37 +185,7 @@ export default function BlogGrid2() {
                         </li>
                         <li>
                           <Link href="#">
-                            <span className="pager-number">1</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number">2</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number">3</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number">4</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number">5</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number active">6</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href="#">
-                            <span className="pager-number">7</span>
+                            <span className="pager-number active">1</span>
                           </Link>
                         </li>
                         <li>
@@ -464,6 +194,8 @@ export default function BlogGrid2() {
                       </ul>
                     </div>
                   </div>
+
+                  {/* Sidebar */}
                   <div className="col-lg-4 col-md-12 col-sm-12 col-12 pl-40 pl-lg-15 mt-lg-30">
                     <div className="widget_search mb-40">
                       <div className="search-form">
@@ -478,188 +210,61 @@ export default function BlogGrid2() {
                     <div className="sidebar-shadow sidebar-news-small">
                       <h5 className="sidebar-title">Trending Now</h5>
                       <div className="post-list-small">
-                        <div className="post-list-small-item d-flex align-items-center">
-                          <figure className="thumb mr-15">
-                            <a href="/blog-details">
-                              <img src="assets/imgs/page/blog/img-trending.png" alt="jobBox" />
-                            </a>
-                          </figure>
-                          <div className="content">
-                            <h5>
-                              <a href="/blog-details">How to get better agents in New York, USA</a>
-                            </h5>
-                            <div className="post-meta text-muted d-flex align-items-center mb-15">
-                              <div className="author d-flex align-items-center mr-20">
-                                <img alt="jobBox" src="assets/imgs/page/homepage1/user1.png" />
-                                <span>Sugar Rosie</span>
+                        {blogs.slice(0, 5).map((blog) => (
+                          <div key={blog.id} className="post-list-small-item d-flex align-items-start">
+                            <figure className="thumb mr-15">
+                              <a href={`/blog-details?slug=${blog.slug}`}>
+                                <img
+                                  src={blog.imageUrl || "assets/imgs/page/blog/img-trending.png" || "/placeholder.svg"}
+                                  alt={blog.title}
+                                />
+                              </a>
+                            </figure>
+                            <div className="content">
+                              <h5>
+                                <a href={`/blog-details?slug=${blog.slug}`}>{blog.title}</a>
+                              </h5>
+                              <div className="post-meta text-muted d-flex align-items-center mb-15">
+                                <div className="author d-flex align-items-center mr-20"></div>
+                                <div className="date">
+                                  <span>{formatDate(blog.createdAt)}</span>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="post-list-small-item d-flex align-items-center">
-                          <figure className="thumb mr-15">
-                            <a href="/blog-details">
-                              <img src="assets/imgs/page/blog/gallery1.png" alt="jobBox" />
-                            </a>
-                          </figure>
-                          <div className="content">
-                            <h5>
-                              <a href="/blog-details">How To Create a Resume for a Job in Social</a>
-                            </h5>
-                            <div className="post-meta text-muted d-flex align-items-center mb-15">
-                              <div className="author d-flex align-items-center mr-20">
-                                <img alt="jobBox" src="assets/imgs/page/homepage1/user3.png" />
-                                <span>Harding</span>
-                              </div>
-                              <div className="date">
-                                <span>17 Sep</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="post-list-small-item d-flex align-items-center">
-                          <figure className="thumb mr-15">
-                            <a href="/blog-details">
-                              <img src="assets/imgs/page/blog/gallery2.png" alt="jobBox" />
-                            </a>
-                          </figure>
-                          <div className="content">
-                            <h5>
-                              <a href="/blog-details">10 Ways to Avoid a Referee Disaster Zone</a>
-                            </h5>
-                            <div className="post-meta text-muted d-flex align-items-center mb-15">
-                              <div className="author d-flex align-items-center mr-20">
-                                <img alt="jobBox" src="assets/imgs/page/homepage1/user2.png" />
-                                <span>Steven</span>
-                              </div>
-                              <div className="date">
-                                <span>23 Sep</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="post-list-small-item d-flex align-items-center">
-                          <figure className="thumb mr-15">
-                            <a href="/blog-details">
-                              <img src="assets/imgs/page/blog/gallery4.png" alt="jobBox" />
-                            </a>
-                          </figure>
-                          <div className="content">
-                            <h5>
-                              <a href="/blog-details">How To Set Work-Life Boundaries From Any Location</a>
-                            </h5>
-                            <div className="post-meta text-muted d-flex align-items-center mb-15">
-                              <div className="author d-flex align-items-center mr-20">
-                                <img alt="jobBox" src="assets/imgs/page/homepage1/user3.png" />
-                                <span>Merias</span>
-                              </div>
-                              <div className="date">
-                                <span>14 Sep</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="post-list-small-item d-flex align-items-center">
-                          <figure className="thumb mr-15">
-                            <a href="/blog-details">
-                              <img src="assets/imgs/page/blog/gallery5.png" alt="jobBox" />
-                            </a>
-                          </figure>
-                          <div className="content">
-                            <h5>
-                              {" "}
-                              <a href="/blog-details">How to Land Your Dream Marketing Job</a>
-                            </h5>
-                            <div className="post-meta text-muted d-flex align-items-center mb-15">
-                              <div className="author d-flex align-items-center mr-20">
-                                <img alt="jobBox" src="assets/imgs/page/homepage1/user1.png" />
-                                <span>Rosie</span>
-                              </div>
-                              <div className="date">
-                                <span>12 Sep</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        ))}
                       </div>
                     </div>
+
                     <div className="sidebar-border-bg bg-right">
                       <span className="text-grey">WE ARE</span>
                       <span className="text-hiring">HIRING</span>
-                      <p className="font-xxs color-text-paragraph mt-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto</p>
+                      <p className="font-xxs color-text-paragraph mt-5">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae architecto
+                      </p>
                       <div className="mt-15">
                         <Link href="#">
                           <span className="btn btn-paragraph-2">Know More</span>
                         </Link>
                       </div>
                     </div>
+
                     <div className="sidebar-shadow sidebar-news-small">
                       <h5 className="sidebar-title">Gallery</h5>
                       <div className="post-list-small">
                         <ul className="gallery-3">
-                          <li>
-                            <Link href="#">
-                              <span>
-                                <img src="assets/imgs/page/blog/gallery1.png" />
-                              </span>
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="#">
-                              <span>
-                                <img src="assets/imgs/page/blog/gallery2.png" />
-                              </span>
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="#">
-                              <span>
-                                <img src="assets/imgs/page/blog/gallery3.png" />
-                              </span>
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="#">
-                              <span>
-                                <img src="assets/imgs/page/blog/gallery4.png" />
-                              </span>
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="#">
-                              <span>
-                                <img src="assets/imgs/page/blog/gallery5.png" />
-                              </span>
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="#">
-                              <span>
-                                <img src="assets/imgs/page/blog/gallery6.png" />
-                              </span>
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="#">
-                              <span>
-                                <img src="assets/imgs/page/blog/gallery7.png" />
-                              </span>
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="#">
-                              <span>
-                                <img src="assets/imgs/page/blog/gallery8.png" />
-                              </span>
-                            </Link>
-                          </li>
-                          <li>
-                            <Link href="#">
-                              <span>
-                                <img src="assets/imgs/page/blog/gallery9.png" />
-                              </span>
-                            </Link>
-                          </li>
+                          {blogs.map((blog) => (
+                            <li key={blog.id}>
+                              <Link href={`/blog-details?slug=${blog.slug}`}>
+                                <span>
+                                  <img
+                                    src={blog.imageUrl || "assets/imgs/page/blog/gallery1.png" || "/placeholder.svg"}
+                                    alt={blog.title}
+                                  />
+                                </span>
+                              </Link>
+                            </li>
+                          ))}
                         </ul>
                       </div>
                     </div>
@@ -668,6 +273,7 @@ export default function BlogGrid2() {
               </div>
             </div>
           </section>
+
           <section className="section-box mt-50 mb-20">
             <div className="container">
               <div className="box-newsletter">
@@ -696,6 +302,21 @@ export default function BlogGrid2() {
           </section>
         </div>
       </Layout>
-    </>
-  );
+    )
+  } catch (error) {
+    console.error("Error loading blogs:", error)
+    return (
+      <Layout>
+        <div className="section-box">
+          <div className="container">
+            <div className="text-center">
+              <div className="alert alert-danger" role="alert">
+                Có lỗi xảy ra khi tải dữ liệu blog. Vui lòng thử lại sau.
+              </div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
 }
