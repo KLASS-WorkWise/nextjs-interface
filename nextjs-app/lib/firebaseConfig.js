@@ -1,19 +1,16 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB4lQsAr2_OxOse6R_ZfDAIAkCLNsb60rA",
-  authDomain: "economic-e3c75.firebaseapp.com",
-  projectId: "economic-e3c75",
-  storageBucket: "economic-e3c75.appspot.com",
-  messagingSenderId: "1097189893918",
-  appId: "1:1097189893918:web:8459347d9cf74609030b0f",
-  measurementId: "G-4D6DZV8ZWW",
+  apiKey: "AIzaSyDWVDjP4mCYgDkDQR36OMGzqw7TUcS3zJY",
+  authDomain: "work-wise-1fc2e.firebaseapp.com",
+  projectId: "work-wise-1fc2e",
+  storageBucket: "work-wise-1fc2e.firebasestorage.app",
+  messagingSenderId: "954190400565",
+  appId: "1:954190400565:web:321d47c4680c20b981357c"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
-export { db, storage };
+export { db };
