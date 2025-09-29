@@ -465,7 +465,7 @@ const Header = ({ handleOpen, handleRemove, openClass }: HeaderProps) => {
                             marginBottom: 2,
                           }}
                         >
-                          Số dư tài khoản:
+                          Balance: 
                         </span>
                         <span
                           style={{

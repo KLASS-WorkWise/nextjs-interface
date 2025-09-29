@@ -405,6 +405,7 @@ export default function Home() {
                   </div>
                 )}
               </div>
+              
 <div className="col-lg-6 col-sm-12">
   <div className="content-job-inner">
     <span className="color-text-mutted text-32">
