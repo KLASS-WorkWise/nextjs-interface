@@ -27,7 +27,7 @@ export default function Home() {
   const [standardBanner, setStandardBanner] = useState<any>(null);
 
   useEffect(() => {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const API_URL = process.env.NEXT_PUBLIC_API_URL_BANNER || "http://localhost:8080";
     // VIP Banner
     fetch(`${API_URL}/api/banners/active?bannerType=Vip`)
       .then((res) => res.json())

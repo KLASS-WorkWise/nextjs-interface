@@ -564,9 +564,7 @@ export function SkillsStep() {
   });
 
   const [customSkill, setCustomSkill] = useState<Record<number, string>>({});
-  const [errorMessages, setErrorMessages] = useState<Record<number, string>>(
-    {}
-  );
+  // Đã tắt kiểm tra lỗi skill
 
   const addSkill = () => {
     append(""); // thêm kỹ năng rỗng
@@ -606,13 +604,7 @@ export function SkillsStep() {
     const currentValue = watch(`skills.${index}`);
     const allSkills = watch("skills") || [];
 
-    // Kiểm tra trùng lặp không phân biệt chữ hoa/chữ thường
-    const isDuplicate = (value: string) => {
-      const normalizedValue = value.toLowerCase();
-      return allSkills.some(
-        (s, i) => i !== index && s.toLowerCase() === normalizedValue
-      );
-    };
+
 
     return (
       <div
@@ -645,28 +637,10 @@ export function SkillsStep() {
 
             <select
               id={`skill-${index}`}
-              {...register(`skills.${index}`, {
-                required: "Please select a skill",
-              })}
-              className={`form-select ${
-                errorMessages[index] ? "is-invalid" : ""
-              }`}
+              {...register(`skills.${index}`)}
+              className="form-select"
               value={currentValue || ""}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (isDuplicate(value)) {
-                  setErrorMessages((prev) => ({
-                    ...prev,
-                    [index]: "This skill already exists!",
-                  }));
-                } else {
-                  setValue(`skills.${index}`, value, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  });
-                  setErrorMessages((prev) => ({ ...prev, [index]: "" }));
-                }
-              }}
+              onChange={e => setValue(`skills.${index}`, e.target.value)}
             >
               <option value="">Select a skill</option>
               {skillOptions.map((skill) => (
@@ -682,18 +656,10 @@ export function SkillsStep() {
                 </option>
               )}
             </select>
-            {errors.skills?.[index] && (
-              <div className="text-danger small">
-                {errors.skills[index].message}
-              </div>
-            )}
 
-            {errorMessages[index] && (
-              <div className="invalid-feedback">{errorMessages[index]}</div>
-            )}
           </div>
 
-          {/* Nếu chọn "Khác" thì hiện input + nút Thêm */}
+          {/* Nếu chọn "Other" thì hiện input + nút Thêm */}
           {currentValue === "Other" && (
             <div className="mb-3">
               <label className="form-label">Enter your skill</label>
@@ -703,7 +669,7 @@ export function SkillsStep() {
                   className="form-control"
                   placeholder="Enter skill"
                   value={customSkill[index] || ""}
-                  onChange={(e) =>
+                  onChange={e =>
                     setCustomSkill((prev) => ({
                       ...prev,
                       [index]: e.target.value,
@@ -716,20 +682,11 @@ export function SkillsStep() {
                   onClick={() => {
                     const value = customSkill[index]?.trim();
                     if (!value) return;
-
-                    if (isDuplicate(value)) {
-                      setErrorMessages((prev) => ({
-                        ...prev,
-                        [index]: "This skill already exists!",
-                      }));
-                    } else {
-                      setValue(`skills.${index}`, value, {
-                        shouldValidate: true,
-                        shouldDirty: true,
-                      });
-                      setCustomSkill((prev) => ({ ...prev, [index]: "" }));
-                      setErrorMessages((prev) => ({ ...prev, [index]: "" }));
-                    }
+                    setValue(`skills.${index}`, value, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                    setCustomSkill((prev) => ({ ...prev, [index]: "" }));
                   }}
                 >
                   <Check size={16} /> Add
